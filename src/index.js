@@ -47,15 +47,7 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 client.on("ready", () => {
 	CoreUtil.dateLog('ready');
 	client.guilds.forEach(guild => {
-		//var tmpGuild = Guild.create({_id: guild.id});
-		//CoreUtil.dateLog('tmpGuild');
-		//tmpGuild.updateOfficerRoleId("fsafsd");
-		let doc = Guild.upsert({_id: guild.id}).then(doc => {
-			CoreUtil.dateLog(doc);
-			doc.updateMemberRoleId('f1231321312', function (err) {
-				if (err) return console.log(err);
-			});
-		});
+		let doc = Guild.upsert({_id: guild.id})
 	});
 });
 

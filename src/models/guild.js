@@ -11,8 +11,8 @@ module.exports = function() {
 		memberRoleId: String
 	});
 
-	guildSchema.methods.updateMemberRoleId = function (id, cb) {
-		this.model('Guild').update({id: this.id}, {$set: {memberRoleId: id}}, cb);
+	guildSchema.methods.updateMemberRoleId = function (roleId) {
+		this.model('Guild').updateOne({memberRoleId: roleId}).exec();
 	};
 
 	let GuildModel = mongoose.model('Guild', guildSchema);
@@ -21,7 +21,7 @@ module.exports = function() {
 		return GuildModel.findOneAndUpdate(
 			{_id: doc._id},
 			doc, 
-			{upsert: true, new: true, runValidators: true}
+			{upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true}
 		).exec();
 	}
 };
