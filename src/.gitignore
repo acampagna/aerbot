@@ -1,6 +1,8 @@
-update.sh
-guilds-data/*
-token.json*
+### Discord bots ####
+guilds.json
+token.json
+log
+
 
 # Created by https://www.gitignore.io/api/node,visualstudiocode
 

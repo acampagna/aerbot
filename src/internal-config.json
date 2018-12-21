@@ -1,0 +1,13 @@
+{
+	"dbCompactionSchedule": "0 0 0,3,6,9 * * *",
+	"website": "",
+	"discordInvite": "",
+	"game": "I <3 Aerfalle",
+	"botName": "Aerbot 2.0",
+	"commandPrefix": "!",
+	"debugIgnores": [
+		"[ws] [connection] Sending a heartbeat",
+		"[ws] [connection] Heartbeat acknowledged"
+	],
+	"askTimeout": 60000
+}
