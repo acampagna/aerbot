@@ -1,5 +1,6 @@
 update.sh
-guilds-data/*
+aerbot-data
+aerbot-data/*
 token.json*
 
 # Created by https://www.gitignore.io/api/node,visualstudiocode
