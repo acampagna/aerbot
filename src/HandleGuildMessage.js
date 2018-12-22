@@ -19,28 +19,31 @@ function handleGuildMessage(client, message, commands) {
 function handleGuildCommand(client, message, commands, guildData) {
 	const { botName, isMemberAdmin, params, command } = parseDetails(message, commands, guildData);
 
-	CoreUtil.dateLog(`Command: ${command}`);
-	if (!command)
+	//CoreUtil.dateLog(`Command: `,command);
+	if (!command) {
+		CoreUtil.dateLog("Not a command");
 		return;
+	}
+		
 
 	if (params.length < command.expectedParamCount)
 		message.reply(`Incorrect syntax!\n**Expected:** *${botName} ${command.syntax}*\n**Need help?** *${botName} help*`);
 
-	else if (isMemberAdmin || !command.admin)
+	else if (isMemberAdmin || !command.admin) {
 		command.invoke({ message, params, guildData, client, commands, isMemberAdmin })
-			.then(response => {
-				CoreUtil.dateLog(`Message: ${message}`);
-				if (typeof response === 'object' && response.everyone && response.message) {
-					if(response.everyone) {
-						message.channel.send("@everyone", { embed: response.message });
-					}
-				} else {
-					if(response) {
-						message.reply(response);
-					}
+		.then(response => {
+			if (typeof response === 'object' && response.everyone && response.message) {
+				if(response.everyone) {
+					message.channel.send("@everyone", { embed: response.message });
 				}
-			})
-			.catch(err => err && message.reply(err));
+			} else {
+				if(response) {
+					message.reply(response);
+				}
+			}
+		})
+		.catch(err => err && message.reply(err));
+	}
 }
 
 function parseDetails(message, commands, guildData) {

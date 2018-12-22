@@ -4,6 +4,7 @@ const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
 require('./models/guild.js')();
+require('./models/group.js')();
 const GuildModel = mongoose.model('Guild');
 
 // @ts-ignore

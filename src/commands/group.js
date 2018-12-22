@@ -2,6 +2,7 @@ const CoreUtil = require("../utils/Util.js");
 const Command = require("../Command.js");
 const mongoose = require('mongoose');
 const Group = mongoose.model('Group');
+const Discord = require("discord.js");
 
 module.exports = new Command({
 	name: "group",
@@ -16,15 +17,19 @@ function invoke({ message, params, guildData, client }) {
 
 	if(groupName.length === 0) {
 		return new Promise(function(resolve, reject) {
-			var ret = "**Groups**\n";
+			const embed = new Discord.RichEmbed();
+			var desc = "";
+			embed.setColor("BLUE");
+			embed.setTitle(`__Groups__`)
 			Group.findAllGroups().then(groups => {
 				groups.forEach(group => {
-					console.log(group.name + " : " + group.numMembers + " members");
-					ret = ret + group.name + " : " + group.numMembers + " members\n";
+					//embed.addField(group.name, group.numMembers + " members", true);
+					desc = desc + group.name + " - " + group.numMembers + " members\n";
 				});
-				ret = ret + "Use the !group command to join a group"
-				resolve(ret);
-			}).catch(console.error);
+				embed.setDescription(desc);
+				embed.setFooter("Use the !group command to join a group");
+				resolve ({embed});
+			});
 		});
 	} else {
 		var role = message.guild.roles.find(role => role.name.toLowerCase().trim() === groupName);

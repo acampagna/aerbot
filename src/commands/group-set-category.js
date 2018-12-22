@@ -1,6 +1,5 @@
 const CoreUtil = require("../utils/Util.js");
 const Command = require("../Command.js");
-const mongoose = require('mongoose');
 
 module.exports = new Command({
 	name: "group-set-category",
