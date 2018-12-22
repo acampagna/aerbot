@@ -12,13 +12,13 @@ function calculateActionExp(action) {
 			return 100;
 			break;
 		case 'reaction':
-			return 10;
+			return 4;
 			break;
 		case 'praise':
-			return 20;
+			return 10;
 			break;
 		case 'message':
-			return 5;
+			return 2;
 			break;
 		default:
 			return 1;

@@ -9,7 +9,8 @@ module.exports = function() {
 		_id: String,
 		officerRoleId: String,
 		memberRoleId: String,
-		groupCategory: String
+		groupCategory: String,
+		welcomeRole: String
 	});
 
 	guildSchema.methods.updateMemberRoleId = function (roleId) {
@@ -18,6 +19,10 @@ module.exports = function() {
 
 	guildSchema.methods.updateGroupCategory = function (categoryId) {
 		this.model('Guild').updateOne({_id: this.id},{groupCategory: categoryId}).exec();
+	};
+
+	guildSchema.methods.updateWelcomeRole = function (roleId) {
+		this.model('Guild').updateOne({_id: this.id},{welcomeRole: roleId}).exec();
 	};
 
 	let GuildModel = mongoose.model('Guild', guildSchema);

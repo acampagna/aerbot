@@ -21,8 +21,18 @@ module.exports = function() {
 		lastMessage: Date,
 		lastOnline: Date,
 		lastReaction: Date,
-		lastActive: Date
+		lastActive: Date,
+		accounts: { type: Map, of: String },
+		referrer: String
 	});
+
+	userSchema.methods.getAccounts = function () {
+		return this.accounts || new Map();
+	};
+
+	userSchema.methods.updateReferrer = function (referrerId) {
+		this.model('User').updateOne({_id: this.id},{referrer: referrerId}).exec();
+	};
 
 	userSchema.statics.findAllUsers = function() {
 		return this.find().exec();
