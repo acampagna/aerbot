@@ -10,7 +10,8 @@ module.exports = function() {
 		officerRoleId: String,
 		memberRoleId: String,
 		groupCategory: String,
-		welcomeRole: String
+		welcomeRole: String,
+		welcomeChannelId: String
 	});
 
 	guildSchema.methods.updateMemberRoleId = function (roleId) {
@@ -21,8 +22,13 @@ module.exports = function() {
 		this.model('Guild').updateOne({_id: this.id},{groupCategory: categoryId}).exec();
 	};
 
+	//TODO: Fix to WelcomeRoleId
 	guildSchema.methods.updateWelcomeRole = function (roleId) {
 		this.model('Guild').updateOne({_id: this.id},{welcomeRole: roleId}).exec();
+	};
+
+	guildSchema.methods.updateWelcomeChannelId = function (channelId) {
+		this.model('Guild').updateOne({_id: this.id},{welcomeChannelId: channelId}).exec();
 	};
 
 	let GuildModel = mongoose.model('Guild', guildSchema);

@@ -30,7 +30,7 @@ function invoke({ message, params, guildData, client }) {
 				allow: ['VIEW_CHANNEL']
 			}]
 		).then(channel => {
-			channel.setParent(guildData.groupCategory);;
+			channel.setParent(guildData.groupCategory);
 			Group.create({guildId: message.guild.id, roleId: role.id, channelId: channel.id, name: groupName});
 			console.log(`Created new channel with name ${channel.name}`)
 		}).catch(console.error);
