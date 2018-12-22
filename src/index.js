@@ -3,9 +3,12 @@ const Client = require("./Client.js");
 const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
+const HandleActivity = require("./HandleActivity");
 require('./models/guild.js')();
 require('./models/group.js')();
+require('./models/user.js')();
 const GuildModel = mongoose.model('Guild');
+const UserModel = mongoose.model('User');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", GuildModel);
@@ -13,10 +16,9 @@ const client = new Client(require("../token.json"), __dirname + "/commands", Gui
 client.on("beforeLogin", () => {
 	//setInterval(doGuildIteration, Config.onlineIterationInterval);
 });
-
 client.on("message", message => {
-	/*if (message.guild && message.member)
-		UserData.findOne({ user_id: message.member.id })
+	if (message.guild && message.member)
+		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,
 				message.member.id, 
@@ -24,20 +26,21 @@ client.on("message", message => {
 				false,
 				userData || newUser(message.member.id, message.member.displayName)
 			)
-		);*/
+		);
 });
 
 client.on("messageReactionAdd", (messageReaction, user) => {
 	CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-	/*if (messageReaction && user)
-		UserData.findOne({ user_id: user.id })
+	if (messageReaction && user)
+		UserModel.findById(user.id).exec()
         	.then(userData => HandleActivity(
 				client,
 				user.id, 
 				false,
 				messageReaction,
-				userData || newUser(user.id, user.username)
-			));*/
+				userData || newUser(message.member.id, message.member.displayName)
+			)
+		);
 });
 
 client.on("ready", () => {
@@ -48,8 +51,7 @@ client.on("ready", () => {
 });
 
 client.on("voiceStateUpdate", member => {
-//     GuildData.findOne({ guildID: member.guild.id })
-//         .then(guildData => registerActivity(member.guild, member, guildData));
+
 });
 
 client.bootstrap();
@@ -65,50 +67,6 @@ function doGuildIteration() {
 				CoreUtil.dateLog("Last Announce Time SET");
 				guildData.lastLotteryAnnounce = now;
 				guildData.save();
-			}
-
-			let lotteryDateDiff = new DateDiff(now, guildData.lastLotteryAnnounce);
-
-			if(lotteryDateDiff.seconds()*1000 >= Config.autoAnnounceInterval) {
-				if(guild.channels.get(guildData.lotteryChannel)) {
-					LotteryUtil.announce(guildData).then(m => {
-						guild.channels.get(guildData.lotteryChannel).send("@everyone", { embed: m });
-					});
-				}
-			}
-
-			if(!guildData.lastTip) {
-				CoreUtil.dateLog("Last Tip Time SET");
-				guildData.lastTip = now;
-				guildData.save();
-			}
-
-			let tipDateDiff = new DateDiff(now, guildData.lastTip);
-
-			if(tipDateDiff.seconds()*1000 >= Config.tipInterval) {
-				if(guild.channels.get(guildData.lotteryChannel)) {
-					let tips = Config.tips;
-					let formats = Config.formats;
-					let rnd = Math.floor(Math.random()*tips.length);
-					let tipNum = rnd+1;
-
-					guildData.lastTip = now;
-					guildData.save();
-
-					let rndFormat = 0;
-					if(!tips[rnd].includes("http://") && !tips[rnd].includes("https://")) {
-						rndFormat = Math.floor(Math.random()*formats.length);
-					}
-
-					//guild.channels.get(guildData.tipChannel).send("**** ```" + tips[rnd] + "```");
-					guild.channels.get(guildData.tipChannel).send(CoreUtil.doFormatting(
-						formats[rndFormat],
-						{
-							"one": "Did you know (Tip #" + tipNum + ")",
-							"two": tips[rnd]
-						}
-					));
-				}
 			}
 		});
 	})*/
@@ -142,4 +100,9 @@ function checkOnlineStatus(guild) {
 			);
 		}
 	});*/
+}
+
+function newUser(uid, name) {
+    CoreUtil.dateLog(`Creating ${uid} - ${name}`);
+    return UserModel.create({ _id: uid, username: name });
 }

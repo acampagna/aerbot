@@ -1,20 +1,20 @@
 const CoreUtil = require("./utils/Util.js");
 const MemberUtil = require("./utils/MemberUtil.js");
 
-function handleActivity(client, id, message, reaction, userData, lottery) {
+function handleActivity(client, id, message, reaction, userData) {
     if (userData && id !== client.user.id) {
 		let date = new Date();
 
 		newUserData = {
-			last_online: date,
-			last_active: date
+			lastOnline: date,
+			lastActive: date
 		};
 
 		//handle exp
 		var exp = userData.exp;
 
 		//give activity points
-		userData.activity_points++;
+		userData.activityPoints++;
 		exp = MemberUtil.calculateNewExp("activity", exp);
 
 		if(message) {
@@ -31,7 +31,7 @@ function handleActivity(client, id, message, reaction, userData, lottery) {
 		}
 
 		if(reaction) {
-			newUserData.last_reaction = date;
+			newUserData.lastReaction = date;
 			userData.reactions++;
 			exp = MemberUtil.calculateNewExp("reaction", exp);
 		}
@@ -43,7 +43,8 @@ function handleActivity(client, id, message, reaction, userData, lottery) {
 
 		Object.assign(userData, newUserData);
 
-        userData.save();
+		//console.log(userData);
+		userData.save();
 	}
 }
 
