@@ -13,7 +13,7 @@ function invoke({ message, params, guildData, client }) {
 	CoreUtil.dateLog(params);
 
 	switch(params[0]) {
-		case 'set_member_role':
+		/*case 'set_member_role':
 			if (message.mentions.roles.size > 0) {
 				guildData.memberRoleID = message.mentions.roles.first().id;
 			} else {
@@ -26,7 +26,7 @@ function invoke({ message, params, guildData, client }) {
 		} else {
 			return Promise.resolve("You must @mention an existing role");
 		}
-		break;
+		break;*/
 		default:
 			return Promise.resolve(params[0] + " is an invalid configuration");
 	}

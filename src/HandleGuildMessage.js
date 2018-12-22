@@ -5,15 +5,14 @@ const RequireAll = require("require-all");
 const cmdPrefix = InternalConfig.commandPrefix;
 
 function handleGuildMessage(client, message, commands) {
-	CoreUtil.dateLog(`Message: ${message}`);
 	if (isCommand(message))
-		client.guildDataModel.findOne({ guildID: message.guild.id })
+		client.guildModel.findById(message.guild.id).exec()
 			.then(guildData =>
 				handleGuildCommand(
 					client,
 					message,
 					Object.assign({}, commands),
-					guildData || client.guildDataModel.create({ guildID: message.guild.id })
+					guildData
 				));
 }
 
@@ -30,8 +29,7 @@ function handleGuildCommand(client, message, commands, guildData) {
 	else if (isMemberAdmin || !command.admin)
 		command.invoke({ message, params, guildData, client, commands, isMemberAdmin })
 			.then(response => {
-				//CoreUtil.dateLog(response);
-				guildData.save();
+				CoreUtil.dateLog(`Message: ${message}`);
 				if (typeof response === 'object' && response.everyone && response.message) {
 					if(response.everyone) {
 						message.channel.send("@everyone", { embed: response.message });
@@ -56,7 +54,8 @@ function parseDetails(message, commands, guildData) {
 
 	return {
 		botName: "@" + (message.guild.me.nickname || message.guild.me.user.username),
-		isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(guildData.officerRoleID),
+		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(guildData.officerRoleID),
+		isMemberAdmin: message.member.permissions.has("ADMINISTRATOR"),
 		params: split.slice(cmdPos+1, split.length),
 		command: commands[commandName]
 	};

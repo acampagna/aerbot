@@ -15,9 +15,9 @@ module.exports = class Client extends Discord.Client {
 	 * Construct a new Discord.Client with some added functionality
 	 * @param {string} token bot token
 	 * @param {string} commandsDir location of dir containing commands .js files
-	 * @param {*} guildDataModel GuildData model to be used for app; must extend BaseGuildData
+	 * @param {*} guildModel GuildData model to be used for app; must extend BaseGuildData
 	 */
-	constructor(token, commandsDir, guildDataModel) {
+	constructor(token, commandsDir, guildModel) {
 		super({
 			messageCacheMaxSize: 1000,
 			autofetch: [
@@ -28,23 +28,24 @@ module.exports = class Client extends Discord.Client {
 
 		this._token = token;
 		this.commandsDir = commandsDir;
-		this.guildDataModel = guildDataModel;
+		this.guildModel = guildModel;
 
 		this.commands = RequireAll(this.commandsDir);
 
 		this.on("ready", this._onReady);
 		this.on("message", this._onMessage);
 		this.on("debug", this._onDebug);
+		this.on("error", this._onError);
 		this.on("guildCreate", this._onGuildCreate);
 		this.on("guildDelete", this._onGuildDelete);
 		process.on("uncaughtException", err => this._onUnhandledException(this, err));
 	}
 
 	_onReady() {
-		this.user.setActivity(InternalConfig.game);
+		//this.user.setActivity(InternalConfig.game);
 		CoreUtil.dateLog(`Registered bot ${this.user.username}`);
 
-		this.removeDeletedGuilds();
+		//this.removeDeletedGuilds();
 	}
 
 	_onMessage(message) {
@@ -58,12 +59,17 @@ module.exports = class Client extends Discord.Client {
 			CoreUtil.dateDebug(info);
 	}
 
+	_onError(error) {
+		CoreUtil.dateLog("Error Occured!");
+		CoreUtil.dateError(error);
+	}
+
 	_onGuildCreate(guild) {
 		CoreUtil.dateLog(`Added to guild ${guild.name}`);
 	}
 
 	_onGuildDelete(guild) {
-		this.guildDataModel.findOneAndDelete({ guildID: guild.id });
+		//this.guildDataModel.findOneAndDelete({ guildID: guild.id });
 
 		CoreUtil.dateLog(`Removed from guild ${guild.name}, removing data for this guild`);
 	}
@@ -79,34 +85,19 @@ module.exports = class Client extends Discord.Client {
 
 	bootstrap() {
 		dbc = Mongoose.connect('mongodb://localhost/test');
-
-		const Cat = Mongoose.model('Cat', { name: String });
-
-		const kitty = new Cat({ name: 'Zildjian' });
-		kitty.save().then(() => console.log('meow'));
-
+		
 		Camo.connect("nedb://aerbot-data").then(db => {
 			neDB = db;
-
-			compactCollections();
-			new CronJob(InternalConfig.dbCompactionSchedule, compactCollections, null, true);
-
 			this.emit("beforeLogin");
 			this.login(this._token);
 		});
 	}
 
-	removeDeletedGuilds() {
+	/*removeDeletedGuilds() {
 		this.guildDataModel.find().then(guildDatas => {
 			for (let guildData of guildDatas)
 				if (!this.guilds.get(guildData.guildID))
 					guildData.delete();
 		});
-	}
+	}*/
 };
-
-function compactCollections() {
-	CoreUtil.dateLog("Collection Keys: " + Object.keys(neDB._collections));
-	for (let collectionName of Object.keys(neDB._collections))
-		neDB._collections[collectionName].persistence.compactDatafile();
-}

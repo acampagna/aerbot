@@ -8,11 +8,16 @@ module.exports = function() {
 	const guildSchema = new Schema({
 		_id: String,
 		officerRoleId: String,
-		memberRoleId: String
+		memberRoleId: String,
+		groupCategory: String
 	});
 
 	guildSchema.methods.updateMemberRoleId = function (roleId) {
-		this.model('Guild').updateOne({memberRoleId: roleId}).exec();
+		this.model('Guild').updateOne({_id: this.id},{memberRoleId: roleId}).exec();
+	};
+
+	guildSchema.methods.updateGroupCategory = function (categoryId) {
+		this.model('Guild').updateOne({_id: this.id},{groupCategory: categoryId}).exec();
 	};
 
 	let GuildModel = mongoose.model('Guild', guildSchema);

@@ -1,25 +1,20 @@
 // @ts-ignore
 const Client = require("./Client.js");
 const Config = require("./config.json");
-const GuildData = require("./models/guild-data.js");
-const UserData = require("./models/user-data.js");
 const CoreUtil = require("./utils/Util.js");
-const LotteryUtil = require("./utils/LotteryUtil.js");
-const HandleActivity = require("./HandleActivity");
-const DateDiff = require("date-diff");
 const mongoose = require('mongoose');
 require('./models/guild.js')();
-const Guild = mongoose.model('Guild');
+const GuildModel = mongoose.model('Guild');
 
 // @ts-ignore
-const client = new Client(require("../token.json"), __dirname + "/commands", GuildData);
+const client = new Client(require("../token.json"), __dirname + "/commands", GuildModel);
 
 client.on("beforeLogin", () => {
 	//setInterval(doGuildIteration, Config.onlineIterationInterval);
 });
 
 client.on("message", message => {
-	if (message.guild && message.member)
+	/*if (message.guild && message.member)
 		UserData.findOne({ user_id: message.member.id })
         	.then(userData => HandleActivity(
 				client,
@@ -28,12 +23,12 @@ client.on("message", message => {
 				false,
 				userData || newUser(message.member.id, message.member.displayName)
 			)
-		);
+		);*/
 });
 
 client.on("messageReactionAdd", (messageReaction, user) => {
 	CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-	if (messageReaction && user)
+	/*if (messageReaction && user)
 		UserData.findOne({ user_id: user.id })
         	.then(userData => HandleActivity(
 				client,
@@ -41,20 +36,20 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 				false,
 				messageReaction,
 				userData || newUser(user.id, user.username)
-			));
+			));*/
 });
 
 client.on("ready", () => {
 	CoreUtil.dateLog('ready');
 	client.guilds.forEach(guild => {
-		let doc = Guild.upsert({_id: guild.id})
+		let doc = GuildModel.upsert({_id: guild.id})
 	});
 });
 
-// client.on("voiceStateUpdate", member => {
+client.on("voiceStateUpdate", member => {
 //     GuildData.findOne({ guildID: member.guild.id })
 //         .then(guildData => registerActivity(member.guild, member, guildData));
-// });
+});
 
 client.bootstrap();
 
@@ -146,9 +141,4 @@ function checkOnlineStatus(guild) {
 			);
 		}
 	});*/
-}
-
-function newUser(uid, name) {
-	CoreUtil.dateLog(`Creating ${uid} - ${name}`);
-	return UserData.create({ user_id: uid, username: name });
 }
