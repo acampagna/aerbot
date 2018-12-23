@@ -14,10 +14,10 @@ const UserModel = mongoose.model('User');
 const client = new Client(require("../token.json"), __dirname + "/commands", GuildModel);
 
 client.on("beforeLogin", () => {
-	//setInterval(doGuildIteration, Config.onlineIterationInterval);
+	setInterval(doGuildIteration, Config.onlineIterationInterval);
 });
 client.on("message", message => {
-	if (message.guild && message.member)
+	if (message.guild && message.member && !message.member.user.bot)
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,
@@ -31,7 +31,7 @@ client.on("message", message => {
 
 client.on("messageReactionAdd", (messageReaction, user) => {
 	CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-	if (messageReaction && user)
+	if (messageReaction && user && !user.bot)
 		UserModel.findById(user.id).exec()
         	.then(userData => HandleActivity(
 				client,
@@ -56,27 +56,33 @@ client.on("voiceStateUpdate", member => {
 
 client.on("guildMemberAdd", (member) => {
 	member.send("Welcome to the Dauntless gaming server!");
-	client.guildModel.findById(member.guild.id).exec().then(guild =>{
-		member.addRole(guild.welcomeRole);
-	});
+	if(!member.user.bot) {
+		client.guildModel.findById(member.guild.id).exec().then(guild =>{
+			member.addRole(guild.welcomeRole);
+		});
+	}
 });
 
 client.bootstrap();
 
 function doGuildIteration() {
-	/*CoreUtil.dateLog(`[Interval]`);
+	CoreUtil.dateLog(`[Online Interval]`);
 	client.guilds.forEach(guild => {
-		checkOnlineStatus(guild);
-		GuildData.findOne({ guildID: guild.id}).then(guildData => {
-			let now = new Date();
-
-			if(!guildData.lastLotteryAnnounce) {
-				CoreUtil.dateLog("Last Announce Time SET");
-				guildData.lastLotteryAnnounce = now;
-				guildData.save();
+		//checkOnlineStatus(guild);
+		guild.members.forEach(member =>{
+			if(member.presence.status != "offline" && !member.user.bot) {
+				CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
+				UserModel.findById(member.id).exec()
+				.then(userData => HandleActivity(
+					client,
+					member.id, 
+					false,
+					false,
+					userData || newUser(member.id, member.displayName)
+				));
 			}
 		});
-	})*/
+	})
 }
 
 function checkOnlineStatus(guild) {

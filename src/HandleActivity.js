@@ -2,7 +2,7 @@ const CoreUtil = require("./utils/Util.js");
 const MemberUtil = require("./utils/MemberUtil.js");
 
 function handleActivity(client, id, message, reaction, userData) {
-    if (userData && id !== client.user.id) {
+    if (userData) {
 		let date = new Date();
 
 		newUserData = {

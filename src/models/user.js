@@ -19,9 +19,10 @@ module.exports = function() {
 		praise: { type: Number, default: 0, min: 0 },
 		activityPoints: { type: Number, default: 0, min: 0 },
 		lastMessage: Date,
-		lastOnline: Date,
 		lastReaction: Date,
-		lastActive: Date,
+		lastOnline: {type: Date, default: new Date()},
+		lastActive: {type: Date, default: new Date()},
+		joined: {type: Date, default: new Date()},
 		accounts: { type: Map, of: String },
 		referrer: String
 	});
