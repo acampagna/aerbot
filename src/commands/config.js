@@ -13,11 +13,11 @@ function invoke({ message, params, guildData, client }) {
 	CoreUtil.dateLog(params);
 
 	switch(params[0]) {
-		/*case 'set_member_role':
-			if (message.mentions.roles.size > 0) {
-				guildData.memberRoleID = message.mentions.roles.first().id;
+		case 'set_group_category':
+			if (params[1].length > 0 && !isNaN(params[1])) {
+				guildData.updateGroupCategory(category);
 			} else {
-				return Promise.resolve("You must @mention an existing role");
+				return Promise.resolve("You must specify a category ID.");
 			}
 			break;
 		case 'set_mod_role':
@@ -26,7 +26,7 @@ function invoke({ message, params, guildData, client }) {
 		} else {
 			return Promise.resolve("You must @mention an existing role");
 		}
-		break;*/
+		break;
 		default:
 			return Promise.resolve(params[0] + " is an invalid configuration");
 	}

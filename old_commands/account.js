@@ -1,4 +1,4 @@
-const CoreUtil = require("../utils/Util.js");
+/*const CoreUtil = require("../utils/Util.js");
 const Command = require("../Command.js");
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
@@ -15,7 +15,7 @@ module.exports = new Command({
 function invoke({ message, params, guildData, client }) {
 	if(params[0] && params[1]) {
 		switch(params[0]) {
-			/*case 'steam':
+			case 'steam':
 				
 				break;
 			case 'epic':
@@ -35,7 +35,7 @@ function invoke({ message, params, guildData, client }) {
 				break;
 			case 'twitch':
 				
-				break;*/
+				break;
 			default:
 				return new Promise(function(resolve, reject) {
 					User.findById(message.member.id).exec().then(user => {
@@ -52,14 +52,20 @@ function invoke({ message, params, guildData, client }) {
 		return new Promise(function(resolve, reject) {
 			const embed = new Discord.RichEmbed();
 			embed.setColor("GREEN");
-			embed.setTitle(`__ACCOUNTS__`)
+			embed.setTitle(`__ACCOUNTS__`);
+			embed.setThumbnail(message.member.user.displayAvatarURL);
 			User.findById(message.member.id).exec().then(user => {
 				let accounts = user.getAccounts();
 				for (var [key, value] of accounts) {
-					embed.addField(key, value); 
+					if(key.toLowerCase() == "steam" && value.toLowerCase().startsWith('http')) {
+						let splitArr = value.replace(/\/$/, '').split("/");
+						value = "[" + splitArr[splitArr.length-1] + "](" + value + ")";
+						console.log("Value: " + value);
+					}
+					embed.addField(key, value, true); 
 				}
 				resolve ({embed});
 			});
 		});
 	}
-}
+}*/

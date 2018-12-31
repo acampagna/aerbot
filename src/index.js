@@ -55,8 +55,8 @@ client.on("voiceStateUpdate", member => {
 });
 
 client.on("guildMemberAdd", (member) => {
-	member.send("Welcome to the Dauntless gaming server!");
 	if(!member.user.bot) {
+		member.send("Welcome to the Dauntless gaming server!");
 		client.guildModel.findById(member.guild.id).exec().then(guild =>{
 			member.addRole(guild.welcomeRole);
 		});
