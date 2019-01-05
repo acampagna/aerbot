@@ -84,7 +84,7 @@ module.exports = class Client extends Discord.Client {
 	}
 
 	bootstrap() {
-		dbc = Mongoose.connect('mongodb://localhost/test');
+		dbc = Mongoose.connect('mongodb://localhost/aerbot');
 		
 		Camo.connect("nedb://aerbot-data").then(db => {
 			neDB = db;
