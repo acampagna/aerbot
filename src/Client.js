@@ -42,7 +42,7 @@ module.exports = class Client extends Discord.Client {
 	}
 
 	_onReady() {
-		//this.user.setActivity(InternalConfig.game);
+		this.user.setActivity(InternalConfig.game);
 		CoreUtil.dateLog(`Registered bot ${this.user.username}`);
 
 		//this.removeDeletedGuilds();
