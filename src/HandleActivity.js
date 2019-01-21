@@ -43,7 +43,7 @@ function handleActivity(client, id, message, reaction, userData) {
 
 		Object.assign(userData, newUserData);
 
-		//console.log(userData);
+		//TODO: Fix this being a promise on newUser
 		userData.save();
 	}
 }
