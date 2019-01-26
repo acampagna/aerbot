@@ -11,6 +11,12 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Prototype of playing around with server-side image manipulation and rendering.
+ * UNFINISHED. PROTOTYPE. REQUIRES EXTRA SETUP TO USE.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 async function invoke({ message, params, guildData, client }) {
 	try{
 		console.log(message.member.user.fetchProfile());

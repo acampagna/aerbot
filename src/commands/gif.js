@@ -11,6 +11,12 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Pulls a gif from giphy based on a search term.
+ * GIPHY API CURRENTLY NOT WORKING. NEED TO INVESTIGATE. FROM OLD AERBOT v1.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	return new Promise(function(resolve, reject) {
 		gifClient.random('gifs', {"tag": params[0]})

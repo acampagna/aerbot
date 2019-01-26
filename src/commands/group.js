@@ -12,6 +12,12 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Lists all groups. Adds/Removes a group for a user if they specify a group by adding the group's role to them.
+ * UNFINISHED. NEEDS TO BE CLEANED UP A BIT.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	var groupName = params.join(" ").toLowerCase().trim();
 

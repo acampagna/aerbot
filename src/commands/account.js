@@ -12,6 +12,12 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Sets and displays accounts for a member. Currently we use a single default for setting and displaying.
+ * UNFINISHED. NEEDS CLEANUP. NEEDS TO BE FINISHED.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	if(params[0] && params[1]) {
 		switch(params[0]) {

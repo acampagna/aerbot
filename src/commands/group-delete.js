@@ -11,6 +11,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Deletes a group from the system. Deletes the group's channel, role, entry in database.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	var groupName = params.join(" ");
 

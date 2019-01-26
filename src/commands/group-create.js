@@ -11,6 +11,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Creates a group in the system. Creates the group's channel, role, entry in database. Also sets permissions for the channel.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	var groupName = params.join(" ");
 	CoreUtil.dateLog(groupName);

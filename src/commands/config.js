@@ -9,6 +9,12 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * General command to set configuration. I decided to go with specific commands for this bot but I might fall back to a single config command.
+ * UNFINISHED. NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1. MIGHT NEVER USE.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	CoreUtil.dateLog(params);
 

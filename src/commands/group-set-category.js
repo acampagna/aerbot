@@ -9,6 +9,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Sets the group category where all groups will be added to
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	var category = params[0];
 	guildData.updateGroupCategory(category);
