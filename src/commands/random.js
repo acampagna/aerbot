@@ -10,6 +10,13 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Utility to pick a random item from a list of items separated by commas. Used for things like raffles.
+ * Optional: each item can have :# to specify the number of entries that item has. (e.g. Aerfalle:3)
+ * NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	//CoreUtil.dateLog(params);
 

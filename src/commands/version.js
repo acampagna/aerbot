@@ -9,6 +9,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Prints bot version. Useless.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke() {
 	return Promise.resolve(ParentPackageJson.version);
 }

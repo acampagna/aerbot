@@ -9,6 +9,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Ping.Pong.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	return Promise.resolve("Pong!");
 }

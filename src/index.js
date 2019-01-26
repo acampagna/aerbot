@@ -46,6 +46,7 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 client.on("ready", () => {
 	CoreUtil.dateLog('ready');
 	client.guilds.forEach(guild => {
+		//CoreUtil.dateLog(guild);
 		let doc = GuildModel.upsert({_id: guild.id})
 	});
 });
@@ -56,7 +57,9 @@ client.on("voiceStateUpdate", member => {
 
 client.on("guildMemberAdd", (member) => {
 	if(!member.user.bot) {
-		member.send("Welcome to the Dauntless gaming server!");
+		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
+		//Need to make this a command or configuration
+		member.send("Welcome to the Dauntless gaming server! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
 		client.guildModel.findById(member.guild.id).exec().then(guild =>{
 			member.addRole(guild.welcomeRole);
 		});

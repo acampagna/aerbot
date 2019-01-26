@@ -9,6 +9,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Sets the welcome role to add to new members and control welcome channel permissions
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	if (message.mentions.roles.size > 0) {
 		let role = message.mentions.roles.first();

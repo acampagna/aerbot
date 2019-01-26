@@ -11,6 +11,12 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Shows help message.
+ * UNFINISHED. NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1. TAKEN FROM SOME TUTORIAL BOT AND IT SUCKS.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ commands, isMemberAdmin }) {
 	return Promise.resolve(createHelpEmbed(InternalConfig.botName, commands, isMemberAdmin));
 }

@@ -11,6 +11,11 @@ module.exports = new Command({
 	invoke
 });
 
+/**
+ * Set who referred you to the community
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function invoke({ message, params, guildData, client }) {
 	if (message.mentions.members.size > 0) {
 		return new Promise(function(resolve, reject) {
