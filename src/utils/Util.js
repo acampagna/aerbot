@@ -1,33 +1,15 @@
-// @ts-ignore
+/**
+ * General utils. Used everwhere. Utils like this are generally not a great idea but I don't care. 
+ *  UNFINISHED. NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 const InternalConfig = require("../internal-config.json");
 const Console = require("console");
 const SimpleFileWriter = require("simple-file-writer");
 
 const logWriter = new SimpleFileWriter("./console.log");
 const debugLogWriter = new SimpleFileWriter("./debug.log");
-
-function ask(client, textChannel, member, question) {
-	//return a promise which will resolve once the user next sends a message in this textChannel
-	return new Promise((resolve, reject) => {
-		const cancelAsk = () => {
-			client.removeListener("message", handler);
-			textChannel.send("Response to question timed out");
-		};
-
-		const askTimeout = setTimeout(cancelAsk, InternalConfig.askTimeout);
-
-		const handler = responseMessage => {
-            if (responseMessage.channel.id === textChannel.id && responseMessage.member && responseMessage.member.id === member.id) {
-				clearTimeout(askTimeout);
-				resolve(responseMessage);
-			}
-		};
-
-		client.on("message", handler);
-
-		textChannel.send(member.toString() + " " + question).catch(reject);
-	});
-}
 
 function dateLog(...args) {
 	doDateLog(Console.log, logWriter, args, "INFO");
@@ -49,7 +31,8 @@ function isMemberAdmin(message, guildData) {
 	return message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(guildData.officerRoleID);
 }
 
-// replacements is an object with keys of numbers starting at 1
+//replacements is an object with keys of numbers starting at 1
+//No idea what this is used for....
 function doFormatting(format, replacements) {
 	return format.replace("$1", replacements.one).replace("$2", replacements.two).replace("$3", replacements.three);
 }

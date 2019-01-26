@@ -13,6 +13,9 @@ let dbc;
 module.exports = class Client extends Discord.Client {
 	/**
 	 * Construct a new Discord.Client with some added functionality
+	 * NEEDS TO BE CLEANED UP. BASED ON Client FROM OLD AERBOT v1. BASED ON Client FROM SOME TUTORIAL BOT.
+	 * @author acampagna
+	 * @copyright Dauntless Gaming Community 2019
 	 * @param {string} token bot token
 	 * @param {string} commandsDir location of dir containing commands .js files
 	 * @param {*} guildModel GuildData model to be used for app; must extend BaseGuildData
@@ -45,6 +48,7 @@ module.exports = class Client extends Discord.Client {
 		this.user.setActivity(InternalConfig.game);
 		CoreUtil.dateLog(`Registered bot ${this.user.username}`);
 
+		//We should be doing this eventually
 		//this.removeDeletedGuilds();
 	}
 
@@ -70,7 +74,6 @@ module.exports = class Client extends Discord.Client {
 
 	_onGuildDelete(guild) {
 		//this.guildDataModel.findOneAndDelete({ guildID: guild.id });
-
 		CoreUtil.dateLog(`Removed from guild ${guild.name}, removing data for this guild`);
 	}
 
@@ -86,6 +89,7 @@ module.exports = class Client extends Discord.Client {
 	bootstrap() {
 		dbc = Mongoose.connect('mongodb://localhost/aerbot');
 		
+		//Need to finish removing Camo.
 		Camo.connect("nedb://aerbot-data").then(db => {
 			neDB = db;
 			this.emit("beforeLogin");

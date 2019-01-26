@@ -1,3 +1,9 @@
+/**
+ * Handles a message
+ * TAKEN FROM SOME TUTORIAL BOT. MADE MINOR MODIFICATIONS.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 const CoreUtil = require("./utils/Util.js");
 const InternalConfig = require("./internal-config.json");
 const RequireAll = require("require-all");

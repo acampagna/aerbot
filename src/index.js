@@ -1,3 +1,9 @@
+/**
+ * Construct a new Discord.Client with some added functionality
+ * NEEDS TO BE CLEANED UP. BASED ON index.js FROM OLD AERBOT v1. BASED ON index.js FROM SOME TUTORIAL BOT.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 // @ts-ignore
 const Client = require("./Client.js");
 const Config = require("./config.json");

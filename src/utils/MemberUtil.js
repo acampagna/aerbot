@@ -1,4 +1,8 @@
-// @ts-ignore
+/**
+ * Member utilities. Only deals with member exp right now.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 const CoreUtil = require("./Util.js");
 
 function calculateNewExp(action, currentExp) {

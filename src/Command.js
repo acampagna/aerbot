@@ -1,3 +1,9 @@
+/**
+ * Defines a command
+ * TAKEN FROM SOME TUTORIAL BOT.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 module.exports = class Command {
 	constructor({ name, description, syntax, admin, invoke }) {
 		this.name = name;

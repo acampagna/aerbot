@@ -3,6 +3,12 @@ const DateDiff = require("date-diff");
 const mongoose = require('mongoose');
 const { Model, Schema } = mongoose
 
+/**
+ * Defines a guild database model. Guilds are servers in Discord.
+ * I'm not totally sure about how to be using mongoose. As with everything in Javascript it seems very open-ended and sucks.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 module.exports = function() {
 
 	const guildSchema = new Schema({

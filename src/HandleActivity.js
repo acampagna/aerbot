@@ -1,6 +1,12 @@
 const CoreUtil = require("./utils/Util.js");
 const MemberUtil = require("./utils/MemberUtil.js");
 
+/**
+ * Main function to handle user activity. Mostly just deals with adding exp based on user actions.
+ * UNFINISHED. HAS A FEW BAD BUGS. NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 function handleActivity(client, id, message, reaction, userData) {
     if (userData) {
 		let date = new Date();

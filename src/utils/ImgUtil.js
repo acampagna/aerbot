@@ -1,4 +1,8 @@
-// @ts-ignore
+/**
+ * A util for image manipulation. Uness you play with the !card command you shouldn't need anything here.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 const Pixly = require("pixel-util");
 const Canvas = require("canvas");
 
