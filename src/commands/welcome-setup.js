@@ -14,7 +14,6 @@ module.exports = new Command({
  * Sets up the welcome channel, channel permissions, and welcome messages. !welcome-setup runs the entire thing.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
- * @classdesc Sets up the welcome channel, channel permissions, and welcome messages. !welcome-setup runs the entire thing.
  */
 function invoke({ message, params, guildData, client }) {
 	//Deletes existing channel if an id exists in database
@@ -30,8 +29,9 @@ function invoke({ message, params, guildData, client }) {
 		'text', 
 		[{
 			id: message.guild.id,
-			deny: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-		}, {
+			deny: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+			allow: ['READ_MESSAGE_HISTORY']
+		},{
 			id: role.id,
 			allow: ['VIEW_CHANNEL']
 		}]
@@ -57,11 +57,26 @@ function invoke({ message, params, guildData, client }) {
 		embedOne.setFooter("This is a welcome channel. You will be removed in 14 days!");
 		channel.send(embedTwo);
 
-		const embedThree = new Discord.RichEmbed();
-		embedThree.setDescription("**:tickets: Welcome to Dauntless Raffles! :tickets:**\nEvery Sunday for the next 2 weeks there will be 2 raffles for a $15 iTunes or Google Play gift card. Every member on discord that has given an #introductions will be entered into the first raffle automatically each week. There will be a second raffle each week for the top 50% of donation contributors. Members within the top 50% of donation contributors that have given an #introductions will automatically be entered into this second raffle.\n\n**:cop: Looking for @Officer :cop:**\nI am looking for 1-2 officers to help run the guild. This comes with the burden of being partially responsible for the success of Dauntless and the happiness of it's members. As an officer you would be expected to help organize events, promote interaction between guild members, and help lead the guild. If you're interested in being an officer then please private message me on discord.\n\n**:eye: Keep an Eye on Discord :eye:**\nNew #announcements , #events , #guides , and more are posted on Discord everyday. It's important that you check back daily.");
-		embedThree.setColor("RED");
-		embedThree.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
-		channel.send(embedThree);
+		//Super proud of this part. "embedThree1"...lol
+		/*const embedThree1 = new Discord.RichEmbed();
+		embedThree1.setDescription("**:tickets: Welcome to Dauntless Raffles! :tickets:**\nEvery Sunday for the next 2 weeks there will be 2 raffles for a $15 iTunes or Google Play gift card. Every member on discord that has given an #introductions will be entered into the first raffle automatically each week. There will be a second raffle each week for the top 50% of donation contributors. Members within the top 50% of donation contributors that have given an #introductions will automatically be entered into this second raffle.")
+		embedThree1.setColor("RED");
+		embedThree1.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
+		channel.send(embedThree1);*/
+
+		//Super proud of this part. "embedThree2"...lol
+		const embedThree2 = new Discord.RichEmbed();
+		embedThree2.setDescription("**:cop: Looking for @Officer :cop:**\nI am looking for 1-2 officers to help run the guild. This comes with the burden of being partially responsible for the success of Dauntless and the happiness of it's members. As an officer you would be expected to help organize events, promote interaction between guild members, and help lead the guild. If you're interested in being an officer then please private message me on discord.")
+		embedThree2.setColor("RED");
+		embedThree2.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
+		channel.send(embedThree2);
+
+		//Super proud of this part. "embedThree3"...lol
+		const embedThree3 = new Discord.RichEmbed();
+		embedThree3.setDescription("**:eye: Keep an Eye on Discord :eye:**\nNew #announcements , #events , #guides , and more are posted on Discord everyday. It's important that you check back daily.");
+		embedThree3.setColor("RED");
+		embedThree3.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
+		channel.send(embedThree3);
 
 		const embedFour = new Discord.RichEmbed();
 		embedFour.setTitle(":scales: Guild Rules :scales:")
@@ -71,10 +86,21 @@ function invoke({ message, params, guildData, client }) {
 		embedFour.addField("Rule 3", "Since we are not a purely casual guild there is an expectation that everyone is active in game. Members that are frequently inactive and/or absent will likely be replaced after a warning.");
 		embedFour.addField("Rule 4", "Please to be respectful and tolerant towards one another. That being said, I'm not the word police. Ideally everyone gets along and can poke fun at each other while keeping it civil :)");
 		embedFour.addField("Rule 5", "Don't make Dauntless or it's members (including yourself) look bad in public.");
-		
 		embedFour.setFooter("Note: I'm not a huge fan of too many rules so this list is unlikely to grow");
 		channel.send(embedFour);
 
+		//Guides disabled because it ends up sending at the top of the channel. Probably need to use promises to enforce the order of messages.
+		/*let guides = "";
+		guides += "Why Join a Guild?: <https://www.reddit.com/r/RagnarokMobile/comments/a3f0la/what_is_guild_for/>\n";
+		guides += "All About Guilds: <https://www.youtube.com/watch?v=id0Ul2cmxtw>\n";
+		guides += "Zenny Farming Guide: <https://ragnamobileguide.com/zeny-farming-spots-ragnarok-mobile-eternal-love/>\n";
+		guides += "Rune System (Aesir Monument): <https://ragnamobileguide.com/guide-to-rune-system-ragnarok-mobile-eternal-love/>\n";
+		guides += "Guild Facilities: <https://rierin.com/2018/01/05/guild-facility/>\n"
+		guides += "Where to buy Peak Shards: <https://gamingph.com/2018/11/where-to-buy-peak-shard-in-ragnarok-m-eternal-love/>\n";
+		guides += "Valhalla Ruins: <https://www.google.com/amp/s/amp.reddit.com/r/RagnarokMobile/comments/9x0vv7/comprehensive_faq_for_valhalla_ruinsguild_raid/>\n"
+		channel.send(guides);*/
+
+		//Keep for template ideas
 		/*const embedFour = new Discord.RichEmbed();
 		embedFour.setTitle("Bot Help");
 		embedFour.setDescription("Sed nec ultrices quam, eu commodo ex. Curabitur euismod vestibulum urna at efficitur. In a enim ex. Praesent cursus elit et nisl ullamcorper aliquam. Nulla risus lectus, dapibus consequat sollicitudin eu, aliquet ac ante. Aenean at elit sit amet lectus fringilla porttitor. Cras porttitor vitae dolor non dignissim. Morbi egestas lacus vel ligula placerat sagittis. Aenean pellentesque mauris nisl, vulputate cursus lectus dapibus at...");
@@ -82,6 +108,7 @@ function invoke({ message, params, guildData, client }) {
 		embedFour.setURL("http://www.dauntlessgc.com");
 		channel.send(embedFour);
 
+		//Keep for template ideas
 		const embedFive = new Discord.RichEmbed();
 		embedFive.setColor("AQUA");
 		embedFive.setImage("https://www.theartroom.org.uk/sites/www.theartroom.org.uk/files/styles/object_listing_image/public/2016-11/Welcome-nobackground.png?itok=JhcDYqx3");

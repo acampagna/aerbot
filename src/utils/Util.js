@@ -1,6 +1,6 @@
 /**
  * General utils. Used everwhere. Utils like this are generally not a great idea but I don't care. 
- *  UNFINISHED. NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1.
+ * UNFINISHED. NEEDS TO BE CLEANED UP. FROM OLD AERBOT v1.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
@@ -64,7 +64,6 @@ module.exports = {
 	dateLog,
 	dateDebug,
 	dateDebugError,
-	ask,
 	isMemberAdmin,
 	doFormatting,
 	isNumber

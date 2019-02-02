@@ -66,8 +66,12 @@ client.on("guildMemberAdd", (member) => {
 		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
 		//Need to make this a command or configuration
 		member.send("Welcome to the Dauntless gaming server! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
+		CoreUtil.dateLog("Sent welcome message to " + member.user.username);
 		client.guildModel.findById(member.guild.id).exec().then(guild =>{
+			CoreUtil.dateLog("Adding welcome role to " + member.user.username);
+			CoreUtil.dateLog(guild.welcomeRole);
 			member.addRole(guild.welcomeRole);
+			CoreUtil.dateLog("Role added to " + member.user.username);
 		});
 	}
 });
@@ -95,33 +99,7 @@ function doGuildIteration() {
 }
 
 function checkOnlineStatus(guild) {
-
-	/*//REMOVE AFTER A WEEK
-	UserData.findOne({ user_id: member.id }).then(userData => {
-		if(userData && userData.lotteries === 0) {
-			CoreUtil.dateLog(member.displayName + " has 0 lotteries!");
-			LotteryEntryData.count({ user_id: member.id }).then(count => {
-				CoreUtil.dateLog("Total lotteries: " + count);
-				userData.lotteries = count;
-				userData.save();
-			});
-		}
-	});*/
-
-	/*guild.members.forEach(member =>{
-		if(member.presence.status != "offline") {
-			CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
-			UserData.findOne({ user_id: member.id })
-				.then(userData => HandleActivity(
-					client,
-					member.id, 
-					false,
-					false,
-					userData || newUser(member.id, member.displayName)
-				)
-			);
-		}
-	});*/
+	//Need to move stuff from doGuildIteration into here
 }
 
 function newUser(uid, name) {

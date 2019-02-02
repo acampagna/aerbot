@@ -1,6 +1,7 @@
 const CoreUtil = require("../utils/Util.js");
 var GphApiClient = require('giphy-js-sdk-core');
 const Command = require("../Command.js");
+//Shouldn't put this in the code but it doesn't work anyway so who cares.
 const gifClient = GphApiClient("j03gdWqzVJOQMfAAEMPmCWScR66o7QtP");
 
 module.exports = new Command({
@@ -13,7 +14,7 @@ module.exports = new Command({
 
 /**
  * Pulls a gif from giphy based on a search term.
- * GIPHY API CURRENTLY NOT WORKING. NEED TO INVESTIGATE. FROM OLD AERBOT v1.
+ * FROM OLD AERBOT v1.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
@@ -21,7 +22,7 @@ function invoke({ message, params, guildData, client }) {
 	return new Promise(function(resolve, reject) {
 		gifClient.random('gifs', {"tag": params[0]})
          .then((response) => {
-			var gif = response.data[0].url;
+			var gif = response.data.url;
 		   resolve(gif);
          })
          .catch((err) => {
