@@ -3,6 +3,12 @@ const DateDiff = require("date-diff");
 const mongoose = require('mongoose');
 const { Model, Schema } = mongoose
 
+/**
+ * Defines a user database model. 
+ * I'm not totally sure about how to be using mongoose. As with everything in Javascript it seems very open-ended and sucks.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 module.exports = function() {
 
 	const userSchema = new Schema({
@@ -37,6 +43,14 @@ module.exports = function() {
 
 	userSchema.statics.findAllUsers = function() {
 		return this.find().exec();
+	};
+
+	userSchema.query.byUsername = function(username) {
+		return this.where({ username: new RegExp(username, 'i') });
+	};
+
+	userSchema.query.byId = function(id) {
+		return this.where({ _id: id });
 	};
 
 	let UserModel = mongoose.model('User', userSchema);

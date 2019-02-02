@@ -24,6 +24,10 @@ module.exports = function() {
 		this.model('Guild').updateOne({_id: this.id},{memberRoleId: roleId}).exec();
 	};
 
+	guildSchema.methods.updateOfficerRoleId = function (roleId) {
+		this.model('Guild').updateOne({_id: this.id},{OfficerRoleId: roleId}).exec();
+	};
+
 	guildSchema.methods.updateGroupCategory = function (categoryId) {
 		this.model('Guild').updateOne({_id: this.id},{groupCategory: categoryId}).exec();
 	};

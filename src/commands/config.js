@@ -27,12 +27,19 @@ function invoke({ message, params, guildData, client }) {
 			}
 			break;
 		case 'set_mod_role':
-		if (message.mentions.roles.size > 0) {
-			guildData.officerRoleID = message.mentions.roles.first().id;
-		} else {
-			return Promise.resolve("You must @mention an existing role");
-		}
-		break;
+			if (message.mentions.roles.size > 0) {
+				guildData.updateOfficerRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
+		case 'set_member_role':
+			if (message.mentions.roles.size > 0) {
+				guildData.updateMemberRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
 		default:
 			return Promise.resolve(params[0] + " is an invalid configuration");
 	}
