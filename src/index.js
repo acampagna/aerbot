@@ -1,6 +1,6 @@
 /**
  * Construct a new Discord.Client with some added functionality
- * NEEDS TO BE CLEANED UP. BASED ON index.js FROM OLD AERBOT v1. BASED ON index.js FROM SOME TUTORIAL BOT.
+ * NEEDS TO BE CLEANED UP. NEEDS TO BE COMBINED WITH Client.js. BASED ON index.js FROM OLD AERBOT v1. BASED ON index.js FROM SOME TUTORIAL BOT.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */

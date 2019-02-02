@@ -4,6 +4,10 @@
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
+
+
+ //I want to modify this to work more like this bot's commands. Plus add Aliases:
+ //https://github.com/izio38/Discord.js-bot-example/tree/master/commands
 const CoreUtil = require("./utils/Util.js");
 const InternalConfig = require("./internal-config.json");
 const RequireAll = require("require-all");

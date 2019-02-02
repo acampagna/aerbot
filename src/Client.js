@@ -13,7 +13,7 @@ let dbc;
 module.exports = class Client extends Discord.Client {
 	/**
 	 * Construct a new Discord.Client with some added functionality
-	 * NEEDS TO BE CLEANED UP. BASED ON Client FROM OLD AERBOT v1. BASED ON Client FROM SOME TUTORIAL BOT.
+	 * NEEDS TO BE CLEANED UP. NEEDS TO BE COMBINED WITH index.js. BASED ON Client FROM OLD AERBOT v1. BASED ON Client FROM SOME TUTORIAL BOT.
 	 * @author acampagna
 	 * @copyright Dauntless Gaming Community 2019
 	 * @param {string} token bot token
