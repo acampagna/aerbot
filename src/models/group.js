@@ -3,6 +3,12 @@ const DateDiff = require("date-diff");
 const mongoose = require('mongoose');
 const { Model, Schema } = mongoose
 
+/**
+ * Defines a group database model. 
+ * I'm not totally sure about how to be using mongoose. As with everything in Javascript it seems very open-ended and sucks.
+ * @author acampagna
+ * @copyright Dauntless Gaming Community 2019
+ */
 module.exports = function() {
 
 	const groupSchema = new Schema({
@@ -11,6 +17,8 @@ module.exports = function() {
 		channelId: String,
 		name: String,
 		type: String,
+		emoji: String,
+		list: {type: Boolean, default: true},
 		numMembers: {type: Number, default: 0}
 	});
 

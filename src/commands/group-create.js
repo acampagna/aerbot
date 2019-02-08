@@ -17,8 +17,18 @@ module.exports = new Command({
  * @copyright Dauntless Gaming Community 2019
  */
 function invoke({ message, params, guildData, client }) {
-	var groupName = params.join(" ");
+	let newParams = new Map(
+		params.join(" ").split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(p => p.trim().replace(/\"/g, "").split(":").map(m => m.trim())).map(([k, v]) => [k.toLowerCase(), v])
+	);
+	CoreUtil.dateLog(newParams);
+	var groupName = newParams.get('name');
+	var groupEmoji = newParams.get('emoji');
+	var groupList = (newParams.get('list') == 'true') || true;
+	//var channelName = groupEmoji + groupName;
+
 	CoreUtil.dateLog(groupName);
+	CoreUtil.dateLog(groupEmoji);
+	CoreUtil.dateLog(groupList);
 	message.guild.createRole({
 		name: groupName
 	})
@@ -36,7 +46,7 @@ function invoke({ message, params, guildData, client }) {
 			}]
 		).then(channel => {
 			channel.setParent(guildData.groupCategory);
-			Group.create({guildId: message.guild.id, roleId: role.id, channelId: channel.id, name: groupName});
+			Group.create({guildId: message.guild.id, roleId: role.id, channelId: channel.id, name: groupName, emoji: groupEmoji, list: groupList});
 			console.log(`Created new channel with name ${channel.name}`)
 		}).catch(console.error);
 	}).catch(console.error);
