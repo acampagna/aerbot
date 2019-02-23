@@ -6,7 +6,7 @@ module.exports = new Command({
 	name: "random",
 	description: "Pick a random item from a list of items separated by commas. Optional: each item can have :# to specify the number of entries that item has. (e.g. Aerfalle:3)",
 	syntax: "random",
-	admin: true,
+	admin: false,
 	invoke
 });
 

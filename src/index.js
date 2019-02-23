@@ -15,6 +15,7 @@ require('./models/group.js')();
 require('./models/user.js')();
 const GuildModel = mongoose.model('Guild');
 const UserModel = mongoose.model('User');
+const GachaGameService = require("./services/GachaGameService");
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", GuildModel);
@@ -51,6 +52,7 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 
 client.on("ready", () => {
 	CoreUtil.dateLog('ready');
+	var ggs = new GachaGameService();
 	client.guilds.forEach(guild => {
 		//CoreUtil.dateLog(guild);
 		let doc = GuildModel.upsert({_id: guild.id})
