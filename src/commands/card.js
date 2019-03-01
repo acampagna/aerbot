@@ -1,7 +1,7 @@
 const CoreUtil = require("../utils/Util.js");
-const ImgUtil = require("../utils/ImgUtil.js");
+//const ImgUtil = require("../utils/ImgUtil.js");
 const Command = require("../Command.js");
-const Canvas = require("canvas");
+//const Canvas = require("canvas");
 
 module.exports = new Command({
 	name: "card",
@@ -20,18 +20,18 @@ module.exports = new Command({
 async function invoke({ message, params, guildData, client }) {
 	try{
 		console.log(message.member.user.fetchProfile());
-		const canvas = new Canvas.createCanvas(600, 200);
+		/*const canvas = new Canvas.createCanvas(600, 200);
 		const ctx = canvas.getContext('2d');
 
 		ctx.drawImage(await Canvas.loadImage("res/bg.png"), 0, 0);
-		ctx.drawImage(await Canvas.loadImage(message.member.user.displayAvatarURL), 20, 25, 150, 150);
+		ctx.drawImage(await Canvas.loadImage(message.member.user.displayAvatarURL), 20, 25, 150, 150);*/
 
-		message.channel.send({
+		/*message.channel.send({
 			files: [{
 				attachment: canvas.toBuffer(),
 				name: "profile-"+message.member.id+".jpg"
 			}]
-		});
+		});*/
 
 		//const avatar = message.member.user.displayAvatarURL;
 		//ctx.drawImage(bg,0,0);

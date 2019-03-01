@@ -51,8 +51,7 @@ function invoke({ message, params, guildData, client }) {
 
 			resolve("The following users have been inactive for more than " + inactiveThresholdDays + " days:\n" + 
 				inactiveOfficers.map(iu=> "**" + iu.displayName + "**").join("\n") + "\n" +
-				inactiveMembers.map(iu=> iu.displayName).join("\n") + "\n" +
-				inactiveOther.map(iu=> "*" + iu.displayName + "*").join("\n")
+				inactiveMembers.map(iu=> iu.displayName).join("\n")
 			);
 		});
 	});

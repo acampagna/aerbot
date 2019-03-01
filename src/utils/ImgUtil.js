@@ -3,7 +3,7 @@
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-const Pixly = require("pixel-util");
+/*const Pixly = require("pixel-util");
 const Canvas = require("canvas");
 
 async function getCanvas(path) {
@@ -83,4 +83,4 @@ module.exports = {
 	getCanvas,
 	getBuffer,
 	hex
-};
+};*/
