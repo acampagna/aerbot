@@ -52,10 +52,7 @@ function handleGuildCommand(client, message, commands, guildData) {
 				}
 			}
 		})
-		.catch(err => {
-			console.error(err);
-			message.reply("An error occurred.");
-		});
+		.catch(err => err && message.reply(err));
 	}
 }
 
