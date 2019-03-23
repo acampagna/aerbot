@@ -62,6 +62,7 @@ module.exports = function() {
 
 	// TODO: Either replace all instances of User.findById with this function, or remove this function
 	userSchema.statics.byId = function(id) {
+		id = id.toString().replace(/\D/g,'');
 		return this.findById(id).exec();
 	};
 

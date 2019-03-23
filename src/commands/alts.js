@@ -53,7 +53,7 @@ async function invoke({ message, params, guildData, client }) {
         return `Removed __${name}__ from your characters: [${user.characters.join(", ")}]`;
     } else {
         const name = params.join(" ");
-        const userWithName = await User.byUsername(name) || await User.byCharacter(name);
+        const userWithName = await User.byId(name) || await User.byUsername(name) || await User.byCharacter(name);
         if (userWithName) { 
             const embed = new Discord.RichEmbed();
             embed.setColor("BLUE");
