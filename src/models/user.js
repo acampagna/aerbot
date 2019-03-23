@@ -30,7 +30,8 @@ module.exports = function() {
 		lastActive: {type: Date, default: new Date()},
 		joined: {type: Date, default: new Date()},
 		accounts: { type: Map, of: String },
-		referrer: String
+		referrer: String,
+		characters: { type: Array, of: String }
 	});
 
 	userSchema.methods.getAccounts = function () {
@@ -41,17 +42,36 @@ module.exports = function() {
 		this.model('User').updateOne({_id: this.id},{referrer: referrerId}).exec();
 	};
 
+	userSchema.methods.addCharacter = function (name) {
+		return this.model('User').findOneAndUpdate(
+			{_id: this.id},
+			{$addToSet: {characters: name}},
+			{new: true}).exec();
+	}
+
+	userSchema.methods.removeCharacter = function (name) {
+		return this.model('User').findOneAndUpdate(
+			{_id: this.id},
+			{$pull: {characters: new RegExp(`^${name}$`, 'i')}},
+			{new: true}).exec();
+	}
+
 	userSchema.statics.findAllUsers = function() {
 		return this.find().exec();
 	};
 
-	userSchema.query.byUsername = function(username) {
-		return this.where({ username: new RegExp(username, 'i') });
+	// TODO: Either replace all instances of User.findById with this function, or remove this function
+	userSchema.statics.byId = function(id) {
+		return this.findById(id).exec();
 	};
 
-	userSchema.query.byId = function(id) {
-		return this.where({ _id: id });
+	userSchema.statics.byUsername = function(username) {
+		return this.findOne({ username: new RegExp(`^${username}$`, 'i') }).exec();
 	};
+
+	userSchema.statics.byCharacter = function(name) {
+		return this.findOne({ characters: new RegExp(`^${name}$`, 'i') }).exec();
+	}
 
 	let UserModel = mongoose.model('User', userSchema);
 
