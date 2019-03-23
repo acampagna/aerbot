@@ -7,7 +7,7 @@ const Discord = require("discord.js");
 module.exports = new Command({
 	name: "alts",
 	description: "List a member's character names or add/remove your own characters to directory",
-	syntax: "alts, alts add, alts remove",
+	syntax: "alts",
 	admin: false,
 	invoke
 });
