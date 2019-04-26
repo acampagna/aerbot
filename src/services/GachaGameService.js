@@ -1,10 +1,19 @@
+const GachaDice = require("./gacha/GachaDice.js");
+const GachaRPS = require("../services/gacha/GachaRPS.js");
 /**
  * Service to manage Gacha Game. Threw this together for an event. Need to clean it up.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
+var game = GachaDice;
 var gameInProgress = false;
 var entries = new Map();
+
+var newEntry = {
+    member: {},
+    entry: undefined
+}
+
 class GachaGameService {
     constructor(){
      if(! GachaGameService.instance){
@@ -18,6 +27,7 @@ class GachaGameService {
     initializeGame() {
         gameInProgress = false;
         entries = new Map();
+        //game.init();
     }
 
     startGame() {
