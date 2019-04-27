@@ -1,18 +1,15 @@
 const GachaDice = require("./gacha/GachaDice.js");
-const GachaRPS = require("../services/gacha/GachaRPS.js");
+const GachaRPS = require("./gacha/GachaRPS.js");
+const Discord = require("discord.js");
+
 /**
  * Service to manage Gacha Game. Threw this together for an event. Need to clean it up.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-var game = GachaDice;
+var game = new GachaRPS();
 var gameInProgress = false;
 var entries = new Map();
-
-var newEntry = {
-    member: {},
-    entry: undefined
-}
 
 class GachaGameService {
     constructor(){
@@ -25,18 +22,14 @@ class GachaGameService {
     }
 
     initializeGame() {
-        gameInProgress = false;
         entries = new Map();
-        //game.init();
+        gameInProgress = true;
+        game.init();
     }
 
     startGame() {
         this.initializeGame();
-        gameInProgress = true;
-    }
-
-    endGame() {
-        gameInProgress = false;
+        return game.startGame();
     }
 
     getGameInProgress() {
@@ -47,30 +40,17 @@ class GachaGameService {
         return entries.has(key);
     }
 
-    userEntry(member) {
-        let roll = this.rollDice();
-        entries.set(member, roll);
-        console.log(entries);
-        return roll;
+    userEntry(message) {
+        let entry = game.generateEntry(message);
+        entries.set(message.member.displayName, {member: message.member, entry: entry});
+        //console.log(member.user);
+        //console.log(entries);
+        return game.entryMessage(game.entryToString(entry));
     }
 
-    //Ends the game. there are way better ways to do this. Will worry about that when I rewrite the whole feature.
     endGame() {
-        var winnerKey = "";
-        var winnerValue = 0;
-        entries.forEach(function(value, key) {
-            if(value > winnerValue) {
-                winnerValue = value;
-                winnerKey = key;
-            }
-        });
-        this.initializeGame();
-        return winnerKey + " won with a roll of " + winnerValue;
-    }
-
-    rollDice() {
-        var randomNumber = Math.floor(Math.random() * 100) + 1;
-        return randomNumber;
+        gameInProgress = false;
+        return game.endGame(entries);
     }
 }
   
