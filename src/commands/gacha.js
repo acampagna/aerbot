@@ -33,7 +33,7 @@ function invoke({ message, params, guildData, client }) {
 	} else {
 		//Game is not in progress. Need to start a game or yell if the user isn't an admin.
 		if(CoreUtil.isMemberAdmin(message, guildData)) {
-			return Promise.resolve({here: true, message: ggs.startGame() });
+			return Promise.resolve({here: true, message: ggs.startGame(message) });
 		} else {
 			return Promise.resolve("Gacha Game is not currently active");
 		}

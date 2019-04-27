@@ -7,7 +7,7 @@ class GachaDice {
     }
 
     init() {
-        CoreUtil.dateLog("Initialized DICE Game! " + this.rollDice());
+        CoreUtil.dateLog("Initialized DICE Game! " + this.generateEntry());
     }
 
     generateEntry(message) {
@@ -16,8 +16,7 @@ class GachaDice {
     }
 
     rollDice() {
-        var randomNumber = Math.floor(Math.random() * 100) + 1;
-        return randomNumber;
+        return Math.floor(Math.random() * 100) + 1;
     }
 
     startGame() {
