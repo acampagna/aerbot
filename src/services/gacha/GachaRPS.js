@@ -2,11 +2,13 @@ const CoreUtil = require("../../utils/Util.js");
 const Discord = require("discord.js");
 const Levenshtein = require('js-levenshtein');
 
+const gameName = "RPS";
 const rock = "rock";
 const paper = "paper";
 const scissors = "scissors";
 const RPS = [rock, paper, scissors];
 const maxNumber = 100;
+
 var botPicks = {};
 
 class GachaRPS {
@@ -82,7 +84,7 @@ class GachaRPS {
     }
 
     entryToString(entry) {
-        return "RPS: " + entry.RPS.charAt(0).toUpperCase() + entry.RPS.slice(1) + " & Number: " + entry.number;
+        return entry.RPS.charAt(0).toUpperCase() + entry.RPS.slice(1) + " & Number: " + entry.number;
     }
 
     endGame(entries) {
@@ -133,8 +135,6 @@ class GachaRPS {
         embed.setTitle(`__Gacha! - RPS Game__`);
         embed.addField("Bot Selected", this.entryToString(botPicks));
         embed.addField("Winner", winnerName + " won with " + this.entryToString(winnerValue.entry));
-        console.log(winnerValue.member.user);
-        console.log(winnerValue.member.user.avatarURL);
         embed.setThumbnail(winnerValue.member.user.avatarURL);
         return embed;
     }

@@ -42,10 +42,10 @@ function handleGuildCommand(client, message, commands, guildData) {
 	else if (isMemberAdmin || !command.admin) {
 		command.invoke({ message, params, guildData, client, commands, isMemberAdmin })
 		.then(response => {
-			if (typeof response === 'object' && (response.everyone || response.here) && response.message) {
-				if(response.everyone) {
+			if (typeof response === 'object' && (response.everyone || response.here)) {
+				if(response.everyone && response.message) {
 					message.channel.send("@everyone", { embed: response.message });
-				} else if(response.here) {
+				} else if(response.here && response.message) {
 					message.channel.send("@here", { embed: response.message });
 				}
 			} else {

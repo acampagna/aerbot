@@ -1,6 +1,8 @@
 const CoreUtil = require("../../utils/Util.js");
 const Discord = require("discord.js");
 
+const gameName = "Dice";
+
 class GachaDice {
     constructor(){
         this.init();
