@@ -1,10 +1,12 @@
 const CoreUtil = require("../../utils/Util.js");
 const Discord = require("discord.js");
+const Levenshtein = require('js-levenshtein');
 
 const rock = "rock";
 const paper = "paper";
 const scissors = "scissors";
 const RPS = [rock, paper, scissors];
+const maxNumber = 100;
 var botPicks = {};
 
 class GachaRPS {
@@ -21,9 +23,39 @@ class GachaRPS {
         return RPS[Math.floor(Math.random()*RPS.length)];
     }
 
-    generateEntry() {
-        var randomNumber = Math.floor(Math.random() * 100) + 1;
-        return {RPS: this.pickRPS(), number: randomNumber};
+    generateEntry(message, params) {
+        var numberPick = Math.floor(Math.random() * maxNumber) + 1;
+        var RPSPick = this.pickRPS();
+        if(params) {
+            if(params[0] && isNaN(params[0])) {
+                RPSPick = this.detectRPS(params[0]);
+            }
+            if(params[1] && this.validateNumber(params[1])) {
+                numberPick = params[1];
+            }
+        }
+        
+        return {RPS: RPSPick, number: numberPick};
+    }
+
+    detectRPS(str) {
+        if(Levenshtein(str.toLowerCase(), rock) <= 1 || str.toLowerCase() === "r") {
+            return rock;
+        } else if(Levenshtein(str.toLowerCase(), paper) <= 2 || str.toLowerCase() === "p") {
+            return paper;
+        } else if(Levenshtein(str.toLowerCase(), scissors) <= 3 || str.toLowerCase() === "s") {
+            return scissors;
+        } else {
+            return this.pickRPS();
+        }
+    }
+
+    validateNumber(num) {
+        if(!isNaN(num) && num >= 0 && num <= maxNumber){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     didUserWin(userPick, botPick) {
@@ -50,7 +82,7 @@ class GachaRPS {
     }
 
     entryToString(entry) {
-        return "RPS: " + entry.RPS + " Number: " + entry.number;
+        return "RPS: " + entry.RPS.charAt(0).toUpperCase() + entry.RPS.slice(1) + " & Number: " + entry.number;
     }
 
     endGame(entries) {
@@ -82,24 +114,28 @@ class GachaRPS {
         });
 
         if(winnerKey != "") {
-            return this.endGameMessage(winnerKey, winnerValue.entry);
+            return this.endGameMessage(winnerKey, winnerValue);
         } else {
-            this.noWinnerMessage();
+            return this.noWinnerMessage();
         }
     }
 
     startGameMessage() {
         const embed = new Discord.RichEmbed();
 		embed.setTitle(`__Gacha! - RPS Game__`);
-		embed.setDescription("Gacha Rock, Paper, Scissors Game Started! The player who beats the bot in Rock, Paper, Scissors and guesses a number closest to the bot's wins.");
-        embed.setFooter("To enter type !gacha");
+		embed.setDescription("Gacha Rock, Paper, Scissors Game Started! The player who beats the bot in Rock, Paper, Scissors and guesses a number closest to the bot's wins.\n\n You may select your RPS pick and number while entering the game. Failure to properly select options will give you a random entry.\n\n To enter type !gacha <rock,paper,scissors> <number between 1 and 100>");
+        embed.setFooter("Entry Example: !gacha rock 43");
         return embed;
     }
 
-    endGameMessage(winnerName, entry) {
+    endGameMessage(winnerName, winnerValue) {
         const embed = new Discord.RichEmbed();
-		embed.setTitle(`__Gacha! - RPS Game__`);
-		embed.setDescription("Bot selected: " + this.entryToString(botPicks) + "\n" + winnerName + " won with " + this.entryToString(entry));
+        embed.setTitle(`__Gacha! - RPS Game__`);
+        embed.addField("Bot Selected", this.entryToString(botPicks));
+        embed.addField("Winner", winnerName + " won with " + this.entryToString(winnerValue.entry));
+        console.log(winnerValue.member.user);
+        console.log(winnerValue.member.user.avatarURL);
+        embed.setThumbnail(winnerValue.member.user.avatarURL);
         return embed;
     }
 

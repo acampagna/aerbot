@@ -30,16 +30,18 @@ class GachaDice {
 
     endGame(entries) {
         var winnerKey = "";
-        var winnerValue = 0;
+        var winnerValue = {};
+        var winnerRoll = 0;
         console.log("Ending Game!");
         entries.forEach(function(value, key) {
             var roll = value.entry;
             //console.log(key + " rolled a " + roll);
-            if(roll > winnerValue) {
-                winnerValue = roll;
+            if(roll > winnerRoll) {
+                winnerRoll = roll;
                 winnerKey = key;
+                winnerValue = value;
             }
-            console.log("Winner = " + winnerKey + "(" + winnerValue + ")");
+            console.log("Winner = " + winnerKey + "(" + winnerRoll + ")");
         });
 
         return this.endGameMessage(winnerKey, winnerValue);
@@ -48,15 +50,16 @@ class GachaDice {
     startGameMessage() {
         const embed = new Discord.RichEmbed();
 		embed.setTitle(`__Gacha! - Dice Game__`);
-		embed.setDescription("Gacha Game Started! Roll the dice and win a prize. Highest roll in 1 minute wins!");
-        embed.setFooter("To enter type !gacha");
+		embed.setDescription("Gacha Game Started! Roll the dice and win a prize. Highest roll in 1 minute wins!\n\n To enter type !gacha");
+        embed.setFooter("Entry Example: !gacha");
         return embed;
     }
 
     endGameMessage(winnerName, winnerValue) {
         const embed = new Discord.RichEmbed();
 		embed.setTitle(`__Gacha! - Dice Game__`);
-		embed.setDescription(winnerName + " won with a roll of " + winnerValue);
+        embed.setDescription(winnerName + " won with a roll of " + winnerValue.entry);
+        embed.setThumbnail(winnerValue.member.user.avatarURL);
         return embed;
     }
 

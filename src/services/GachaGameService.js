@@ -40,8 +40,8 @@ class GachaGameService {
         return entries.has(key);
     }
 
-    userEntry(message) {
-        let entry = game.generateEntry(message);
+    userEntry(message, params) {
+        let entry = game.generateEntry(message, params);
         entries.set(message.member.displayName, {member: message.member, entry: entry});
         //console.log(member.user);
         //console.log(entries);

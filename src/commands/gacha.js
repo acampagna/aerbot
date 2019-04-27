@@ -28,7 +28,7 @@ function invoke({ message, params, guildData, client }) {
 		if(ggs.hasUserEntered(username)) {
 			return Promise.resolve("You've already entered!");
 		} else {
-			return Promise.resolve(ggs.userEntry(message));
+			return Promise.resolve(ggs.userEntry(message, params));
 		}
 	} else {
 		//Game is not in progress. Need to start a game or yell if the user isn't an admin.

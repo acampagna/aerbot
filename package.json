@@ -20,7 +20,8 @@
     "npm": "6.1.0",
     "require-all": "2.2.0",
     "simple-file-writer": "2.0.0",
-    "pixel-util": "0.0.2"
+    "pixel-util": "0.0.2",
+    "js-levenshtein": "1.1.6"
   },
   "optionalDependencies": {
     "bufferutil": "4.0.0",
