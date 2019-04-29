@@ -370,10 +370,10 @@ class GachaBattleRoyale {
                 this.doResurrect(entries);
                 break;
             case 2:
-                this.doBlueShell(entries);
+                this.doFindPotion(target);
                 break;
             case 3:
-                this.doFindItem(target);
+                this.doBlueShell(entries);
                 break;
             default: 
                 this.doResurrect(entries);
@@ -411,27 +411,31 @@ class GachaBattleRoyale {
 
         var potionName = "";
         var statBoosted = "";
-        var statBoost = Math.floor(Math.random() * 3 + 1) * 5;
+        var statBoost = Math.floor(Math.random() * 4) + 1;
 
         console.log("Item pick: " + action);
 
         switch (action) {
             case 1:
                 potionName = "Vitality Potion";
+                statBoosted = "hitpoints";
+                statBoost = statBoost * 5;
+                target.entry.hp += statBoost;
                 break;
             case 2:
-                potionName = "Vitality Potion";
-                break;
-            case 3:
-                potionName = "Vitality Potion";
+                potionName = "Strength Potion";
+                statBoosted = "strength";
+                statBoost = statBoost * 2;
+                target.entry.strength += statBoost;
                 break;
             default: 
         }
 
-
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Battle Royale - Event__");
-        embed.setDescription("A flying blue shell comes zipping across the battlefield right towards " + target.member.displayName + ", the kill leader");
+        embed.setDescription("A turtle fisherman flies in on a cloud and gives **" + target.member.displayName + 
+            "** a **" + potionName + "**.**" + target.member.displayName + "** drinks the potion and gains **" + 
+            statBoost + " " + statBoosted + "**");
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
     }
