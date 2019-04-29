@@ -8,9 +8,9 @@ const Discord = require("discord.js");
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-//var game = new GachaBattleRoyale();
+var game = new GachaBattleRoyale();
 //var game = new GachaRPS();
-var game = new GachaDice();
+//var game = new GachaDice();
 var gameInProgress = false;
 var entries = new Map();
 var message = undefined;
@@ -52,16 +52,16 @@ class GachaGameService {
         let entry = game.generateEntry(message, params);
         entries.set(message.member.displayName, {member: message.member, entry: entry});
         if(message.member.displayName === "Aerfalle") {
-            entries.set("Bot1", {member: {displayName: "Bot1"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot2", {member: {displayName: "Bot2"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot3", {member: {displayName: "Bot3"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot4", {member: {displayName: "Bot4"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot5", {member: {displayName: "Bot5"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot6", {member: {displayName: "Bot6"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot7", {member: {displayName: "Bot7"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot8", {member: {displayName: "Bot8"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot9", {member: {displayName: "Bot9"}, entry: game.generateEntry(message, params)});
-            entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message, params)});
+            entries.set("Bot1", {member: {displayName: "Bot1"}, entry: game.generateEntry(message)});
+            entries.set("Bot2", {member: {displayName: "Bot2"}, entry: game.generateEntry(message)});
+            entries.set("Bot3", {member: {displayName: "Bot3"}, entry: game.generateEntry(message)});
+            /*entries.set("Bot4", {member: {displayName: "Bot4"}, entry: game.generateEntry(message)});
+            entries.set("Bot5", {member: {displayName: "Bot5"}, entry: game.generateEntry(message)});
+            entries.set("Bot6", {member: {displayName: "Bot6"}, entry: game.generateEntry(message)});
+            entries.set("Bot7", {member: {displayName: "Bot7"}, entry: game.generateEntry(message)});
+            entries.set("Bot8", {member: {displayName: "Bot8"}, entry: game.generateEntry(message)});
+            entries.set("Bot9", {member: {displayName: "Bot9"}, entry: game.generateEntry(message)});
+            entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message)});*/
         }
         
         //console.log(member.user);
