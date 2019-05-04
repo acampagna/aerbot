@@ -2,7 +2,8 @@
   "version": "1.0.0",
   "main": "dist/src/index.js",
   "scripts": {
-    "start": "node dist/src/index.js"
+    "build": "tsc --pretty",
+    "start": "tsc && node dist/src/index.js"
   },
   "dependencies": {
     "typescript": "^2.8.1",

@@ -9,5 +9,6 @@
 		"[ws] [connection] Sending a heartbeat",
 		"[ws] [connection] Heartbeat acknowledged"
 	],
-	"askTimeout": 60000
+	"askTimeout": 60000,
+	"reconnectTimeout": 1000
 }
