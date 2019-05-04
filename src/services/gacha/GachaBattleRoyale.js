@@ -551,7 +551,7 @@ class GachaBattleRoyale {
         });
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Battle Royale **Day " + day + "** - The Showdown__");
-        embed.setDescription("Welcome to the Showdown! Our final 2 combatants will fight to the death " + this.randomPhrase(showdownArenas));
+        embed.setDescription("Welcome to the Showdown! Our final 2 combatants will fight to the death **" + this.randomPhrase(showdownArenas) + "**");
         embed.setFooter(playersAlive);
         embed.setColor(msgColors.showdownDay);
         messages.push({ embed: embed });
