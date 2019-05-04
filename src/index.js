@@ -16,15 +16,18 @@ require('./models/user.js')();
 const GuildModel = mongoose.model('Guild');
 const UserModel = mongoose.model('User');
 const GachaGameService = require("./services/GachaGameService");
+const InternalConfig = require("./internal-config.json");
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", GuildModel);
+const cmdPrefix = InternalConfig.commandPrefix;
 
 client.on("beforeLogin", () => {
 	setInterval(doGuildIteration, Config.onlineIterationInterval);
 });
 client.on("message", message => {
-	if (message.guild && message.member && !message.member.user.bot)
+	//TODO: Should only do then on non-bot commands
+	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix)
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,

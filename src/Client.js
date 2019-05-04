@@ -22,7 +22,7 @@ module.exports = class Client extends Discord.Client {
 	 */
 	constructor(token, commandsDir, guildModel) {
 		super({
-			messageCacheMaxSize: 1000,
+			messageCacheMaxSize: 500,
 			autofetch: [
 				'MESSAGE_CREATE',
 				'MESSAGE_REACTION_ADD'
@@ -54,13 +54,7 @@ module.exports = class Client extends Discord.Client {
 
 	_onMessage(message) {
 		if (message.channel.type === "text" && message.member) {
-			if(message.member.id === "388822941728636938" && message.content.toLowerCase().includes("aerf") && !message.content.toLowerCase().includes("aerfalle")) {
-				//message.reply("*aer - *change is coming....*");
-				//message.member.setNickname("AerIsKing");
-				//message.member.addRole('548822767978414081');
-			} else {
-				HandleGuildMessage(this, message, this.commands);
-			}
+			HandleGuildMessage(this, message, this.commands);
 		}
 	}
 
