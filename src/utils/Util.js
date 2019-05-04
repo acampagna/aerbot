@@ -4,7 +4,7 @@
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-const InternalConfig = require("../internal-config.json");
+
 const Console = require("console");
 const SimpleFileWriter = require("simple-file-writer");
 

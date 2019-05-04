@@ -7,9 +7,6 @@ const InternalConfig = require("./internal-config.json");
 const RequireAll = require("require-all");
 const Mongoose = require('mongoose');
 
-let neDB;
-let dbc;
-
 module.exports = class Client extends Discord.Client {
 	/**
 	 * Construct a new Discord.Client with some added functionality
