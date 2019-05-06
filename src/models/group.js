@@ -30,8 +30,12 @@ module.exports = function() {
 		this.model('Group').updateOne({_id: this.id},{numMembers: this.numMembers-1}).exec();
 	};
 
-	groupSchema.statics.findGroupByName = function(name) {
-		return this.findOne({name: new RegExp(name, 'i')}).exec();
+	groupSchema.statics.findGroupByName = async function(name) {
+		// A bit of a workaround, couldn't use $where due to variable scope restrictions
+		// https://docs.mongodb.com/manual/reference/operator/query/where/#restrictions
+		const groups = await this.find().exec();
+		const regex = new RegExp(CoreUtil.stripPunctuation(name), 'i');
+		return groups.find(group => regex.test(CoreUtil.stripPunctuation(group.name)));
 	};
 
 	groupSchema.statics.findAllGroups = function() {

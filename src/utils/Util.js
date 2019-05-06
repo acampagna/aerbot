@@ -59,6 +59,10 @@ function formatArgsForFile(args) {
 	return args.join(" ") + "\n";
 }
 
+function stripPunctuation(text) {
+	return text.replace(/[^\w\s]/g, "");
+}
+
 module.exports = {
 	dateError,
 	dateLog,
@@ -66,5 +70,6 @@ module.exports = {
 	dateDebugError,
 	isMemberAdmin,
 	doFormatting,
-	isNumber
+	isNumber,
+	stripPunctuation
 };
