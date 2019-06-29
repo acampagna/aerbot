@@ -10,20 +10,21 @@ const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
 const HandleActivity = require("./HandleActivity");
-require('./models/guild.js')();
+require('./models/server.js')();
 require('./models/group.js')();
 require('./models/user.js')();
-const GuildModel = mongoose.model('Guild');
+require('./models/guild.js')();
+const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
 const GachaGameService = require("./services/GachaGameService");
 const InternalConfig = require("./internal-config.json");
 
 // @ts-ignore
-const client = new Client(require("../token.json"), __dirname + "/commands", GuildModel);
+const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
 const cmdPrefix = InternalConfig.commandPrefix;
 
 client.on("beforeLogin", () => {
-	setInterval(doGuildIteration, Config.onlineIterationInterval);
+	setInterval(doServerIteration, Config.onlineIterationInterval);
 });
 client.on("message", message => {
 	//TODO: Should only do then on non-bot commands
@@ -56,9 +57,9 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 client.on("ready", () => {
 	CoreUtil.dateLog('ready');
 	var ggs = new GachaGameService();
-	client.guilds.forEach(guild => {
-		//CoreUtil.dateLog(guild);
-		let doc = GuildModel.upsert({_id: guild.id})
+	client.guilds.forEach(server => {
+		//CoreUtil.dateLog(server);
+		let doc = ServerModel.upsert({_id: server.id})
 	});
 });
 
@@ -66,28 +67,28 @@ client.on("voiceStateUpdate", member => {
 
 });
 
-client.on("guildMemberAdd", (member) => {
+client.on("serverMemberAdd", (member) => {
 	if(!member.user.bot) {
-		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
+		//CoreUtil.dateLog("Sending welcome message to " + member.user.username);
 		//Need to make this a command or configuration
-		member.send("Welcome to the Dauntless gaming server! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
+		/*member.send("Welcome to the Dauntless gaming server! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
 		CoreUtil.dateLog("Sent welcome message to " + member.user.username);
-		client.guildModel.findById(member.guild.id).exec().then(guild =>{
+		client.serverModel.findById(member.server.id).exec().then(server =>{
 			CoreUtil.dateLog("Adding welcome role to " + member.user.username);
-			CoreUtil.dateLog(guild.welcomeRole);
-			member.addRole(guild.welcomeRole);
+			CoreUtil.dateLog(server.welcomeRole);
+			member.addRole(server.welcomeRole);
 			CoreUtil.dateLog("Role added to " + member.user.username);
-		});
+		});*/
 	}
 });
 
 client.bootstrap();
 
-function doGuildIteration() {
+function doServerIteration() {
 	CoreUtil.dateLog(`[Online Interval]`);
-	client.guilds.forEach(guild => {
-		//checkOnlineStatus(guild);
-		guild.members.forEach(member =>{
+	client.guilds.forEach(server => {
+		//checkOnlineStatus(server);
+		server.members.forEach(member =>{
 			if(member.presence.status != "offline" && !member.user.bot) {
 				CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
 				UserModel.findById(member.id).exec()
@@ -103,8 +104,8 @@ function doGuildIteration() {
 	})
 }
 
-function checkOnlineStatus(guild) {
-	//Need to move stuff from doGuildIteration into here
+function checkOnlineStatus(server) {
+	//Need to move stuff from doServerIteration into here
 }
 
 function newUser(uid, name) {

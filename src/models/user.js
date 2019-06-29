@@ -1,5 +1,3 @@
-const CoreUtil = require("../utils/Util.js");
-const DateDiff = require("date-diff");
 const mongoose = require('mongoose');
 const { Model, Schema } = mongoose
 
@@ -31,6 +29,8 @@ module.exports = function() {
 		joined: {type: Date, default: new Date()},
 		accounts: { type: Map, of: String },
 		referrer: String,
+		gachaWins: {type: Number, default: 0},
+		brWins: {type: Number, default: 0},
 		characters: { type: Array, of: String }
 	});
 

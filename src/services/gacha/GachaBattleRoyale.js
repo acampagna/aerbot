@@ -1,8 +1,11 @@
 const CoreUtil = require("../../utils/Util.js");
 const Discord = require("discord.js");
+const mongoose = require('mongoose');
+const UserModel = mongoose.model('User');
 
 const god = "Aerbot";
 const gameName = "Battle Royale";
+const msgSpeed = 1000;
 
 var message = undefined;
 var day = 0;
@@ -304,9 +307,20 @@ class GachaBattleRoyale {
 
     processMessages(entries) {
         var winner = this.firstAlivePlayer(entries);
+
+        UserModel.findById(winner.member.id).exec()
+        	.then(userData => {
+                if(userData) {
+                    userData.gachaWins++;
+                    userData.brWins++;
+                    console.log("BR Wins: " + userData.brWins);
+                    userData.save();
+                }
+        });
+
         console.log("Winner");
-        console.log(winner);
-        sendMsgs(messages, 4000, this.endGameMessage(winner.member.displayName, winner));
+        console.log(winner.entry);
+        sendMsgs(messages, msgSpeed, this.endGameMessage(winner.member.displayName, winner));
     }
 
     endGame(entries) {
@@ -340,8 +354,8 @@ class GachaBattleRoyale {
 
     formatMessage(string, replacements) {
         let str = string;
-        console.log(string);
-        console.log(replacements);
+        //console.log(string);
+        //console.log(replacements);
         //str = str.replace("{$1}", "**" + replacements.player1 + "**");
         //str = str.replace("{$2}", "**" + replacements.player2 + "**");
         //str = str.replace("{$3}", "**" + replacements.player3 + "**");
@@ -359,7 +373,7 @@ class GachaBattleRoyale {
         str = str.replace("{$d}", "**" + replacements.damage + "**");
         str = str.replace("{$hp}", "**" + replacements.hp + "**");
         //str = str.replace("'s", "**'s**");
-        console.log(string);
+        //console.log(string);
         return str;
     }
 
@@ -396,12 +410,13 @@ class GachaBattleRoyale {
                 case 6:
                     this.doNearKill(entries);
                     break;
-                case 9:
-                case 10:
-                    this.doThreeWayKill(entries);
-                    break;
                 case 7:
                 case 8:
+                case 9:
+                
+                    this.doThreeWayKill(entries);
+                    break;
+                case 10:
                 case 11:
                 case 12:
                 case 13:
@@ -499,7 +514,7 @@ class GachaBattleRoyale {
             default: 
         }
 
-        console.log(target);
+        //console.log(target);
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Battle Royale - Event__");
@@ -694,6 +709,8 @@ class GachaBattleRoyale {
         }
     }
 
+    
+
     doThreeWayKill(entries) {
         if(this.numAlive(entries) > 3) {
             var target = this.randomAlivePlayer(entries);
@@ -817,8 +834,8 @@ class GachaBattleRoyale {
                 }
             });
 
-            console.log(aliveString);
-            console.log(deadString);
+            //console.log(aliveString);
+            //console.log(deadString);
 
             embed.addField("Alive *(" + numAlive + ")*", aliveString, true);
 		    embed.addField("Dead *(" + numDead + ")*", deadString, true);

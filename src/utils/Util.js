@@ -11,16 +11,32 @@ const SimpleFileWriter = require("simple-file-writer");
 const logWriter = new SimpleFileWriter("./console.log");
 const debugLogWriter = new SimpleFileWriter("./debug.log");
 
+function log(...args) {
+	doDateLog(Console.log, logWriter, args, "INFO");
+}
+
 function dateLog(...args) {
 	doDateLog(Console.log, logWriter, args, "INFO");
+}
+
+function error(...args) {
+	doDateLog(Console.error, logWriter, args, "ERROR");
 }
 
 function dateError(...args) {
 	doDateLog(Console.error, logWriter, args, "ERROR");
 }
 
+function debugError(...args) {
+	doDateLog(null, null, args, "DEBUG ERROR");
+}
+
 function dateDebugError(...args) {
 	doDateLog(null, null, args, "DEBUG ERROR");
+}
+
+function debug(...args) {
+	doDateLog(null, null, args, "DEBUG");
 }
 
 function dateDebug(...args) {
@@ -60,9 +76,13 @@ function formatArgsForFile(args) {
 }
 
 module.exports = {
+	error,
 	dateError,
+	log,
 	dateLog,
+	debug,
 	dateDebug,
+	debugError,
 	dateDebugError,
 	isMemberAdmin,
 	doFormatting,

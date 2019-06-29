@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { Model, Schema } = mongoose
 
 /**
- * Defines a guild database model. Guilds are servers in Discord.
+ * Defines a server database model. Servers are servers in Discord.
  * I'm not totally sure about how to be using mongoose. As with everything in Javascript it seems very open-ended and sucks.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
@@ -12,24 +12,35 @@ const { Model, Schema } = mongoose
 module.exports = function() {
 
 	const guildSchema = new Schema({
-		_id: String,
-		officerRoleId: String,
-		memberRoleId: String,
-		groupCategory: String,
-		welcomeRole: String,
-		welcomeChannelId: String
+		name: String,
+		game: String,
+		emoji: String,
+		server_id: String,
+		member_role_id: String,
 	});
 
+	guildSchema.statics.findAllGuilds = function() {
+		return this.find().exec();
+	};
+
 	guildSchema.methods.updateMemberRoleId = function (roleId) {
-		this.model('Guild').updateOne({_id: this.id},{memberRoleId: roleId}).exec();
+		this.model('Guild').updateOne({_id: this.id},{member_role_id: roleId}, {new: true}).exec();
 	};
 
 	guildSchema.methods.updateOfficerRoleId = function (roleId) {
-		this.model('Guild').updateOne({_id: this.id},{OfficerRoleId: roleId}).exec();
+		this.model('Guild').updateOne({_id: this.id},{OfficerRoleId: roleId}, {new: true}).exec();
 	};
 
-	guildSchema.methods.updateGroupCategory = function (categoryId) {
-		this.model('Guild').updateOne({_id: this.id},{groupCategory: categoryId}).exec();
+	guildSchema.methods.updateEmoji = function (emojiId) {
+		this.model('Guild').updateOne({_id: this.id},{emoji: emojiId}).exec();
+	};
+
+	guildSchema.methods.updateGame = function (name) {
+		this.model('Guild').updateOne({_id: this.id},{game: name}).exec();
+	};
+
+	guildSchema.methods.updateName = function (name) {
+		this.model('Guild').updateOne({_id: this.id},{name: name}).exec();
 	};
 
 	//TODO: Fix to WelcomeRoleId
@@ -41,10 +52,14 @@ module.exports = function() {
 		this.model('Guild').updateOne({_id: this.id},{welcomeChannelId: channelId}).exec();
 	};
 
+	guildSchema.statics.byName = function(name) {
+		return this.findOne({ name: new RegExp(`^${name}$`, 'i') }).exec();
+	};
+
 	let GuildModel = mongoose.model('Guild', guildSchema);
 
 	GuildModel.upsert = function(doc){
-		return GuildModel.findOneAndUpdate(
+		return ServerModel.findOneAndUpdate(
 			{_id: doc._id},
 			doc, 
 			{upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true}

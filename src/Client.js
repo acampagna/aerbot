@@ -2,7 +2,7 @@ const CoreUtil = require("./utils/Util.js");
 const Camo = require("camo");
 const CronJob = require("cron").CronJob;
 const Discord = require("discord.js");
-const HandleGuildMessage = require("./HandleGuildMessage");
+const HandleServerMessage = require("./HandleServerMessage");
 const InternalConfig = require("./internal-config.json");
 const RequireAll = require("require-all");
 const Mongoose = require('mongoose');
@@ -18,9 +18,9 @@ module.exports = class Client extends Discord.Client {
 	 * @copyright Dauntless Gaming Community 2019
 	 * @param {string} token bot token
 	 * @param {string} commandsDir location of dir containing commands .js files
-	 * @param {*} guildModel GuildData model to be used for app; must extend BaseGuildData
+	 * @param {*} serverModel ServerData model to be used for app; must extend BaseServerData
 	 */
-	constructor(token, commandsDir, guildModel) {
+	constructor(token, commandsDir, serverModel) {
 		super({
 			messageCacheMaxSize: 500,
 			autofetch: [
@@ -31,7 +31,7 @@ module.exports = class Client extends Discord.Client {
 
 		this._token = token;
 		this.commandsDir = commandsDir;
-		this.guildModel = guildModel;
+		this.serverModel = serverModel;
 
 		this.commands = RequireAll(this.commandsDir);
 
@@ -39,8 +39,8 @@ module.exports = class Client extends Discord.Client {
 		this.on("message", this._onMessage);
 		this.on("debug", this._onDebug);
 		this.on("error", this._onError);
-		this.on("guildCreate", this._onGuildCreate);
-		this.on("guildDelete", this._onGuildDelete);
+		this.on("serverCreate", this._onServerCreate);
+		this.on("serverDelete", this._onServerDelete);
 		process.on("uncaughtException", err => this._onUnhandledException(this, err));
 	}
 
@@ -49,12 +49,12 @@ module.exports = class Client extends Discord.Client {
 		CoreUtil.dateLog(`Registered bot ${this.user.username}`);
 
 		//We should be doing this eventually
-		//this.removeDeletedGuilds();
+		//this.removeDeletedServers();
 	}
 
 	_onMessage(message) {
 		if (message.channel.type === "text" && message.member) {
-			HandleGuildMessage(this, message, this.commands);
+			HandleServerMessage(this, message, this.commands);
 		}
 	}
 
@@ -69,13 +69,13 @@ module.exports = class Client extends Discord.Client {
 		CoreUtil.dateError(error);
 	}
 
-	_onGuildCreate(guild) {
-		CoreUtil.dateLog(`Added to guild ${guild.name}`);
+	_onServerCreate(server) {
+		CoreUtil.dateLog(`Added to server ${server.name}`);
 	}
 
-	_onGuildDelete(guild) {
-		//this.guildDataModel.findOneAndDelete({ guildID: guild.id });
-		CoreUtil.dateLog(`Removed from guild ${guild.name}, removing data for this guild`);
+	_onServerDelete(server) {
+		//this.serverDataModel.findOneAndDelete({ serverID: server.id });
+		CoreUtil.dateLog(`Removed from server ${server.name}, removing data for this server`);
 	}
 
 	_onUnhandledException(client, err) {
@@ -98,11 +98,11 @@ module.exports = class Client extends Discord.Client {
 		});
 	}
 
-	/*removeDeletedGuilds() {
-		this.guildDataModel.find().then(guildDatas => {
-			for (let guildData of guildDatas)
-				if (!this.guilds.get(guildData.guildID))
-					guildData.delete();
+	/*removeDeletedServers() {
+		this.serverDataModel.find().then(serverDatas => {
+			for (let serverData of serverDatas)
+				if (!this.servers.get(serverData.serverID))
+					serverData.delete();
 		});
 	}*/
 };

@@ -14,20 +14,20 @@ const RequireAll = require("require-all");
 
 const cmdPrefix = InternalConfig.commandPrefix;
 
-function handleGuildMessage(client, message, commands) {
+function handleServerMessage(client, message, commands) {
 	if (isCommand(message))
-		client.guildModel.findById(message.guild.id).exec()
-			.then(guildData =>
-				handleGuildCommand(
+		client.serverModel.findById(message.guild.id).exec()
+			.then(serverData =>
+				handleServerCommand(
 					client,
 					message,
 					Object.assign({}, commands),
-					guildData
+					serverData
 				));
 }
 
-function handleGuildCommand(client, message, commands, guildData) {
-	const { botName, isMemberAdmin, params, command } = parseDetails(message, commands, guildData);
+function handleServerCommand(client, message, commands, serverData) {
+	const { botName, isMemberAdmin, params, command } = parseDetails(message, commands, serverData);
 
 	//CoreUtil.dateLog(`Command: `,command);
 	if (!command) {
@@ -40,7 +40,7 @@ function handleGuildCommand(client, message, commands, guildData) {
 		message.reply(`Incorrect syntax!\n**Expected:** *${botName} ${command.syntax}*\n**Need help?** *${botName} help*`);
 
 	else if (isMemberAdmin || !command.admin) {
-		command.invoke({ message, params, guildData, client, commands, isMemberAdmin })
+		command.invoke({ message, params, serverData, client, commands, isMemberAdmin })
 		.then(response => {
 			if (typeof response === 'object' && (response.everyone || response.here)) {
 				if(response.everyone && response.message) {
@@ -58,7 +58,7 @@ function handleGuildCommand(client, message, commands, guildData) {
 	}
 }
 
-function parseDetails(message, commands, guildData) {
+function parseDetails(message, commands, serverData) {
 	let cmdPos = 1;
 	if(message.content.substring(0, 1) === cmdPrefix) {
 		message.content = message.content.substring(1);
@@ -69,7 +69,7 @@ function parseDetails(message, commands, guildData) {
 
 	return {
 		botName: "@" + (message.guild.me.nickname || message.guild.me.user.username),
-		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(guildData.officerRoleID),
+		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.officerRoleID),
 		isMemberAdmin: message.member.permissions.has("ADMINISTRATOR"),
 		params: split.slice(cmdPos+1, split.length),
 		command: commands[commandName]
@@ -85,4 +85,4 @@ function isCommand(message) {
 	}
 }
 
-module.exports = handleGuildMessage;
+module.exports = handleServerMessage;

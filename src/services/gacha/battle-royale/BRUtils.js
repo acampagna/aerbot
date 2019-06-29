@@ -5,7 +5,7 @@
  */
 
 class BRUtils {
-
+    
 }
 
 module.exports = BRUtils

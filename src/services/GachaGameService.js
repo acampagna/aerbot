@@ -57,11 +57,11 @@ class GachaGameService {
             entries.set("Bot3", {member: {displayName: "Bot3"}, entry: game.generateEntry(message)});
             entries.set("Bot4", {member: {displayName: "Bot4"}, entry: game.generateEntry(message)});
             entries.set("Bot5", {member: {displayName: "Bot5"}, entry: game.generateEntry(message)});
-            entries.set("Bot6", {member: {displayName: "Bot6"}, entry: game.generateEntry(message)});
+            /*entries.set("Bot6", {member: {displayName: "Bot6"}, entry: game.generateEntry(message)});
             entries.set("Bot7", {member: {displayName: "Bot7"}, entry: game.generateEntry(message)});
             entries.set("Bot8", {member: {displayName: "Bot8"}, entry: game.generateEntry(message)});
             entries.set("Bot9", {member: {displayName: "Bot9"}, entry: game.generateEntry(message)});
-            entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message)});
+            entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message)});*/
         }
         
         //console.log(member.user);

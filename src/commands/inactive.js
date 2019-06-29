@@ -41,18 +41,21 @@ function invoke({ message, params, guildData, client }) {
 			var inactiveOther = [];
 
 			inactiveUsers.forEach(iu => {
-				if(iu.roles.get(guildData.officerRoleId))
+				if(iu.roles.get("534042208761020418"))
 					inactiveOfficers.push(iu);
-				else if(iu.roles.get(guildData.memberRoleId))
+				else if(iu.roles.get("579010317451788289"))
 					inactiveMembers.push(iu);
 				else 
 					inactiveOther.push(iu);
 			});
 
 			resolve("The following users have been inactive for more than " + inactiveThresholdDays + " days:\n" + 
-				inactiveOfficers.map(iu=> "**" + iu.displayName + "**").join("\n") + "\n" +
-				inactiveMembers.map(iu=> iu.displayName).join("\n")
+				"**ROM Members**\n" + inactiveOfficers.map(iu=> "" + iu.displayName + "").join("\n") + "\n" +
+				"**Durango Members**\n" + inactiveMembers.map(iu=> iu.displayName).join("\n")
 			);
+			/*resolve("The following users have been inactive for more than " + inactiveThresholdDays + " days:\n" + 
+				inactiveUsers.map(iu=> iu.displayName).join("\n")
+			);*/
 		});
 	});
 }

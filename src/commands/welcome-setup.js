@@ -15,13 +15,13 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	//Deletes existing channel if an id exists in database
-	if(guildData.welcomeChannelId) {
-		message.guild.channels.get(guildData.welcomeChannelId).delete();
+	if(serverData.welcomeChannelId) {
+		message.guild.channels.get(serverData.welcomeChannelId).delete();
 	}
 
-	let role = message.guild.roles.get(guildData.welcomeRole);
+	let role = message.guild.roles.get(serverData.welcomeRole);
 
 	//Create new Welcome channel then setup initial welcome messages
 	message.guild.createChannel(
@@ -39,7 +39,7 @@ function invoke({ message, params, guildData, client }) {
 		//All of this should be made into a command, configuration, or input file of some kind.
 		//Message templates should probably be made into their own classes.
 
-		guildData.updateWelcomeChannelId(channel.id);
+		serverData.updateWelcomeChannelId(channel.id);
 		const embedOne = new Discord.RichEmbed();
 		embedOne.setTitle("Welcome to Dauntless!")
 		embedOne.setColor("GOLD");
