@@ -14,8 +14,8 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	var category = params[0];
-	guildData.updateGroupCategory(category);
+	serverData.updateGroupCategory(category);
 	return Promise.resolve("Set Group Category: " + category);
 }

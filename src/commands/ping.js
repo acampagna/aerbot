@@ -14,7 +14,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	var nparams4 = params.join(" ").split(/"((?:\\.|[^"\\])*)"/);
 	var nparams3 = new Map(
 		params.slice(1).join(" ").split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(p => p.trim().replace(/\"/g, "").split(":").map(m => m.trim())).map(([k, v]) => [k.toLowerCase(), v])

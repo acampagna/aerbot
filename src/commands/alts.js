@@ -11,7 +11,7 @@ module.exports = new Command({
 	invoke
 });
 
-async function invoke({ message, params, guildData, client }) {
+async function invoke({ message, params, serverData, client }) {
     if (params.length === 0) {
         const embed = new Discord.RichEmbed();
         embed.setColor("BLUE");

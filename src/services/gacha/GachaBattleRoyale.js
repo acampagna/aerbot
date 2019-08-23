@@ -5,10 +5,12 @@ const UserModel = mongoose.model('User');
 
 const god = "Aerbot";
 const gameName = "Battle Royale";
-const msgSpeed = 1000;
+const msgSpeed = 4100;
 
 var message = undefined;
 var day = 0;
+var todaysEvent = 0;
+var todaysEventName = "";
 
 var messages = [];
 
@@ -33,6 +35,19 @@ var messages = [];
 -- Finding special items to assist you in the final showdown
 */
 
+/*PATCH NOTES
+- Added more Durango-based combat messages
+- More messages utilize the player's weapon to make their weapon choice more important
+- Changes a lot of ratios for different actions and events happening. Most importantly, less suicides.
+- Added !gatcha alias
+- Added new item to the "Find Item" event, Immunity Talisman. The player is automatically get resurrected if they die while having this item. Does not resurrect during the showdown.
+- Added Daily Events. Limited effects that last for the whole day. Every day has a new event.
+-- Normal Day: Nothing special happens on this day
+-- Mass Protection: A small number of players gain instant resurrection for the day
+-- Vengeance: Players deal 20 damage to their killer when they're killed
+-- Vampirism: Players game 20 health when they kill someone 
+-- Bloodbath: Only player killing happens on this day
+*/
 
 //Need to move all this to a configuration file
 var players = [
@@ -41,61 +56,76 @@ var players = [
 ]
 
 var annihilations = [
-    "Oh No! King Poring has crushed {$n} arena contestants!",
-    "zRed creates a stew out of {$n} of our tastiest combatants!",
+    "Briyukii creates a stew out of {$n} of our tastiest combatants!",
     "An avalanche of {$w}s crushes {$n} players in the arena. Oh the horror!",
     "Thanos just snapped {$n} mortals out of existence",
     "A wild Electrode has appeared, It used Self-Destruct. {$n} contestants fainted...",
-    "Natural selection kills {$n} smart, intelligent, and unique fighters",
-    "{$n} fighters attended zRed Wedding"
+    "Natural selection kills {$n} smart, intelligent, and unique snowflakes",
+    "A stampede of 1000 {$a} tramples {$n} brave pioneers",
+    "{$n} fighters attended the Red Wedding"
 ];
 
 var oneOnOneKills = [
     "{$1} eviscerates {$2} with their {$w}",
-    "{$1} karate chops {$2} right in the face!",
+    "{$1} + {$w} = one dead {$2}!",
     "{$1} kills {$2} with a {$w}",
     "{$1} one-shots {$2} with a {$w}",
-    "{$1} was given a name: {$2}. The Red God is pleased.",
-    "{$1} sticks {$2} with the pointy end of their {$w}. The bastard would be proud!",
+    //"{$1} was given a name: {$2}. The Red God is pleased.",
+    "{$1} sticks {$2} with the pointy end of their {$w}",
     //"{$1} shows {$2} how they got their smile",
     //"{$1} drops a acme safe in {$2}",
-    "{$1} covers {$2} in tuna and throws them into a pit of hungry kittens",
-    "{$1} shoves a mayonnaise covered {$w} up {$2}'s ass and pulls the trigger"
+    //"{$1} covers {$2} in tuna and throws them into a pit of hungry kittens",
+    "{$1} shoves a mayonnaise covered {$w} up {$2}'s ass and pulls the trigger",
+    //"{$2} intelligently stuck their tongue on an icy pole and was killed by {$1}",
+    "{$1} drowns {$2} in the Dauntless Compy Pool",
+    "{$1} sacrificed {$2} to a herd of wild {$a}"
 ];
 
 var mistakes = [
     //"{$1} one-shot themselves",
     "{$1} killed themself with their own {$w}",
-    "{$1} drowns in soymilk...",
+    //"{$1} drowns in soymilk...",
     "{$1}'s {$w} betrayed them...",
     "{$1} cut the wrong wire",
-    "{$1} cut off their {$b} with a {$w}",
+    "{$1} cut off their own {$b} with a {$w}",
     //"{$1} trips on their untied shoelace right into a pit of fire",
     "{$1} didn't actually want to win and turns their {$w} on themselves. Oh the humanity!",
-    //"{$1} decides to do the tide challenge and dies of regret, stupidity and poison",
-    //"{$1} steps onto a landmine and blows up into million pieces"
+    "{$1} decides to do the tide challenge and dies of regret, stupidity, and poison",
+    //"{$1} steps onto a landmine and blows up into million pieces",
+    "{$1} yeeted themselves out of existence",
+    "{$1} gets squashed by a {$a}",
+    "{$1} gets their {$b} bitten off by a wild {$a}",
+    "{$1} dies waiting for savage islands to reopen"
 ];
 
 var nearKills = [
-    "{$1} attacks {$2} with their {$w} but {$2} narrowly escapes with {$hp} hp"
+    "{$1} attacks {$2} with their {$w} but {$2} narrowly escapes with {$hp} hp",
+    "{$1} takes aim at {$2} with their {$w} but an angelic Festival Elephantulus saves their life with {$hp} health remaining",
+    "{$2} narrowly escapes an encounter with a wild {$a} with {$hp} hp remaining"
 ];
 
 var threeWayKill = [
-    "{$1} and {$3} work together to cut off {$2}'s head"
+    "{$1} and {$3} work together to cut off {$2}'s head",
+    "{$1} and {$3} toss {$2} into a pack of wild {$a}",
+    "{$1}, {$2}, and {$3} go out hunting for {$a}. {$2} was never heard from again."
 ];
 
 var weapons = [
     //"BFG",
     "Frying Pan",
-    "Poring Wand",
-    "Fooling Laser Gun",
+    //"Poring Wand",
+    //"Fooling Laser Gun",
     "Meatball",
     //"I-like-you",
     "GPD (Giant Purple Dildo)",
     "Backscratcher",
-    "dirty socks",
+    "Dirty Socks",
     //"cat-o-nine-tail",
-    "pickle"
+    "Pickle",
+    "Seagull Bone Crossbow",
+    "Thorny Spine Hammer",
+    "Pet Direwolf",
+    "$100 Bill"
 ];
 
 var showdownHits = [
@@ -107,20 +137,22 @@ var showdownHits = [
     "{$1} spanks {$2} on the {$b}",
     "{$1} picks up a rock, hurling it at {$2} hitting them in the {$b}",
     "{$1} goes invisible, flanks {$2}, and attacks from behind with their {$w}",
+    "{$1} throws a pack of {$a} at {$2}",
     //"{$1} tortures {$2} with death by 1000 cuts, then rubs them with salt and lemon juice",
-    //"{$1} curbstomps {$2} teeth",
-    "{$2} asks {$1} to prom and is friendzoned"
+    "A wild {$a} comes out of nowhere, charges at {$2}, and hits them right in the {$b}"
 ];
 
 var showdownArenas = [
-    "in a cave",
-    "in a cold and dark basement",
-    "on a mountain top",
-    "at the soymilk factory",
+    "in Cypress' Dark Basement",
+    "at the Kiki factory",
     "in Aerfalle's closet",
     "in Deathsfew's sex dungeon",
     "on top of Mt. Doom",
-    "Iiiinnnn Spaaaacceee"
+    "at the Dauntless Enclave",
+    "in Realm's Meme Haven",
+    "at Fallen's Tailor Shop",
+    "in Millie's Dank Cave",
+    "at the Teri Motor Inn"
 ];
 
 var bodyParts = [
@@ -131,11 +163,27 @@ var bodyParts = [
     "chest",
     "leg",
     "ass",
-    "baby toe",
+    "big toe",
     "nipple",
+    "boob",
     "taint",
-    "heiny"
+    "heiny",
+    "tail"
 ];
+
+var animals = [
+    "Brachio",
+    "Mammoth",
+    "Sabertooth",
+    "Compy",
+    "Toujiangosaurus",
+    "Apatosaurus",
+    "Allosaurus",
+    "Bonosaurus",
+    "Tarbosaurus",
+    "Ornithomimus",
+    "Skunkodus"
+]
 
 var showdownMisses = [
     "{$1} parrys {$2}'s {$w} attack",
@@ -149,7 +197,8 @@ var msgColors = {
     playerKill: "ORANGE",
     newDay: "AQUA",
     endGame: "BLUE",
-    event: "GOLD"
+    event: "GOLD",
+    dailyEvent: "DARK_ORANGE"
 };
 
 function sendMsgs(msgs, delay, cb) {
@@ -188,8 +237,12 @@ class GachaBattleRoyale {
             numKills: 0,
             kills: [],
             killer: "",
+            immune: false,
+            dailyImmune: false,
             dead: false,
             zombie: false,
+            zeal: false,
+            disease: false,
             hp: 100,
             attack: 25,
             strength: 15,
@@ -212,6 +265,10 @@ class GachaBattleRoyale {
         var entry = entries.get(keys[Math.floor(Math.random() * keys.length)]);
 
         return entry;
+    }
+
+    isPlayerImmune(entry) {
+        return (entry.entry.immune || entry.entry.dailyImmune);
     }
 
     randomAlivePlayer(entries, dupe) {
@@ -241,6 +298,12 @@ class GachaBattleRoyale {
                 return entry;
             }
         }
+    }
+
+    randomXPlayers(entries, num) {
+        entries.forEach(function(value, key) {
+            
+        });
     }
 
     numAlive(entries) {
@@ -288,7 +351,7 @@ class GachaBattleRoyale {
         var killLeader = undefined;
         var killLeaderKills = 0;
         entries.forEach(function(value, key) {
-            if(value.entry.numKills > killLeaderKills) {
+            if(!value.entry.dead && value.entry.numKills > killLeaderKills) {
                 killLeader = value;
                 killLeaderKills = value.entry.numKills;
             }
@@ -345,6 +408,8 @@ class GachaBattleRoyale {
             this.doDayN(entries);
         }
 
+        day++;
+
         this.doShowdown(entries);
 
         this.processMessages(entries);
@@ -368,6 +433,7 @@ class GachaBattleRoyale {
         str = str.replace("{$w1}", "**" + replacements.weapon + "**");
         str = str.replace("{$w2}", "**" + replacements.weapon2 + "**");
 
+        str = str.replace("{$a}", "**" + replacements.animal + "**");
         str = str.replace("{$n}", "**" + replacements.number + "**");
         str = str.replace("{$b}", "**" + replacements.bodyPart + "**");
         str = str.replace("{$d}", "**" + replacements.damage + "**");
@@ -378,21 +444,35 @@ class GachaBattleRoyale {
     }
 
     doDayOne(entries) {
-        this.doAnnihilation(entries);
+        //this.doNormalDay();
+        this.doMassProtection(entries);
+
+        if(this.numAlive(entries) > 10) {
+            this.doAnnihilation(entries);
+            this.doThreeWayKill(entries);
+            this.doNearKill(entries);
+        }
         this.doMistake(entries);
-        this.doNearKill(entries);
-        this.doThreeWayKill(entries);
         this.doPlayerKill(entries);
-        this.doEvent(entries);
+        this.doResurrect(this.randomDeadPlayer(entries));
+
+        this.resolveDailyEvent(entries);
     }
 
     doDayN(entries) {
-        var actions = Math.floor(Math.random() * 3) + 2;
+        var actions = Math.floor(Math.random() * 3) + (Math.floor(day/3)*2);
         var alive = this.numAlive(entries);
-        console.log("Day " + day + " | Alive " + alive);
+        console.log("Day " + day + " | Alive " + alive + " | Actions " + actions);
+
+        this.doDailyEvent(entries);
 
         while(actions > 0 && alive > 2) {
-            var action = Math.floor(Math.random() * 13) + 1;
+            if(todaysEventName === "Bloodbath") {
+                var action = 99;
+            } else {
+                var action = Math.floor(Math.random() * 13) + 1;
+            }
+            
             console.log("Action pick: " + action);
 
             switch (action) {
@@ -403,23 +483,25 @@ class GachaBattleRoyale {
                     this.doMistake(entries);
                     break; 
                 case 3:
-                case 4:
-                case 5:
-                    this.doEvent(entries);
-                    break;
-                case 6:
                     this.doNearKill(entries);
+                    break;
+                case 4:
+                    this.doThreeWayKill(entries);
+                    break;
+                case 5:
+                case 6:
+                    this.doEvent(entries);
                     break;
                 case 7:
                 case 8:
                 case 9:
-                
-                    this.doThreeWayKill(entries);
-                    break;
                 case 10:
                 case 11:
                 case 12:
                 case 13:
+                    this.doPlayerKill(entries);
+                    break;
+                case 99:
                     this.doPlayerKill(entries);
                     break;
                 default: 
@@ -429,39 +511,170 @@ class GachaBattleRoyale {
             alive = this.numAlive(entries);
             actions--;
         }
+
+        this.resolveDailyEvent(entries);
     }
 
     doEvent(entries) {
-        var action = Math.floor(Math.random() * day) + 1;
-        var target = this.randomAlivePlayer(entries);
+        var action = Math.floor(Math.random() * 3) + 1;
+        var aliveTarget = this.randomAlivePlayer(entries);
+        var deadTarget = this.randomDeadPlayer(entries);
 
         console.log("Event pick: " + action);
 
         switch (action) {
             case 1:
-                this.doResurrect(entries);
-                //this.doFindPotion(target);
-                //this.doBlueShell(entries);
+                this.doResurrect(deadTarget);
                 break;
             case 2:
-                this.doFindPotion(target);
-                break;
-            case 3:
                 this.doBlueShell(entries);
                 break;
+            case 3:
+                this.doFindPotion(aliveTarget);
+                break;
             default: 
-                this.doResurrect(entries);
+                this.doResurrect(deadTarget);
         }
     }
 
-    doResurrect(entries) {
-        var target = this.randomDeadPlayer(entries);
+    doDailyEvent(entries) {
+        var action = Math.floor(Math.random() * 5) + 1;
+        var target = this.randomAlivePlayer(entries);
+
+        todaysEvent = action;
+
+        console.log("Daily Event pick: " + action);
+
+        switch (action) {
+            case 1:
+                this.doMassProtection(entries);
+                break;
+            case 2:
+                this.doBloodbath();
+                break;
+            case 3:
+                this.doNormalDay();
+                break;
+            case 4:
+                this.doVampirism();
+                break;
+            case 5:
+                this.doVengeance();
+                break;
+            default: 
+                this.doMassProtection(entries);
+        }
+    }
+
+    resolveDailyEvent(entries) {
+        console.log("Resolving Daily Event " + todaysEventName + "(" + todaysEvent + ")");
+
+        switch (todaysEvent) {
+            case 1:
+                this.resolveMassProtection(entries);
+                break;
+            case 2:
+                //this.resolveBloodbath(entries);
+                break;
+            case 3:
+                //this.resolveNormalDay(entries);
+                break;
+            case 4:
+                //this.resolveVampirism;
+                break;
+            case 5:
+                //this.resolveVengeance();
+                break;
+            default: 
+                this.resolveMassProtection(entries);
+        }
+
+        todaysEvent = 0;
+        todaysEventName = "";
+    }
+
+    doVengeance() {
+        todaysEventName = "Vengeance";
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("All combatants get a final hit on their enemy as they die dealing damage. You *will* have vengeance on this day!");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    doVampirism() {
+        todaysEventName = "Vampirism";
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("All combatants are granted Lifesteal for the day allowing them to gain health from everyone they kill.");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    doBloodbath() {
+        todaysEventName = "Bloodbath";
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("All hell breaks loose! Murder and Death is all that we'll see on this day!");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    doNormalDay() {
+        todaysEventName = "Normal Day";
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("Nothing special happens on this day");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    doMassProtection(entries) {
+        todaysEventName = "Mass Protection";
+        var numAffected = 0;
+        var retStr = "";
+
+        entries.forEach(function(value, key) {
+            var affected = Math.random() >= 0.85;
+            if(affected && !value.entry.dead) {
+                value.entry.dailyImmune = true;
+                retStr += ", " + key;
+                numAffected++;
+            }
+        });
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("The favor of the gods shines upon the battlefield as " + numAffected + 
+            " combatants are granted immunity from death today.\n\n" + retStr.slice(2));
+        embed.setFooter("*Immune players can take damage but can not be killed until the end of the day.*");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    resolveMassProtection(entries) {
+        //Remove Daily Immunity
+        entries.forEach(function(value, key) {
+            value.entry.dailyImmune = false;
+        });
+    }
+
+    doResurrect(target, title) {
+        if(!title || title === undefined) {
+            title = "Event";
+        }
+
+        //var target = this.randomDeadPlayer(entries);
         target.entry.dead = false;
         target.entry.strength -= 2;
         target.entry.hp -= 15;
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Battle Royale - Event__");
+        embed.setTitle("__" + title + "- Resurrection__");
         embed.setDescription("The favor of the gods shine upon **" + target.member.displayName + "** as they are **resurrected** and welcomed back into the fight!");
         embed.setFooter("*Resurrected players are brought back to life with reduced health and damage*");
         //embed.setThumbnail("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZU_7EfPY7-cmtUAZaTK1N0qWC6ZGJpjKP-Hk_nHt5rASBeNbk");
@@ -474,18 +687,21 @@ class GachaBattleRoyale {
         this.killPlayer(target, target);
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Battle Royale - Event__");
+        embed.setTitle("__Event - Blue Shell__");
         embed.setDescription("A flying blue shell comes zipping across the battlefield right towards " + target.member.displayName + ", a kill leader");
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
+
+        this.handleImmunity(target);
     }
 
     doFindPotion(target) {
-        var action = Math.floor(Math.random() * 5) + 1;
+        var action = Math.floor(Math.random() * 6) + 1;
 
         var potionName = "";
         var statBoosted = "";
         var statBoost = Math.floor(Math.random() * 4) + 1;
+        var eventType = 0; //0 = Buff 1 = Item
 
         console.log("Item pick: " + action);
 
@@ -507,9 +723,14 @@ class GachaBattleRoyale {
             case 5:
                 potionName = "Elixer of the Gods";
                 statBoosted = "strength & health";
-                statBoost = statBoost * 3;
+                statBoost = statBoost * 4;
                 target.entry.strength += statBoost;
                 target.entry.hp += statBoost;
+                break;
+            case 6:
+                eventType = 1;
+                potionName = "Immunity Talisman";
+                target.immune = true;
                 break;
             default: 
         }
@@ -517,10 +738,16 @@ class GachaBattleRoyale {
         //console.log(target);
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Battle Royale - Event__");
-        embed.setDescription("A turtle fisherman flies in on a cloud and gives **" + target.member.displayName + 
-            "** a **" + potionName + "**. **" + target.member.displayName + "** drinks the potion and gains **" + 
+        embed.setTitle("__Event - Find Item__");
+        if(eventType === 0) {
+            embed.setDescription("**" + target.member.displayName + 
+            "** finds a **" + potionName + "**. They drink the potion and gain **" + 
             statBoost + " " + statBoosted + "**");
+        } else {
+            embed.setDescription("**" + target.member.displayName + 
+            "** finds an **" + potionName + "**. They'll be immune from a single death.");
+        }
+        
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
     }
@@ -550,6 +777,9 @@ class GachaBattleRoyale {
         var player2;
 
         entries.forEach(function(value, key) {
+            value.entry.immune = false;
+            value.entry.dailyImmune = false;
+
             var killsStr = "";
             if(value.entry.numKills > 0) {
                 killsStr = " (" + value.entry.numKills + ")";
@@ -599,6 +829,7 @@ class GachaBattleRoyale {
                         player2: target.member.displayName,
                         weapon: killer.entry.weapon,
                         bodyPart: this.randomPhrase(bodyParts),
+                        animal: this.randomPhrase(animals),
                         damage: attackValue
                     }
                 ) + " for **" + attackValue + "** damage!"
@@ -627,6 +858,20 @@ class GachaBattleRoyale {
         console.log(player.member.displayName + " lost " + atk + " health. Total hp: " + player.entry.hp);
     }
 
+    handleImmunity(target) {
+        if(this.isPlayerImmune(target)) {
+            console.log(target.member.displayName + " is immune!");
+            target.entry.immune = false;
+            this.doResurrect(target, "Immunity");
+        }
+    }
+
+    /*handleStatModKillMsg(embed) {
+        if(todaysEventName === "Vampirism" || (todaysEventName === "Vengeance") {
+            embed.setFooter();
+        }
+    }*/
+
     doMistake(entries) {
         if(this.numAlive(entries) > 2) {
             var target = this.randomAlivePlayer(entries);
@@ -640,13 +885,16 @@ class GachaBattleRoyale {
                     {
                         player1: target.member.displayName,
                         weapon: target.entry.weapon,
-                        bodyPart: this.randomPhrase(bodyParts)
+                        bodyPart: this.randomPhrase(bodyParts),
+                        animal: this.randomPhrase(animals)
                     }
                 )
             );
             embed.setColor(msgColors.mistake);
     
             messages.push({ embed: embed });
+
+            this.handleImmunity(target);
             //message.channel.send("", { embed: embed })
         }
     }
@@ -660,8 +908,8 @@ class GachaBattleRoyale {
         var alive = this.numAlive(entries);
         
         entries.forEach(function(value, key) {
-            var dies = Math.random() >= 0.7;
-            if(dies && !value.entry.dead && alive > 2) {
+            var dies = Math.random() >= 0.8;
+            if(dies && !value.entry.dead && alive > 2 && !_this.isPlayerImmune(value)) {
                 _this.killPlayer(value, god);
                 annihilatedStr += ", " + key;
                 killed++;
@@ -670,11 +918,11 @@ class GachaBattleRoyale {
         });
 
         const embed = new Discord.RichEmbed();
-		embed.setTitle("__Battle Royale | **Annihilation!**__");
+		embed.setTitle("__**Annihilation!**__");
 		embed.setDescription(
             this.formatMessage(
                 this.randomPhrase(annihilations), 
-                {number: killed, weapon: this.randomPhrase(weapons)}
+                {number: killed, weapon: this.randomPhrase(weapons), animal: this.randomPhrase(animals)}
             ) + "\n\n" + annihilatedStr.slice(2)
         );
         embed.setColor(msgColors.annihilation);
@@ -698,13 +946,23 @@ class GachaBattleRoyale {
                         player1: killer.member.displayName,
                         player2: target.member.displayName,
                         weapon: killer.entry.weapon,
-                        bodyPart: this.randomPhrase(bodyParts)
+                        bodyPart: this.randomPhrase(bodyParts),
+                        animal: this.randomPhrase(animals)
                     }
                 )
             );
             embed.setColor(msgColors.playerKill);
+
+            if(todaysEventName === "Vampirism") {
+                embed.setFooter(killer.member.displayName + " gained 20 hp from Vampirism");
+            }
+            if(todaysEventName === "Vengeance") {
+                embed.setFooter(killer.member.displayName + " lost 20 hp from Vengeance");
+            }
     
             messages.push({ embed: embed });
+
+            this.handleImmunity(target);
             //message.channel.send("", { embed: embed })
         }
     }
@@ -730,13 +988,23 @@ class GachaBattleRoyale {
                         player3: assistant.member.displayName,
                         weapon: killer.entry.weapon,
                         weapon2: assistant.entry.weapon,
-                        bodyPart: this.randomPhrase(bodyParts)
+                        bodyPart: this.randomPhrase(bodyParts),
+                        animal: this.randomPhrase(animals)
                     }
                 )
             );
             embed.setColor(msgColors.playerKill);
+
+            if(todaysEventName === "Vampirism") {
+                embed.setFooter(killer.member.displayName + " & " + assistant.member.displayName + " gained 20 hp from Vampirism");
+            }
+            if(todaysEventName === "Vengeance") {
+                embed.setFooter(killer.member.displayName + " & " + assistant.member.displayName + " lost 20 hp from Vengeance");
+            }
     
             messages.push({ embed: embed });
+
+            this.handleImmunity(target);
             //message.channel.send("", { embed: embed })
         }
     }
@@ -760,7 +1028,8 @@ class GachaBattleRoyale {
                     player2: target.member.displayName,
                     weapon: killer.entry.weapon,
                     hp: target.entry.hp,
-                    bodyPart: this.randomPhrase(bodyParts)
+                    bodyPart: this.randomPhrase(bodyParts),
+                    animal: this.randomPhrase(animals)
                 }
             )
         );
@@ -772,19 +1041,34 @@ class GachaBattleRoyale {
     }
 
     killPlayer(target, killer, assistant) {
-        if(killer === god) {
-            target.entry.killer = god;
+        if(this.isPlayerImmune(target)) {
+            //target.entry.immune = false;
         } else {
-            target.entry.killer = killer.member.displayName;
-            killer.entry.kills.push(target.member.displayName);
-            killer.entry.numKills++;
-            if(assistant){
-                assistant.entry.numKills++;
-                assistant.entry.kills.push(target.member.displayName);
+            if(killer === god) {
+                target.entry.killer = god;
+            } else {
+                target.entry.killer = killer.member.displayName;
+                killer.entry.kills.push(target.member.displayName);
+                killer.entry.numKills++;
+                if(todaysEventName === "Vampirism") {
+                    killer.entry.hp += 20;
+                }
+                if(todaysEventName === "Vengeance") {
+                    killer.entry.hp -= 20;
+                }
+                if(assistant){
+                    assistant.entry.numKills++;
+                    assistant.entry.kills.push(target.member.displayName);
+                    if(todaysEventName === "Vampirism") {
+                        assistant.entry.hp += 20;
+                    }
+                    if(todaysEventName === "Vengeance") {
+                        assistant.entry.hp -= 20;
+                    }
+                }
             }
+            target.entry.dead = true;
         }
-        
-        target.entry.dead = true;
     }
 
     sendNewDayMessage(entries) {
@@ -807,6 +1091,7 @@ class GachaBattleRoyale {
     }
 
     addRosterEmbed(entries, embed) {
+        const _this = this;
         if(day === 1) {
             var entryString = "";
             entries.forEach(function(value, key) {
@@ -822,14 +1107,18 @@ class GachaBattleRoyale {
 
             entries.forEach(function(value, key) {
                 var killsStr = "";
+                var immuneStr = "";
                 if(value.entry.numKills > 0) {
                     killsStr = " (" + value.entry.numKills + ")";
+                }
+                if(_this.isPlayerImmune(value)) {
+                    immuneStr = "*";
                 }
                 if(value.entry.dead) {
                     deadString += deadString.length > 0 ? "\n:skull: " + key + killsStr : ":skull: " + key + killsStr;
                     numDead++;
                 } else {
-                    aliveString += aliveString.length > 0 ? "\n:hearts: " + key + killsStr : ":hearts: " + key + killsStr;
+                    aliveString += aliveString.length > 0 ? "\n:hearts: " + key + immuneStr + killsStr : ":hearts: " + key + killsStr;
                     numAlive++;
                 }
             });

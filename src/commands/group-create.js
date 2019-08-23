@@ -16,7 +16,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	/*let newParams = new Map(
 		params.join(" ").split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(p => p.trim().replace(/\"/g, "").split(":").map(m => m.trim())).map(([k, v]) => [k.toLowerCase(), v])
 	);
@@ -48,7 +48,7 @@ function invoke({ message, params, guildData, client }) {
 				allow: ['VIEW_CHANNEL']
 			}]
 		).then(channel => {
-			channel.setParent(guildData.groupCategory);
+			channel.setParent(serverData.groupCategory);
 			Group.create({guildId: message.guild.id, roleId: role.id, channelId: channel.id, name: groupName});
 			console.log(`Created new channel with name ${channel.name}`)
 		}).catch(console.error);

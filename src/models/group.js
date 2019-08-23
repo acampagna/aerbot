@@ -17,7 +17,8 @@ module.exports = function() {
 		type: String,
 		emoji: String,
 		list: {type: Boolean, default: true},
-		numMembers: {type: Number, default: 0}
+		numMembers: {type: Number, default: 0},
+		memberIds: { type: Array, of: String }
 	});
 
 	groupSchema.methods.incrementNumMembers = function () {
@@ -29,12 +30,31 @@ module.exports = function() {
 	};
 
 	groupSchema.statics.findGroupByName = function(name) {
+		console.log("Finding group by name");
 		return this.findOne({name: new RegExp(name, 'i')}).exec();
 	};
 
 	groupSchema.statics.findAllGroups = function() {
 		return this.find().exec();
 	};
+
+	groupSchema.statics.findAllUsersByGroupName = function(name) {
+		return this.find().exec();
+	}
+
+	groupSchema.methods.addMember = function (groupName, userId) {
+		return this.model('Group').findOneAndUpdate(
+			{name: new RegExp(groupName, 'i')},
+			{$addToSet: {memberIds: userId}},
+			{new: true}).exec();
+	}
+
+	groupSchema.methods.removeMember = function (groupName, userId) {
+		return this.model('Group').findOneAndUpdate(
+			{name: new RegExp(groupName, 'i')},
+			{$pull: {memberIds: userId}},
+			{new: true}).exec();
+	}
 
 	let GroupModel = mongoose.model('Group', groupSchema);
 

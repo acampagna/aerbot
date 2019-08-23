@@ -18,8 +18,8 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
-	if(params[0] && params[1]) {
+function invoke({ message, params, serverData, client }) {
+	if(params[0]) {
 		switch(params[0]) {
 			/*case 'steam':
 				
@@ -44,12 +44,23 @@ function invoke({ message, params, guildData, client }) {
 				break;*/
 			default:
 				return new Promise(function(resolve, reject) {
+					let retMsg = "";
 					User.findById(message.member.id).exec().then(user => {
 						let accounts = user.getAccounts();
-						accounts.set(params[0], params[1]);
+						if(params[1]) {
+							accounts.set(params[0], params[1]);
+							retMsg = "Added " + params[0] + " : " + params[1];
+						} else {
+							if(accounts.has(params[0])) {
+								accounts.delete(params[0]);
+								retMsg = "Deleted " + params[0];
+							} else {
+								retMsg = "Could not delete " + params[0] + ". Account doesn't exist.";
+							}
+						}
 						user.accounts = accounts;
 						user.save();
-						resolve ("Added " + params[0] + " : " + params[1]);
+						resolve (retMsg);
 					});
 				});
 				break;
@@ -62,7 +73,8 @@ function invoke({ message, params, guildData, client }) {
 			User.findById(message.member.id).exec().then(user => {
 				let accounts = user.getAccounts();
 				for (var [key, value] of accounts) {
-					embed.addField(key, value); 
+					if(key != "" && value != "")
+						embed.addField(key, value); 
 				}
 				resolve ({embed});
 			});

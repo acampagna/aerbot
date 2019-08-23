@@ -18,7 +18,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	var groupName = params.join(" ").toLowerCase().trim();
 
 	if(groupName.length === 0) {
@@ -46,6 +46,7 @@ function invoke({ message, params, guildData, client }) {
 				Group.findGroupByName(groupName).then(group => {
 					console.log(group);
 					group.decrementNumMembers();
+					group.removeMember(groupName,message.member.id)
 				}).catch(console.error);
 		
 				return Promise.resolve("Removed you from group " + groupName);
@@ -54,6 +55,7 @@ function invoke({ message, params, guildData, client }) {
 				Group.findGroupByName(groupName).then(group => {
 					console.log(group);
 					group.incrementNumMembers();
+					group.addMember(groupName,message.member.id)
 				}).catch(console.error);
 		
 				return Promise.resolve("Added you to group " + groupName);

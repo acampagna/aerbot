@@ -18,7 +18,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 
 	let guild = getGuild(client, message);
 	let memberIds = getUserIds(guild);
@@ -50,7 +50,7 @@ function invoke({ message, params, guildData, client }) {
 			});
 
 			resolve("The following users have been inactive for more than " + inactiveThresholdDays + " days:\n" + 
-				"**ROM Members**\n" + inactiveOfficers.map(iu=> "" + iu.displayName + "").join("\n") + "\n" +
+				//"**ROM Members**\n" + inactiveOfficers.map(iu=> "" + iu.displayName + "").join("\n") + "\n" +
 				"**Durango Members**\n" + inactiveMembers.map(iu=> iu.displayName).join("\n")
 			);
 			/*resolve("The following users have been inactive for more than " + inactiveThresholdDays + " days:\n" + 
@@ -81,7 +81,7 @@ function getUserIds(guild) {
 
 function getInactiveUsers(guild, activeUsers, inactiveThresholdDays) {
 	const now = new Date();
-	CoreUtil.dateLog("guildData.inactiveThresholdDays: " + inactiveThresholdDays);
+	CoreUtil.dateLog("serverData.inactiveThresholdDays: " + inactiveThresholdDays);
 	return guild.members.filter(m => {
 		var au = activeUsers.find(e => {
 			return e._id === m.id;

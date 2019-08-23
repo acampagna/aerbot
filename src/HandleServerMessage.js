@@ -11,6 +11,7 @@
 const CoreUtil = require("./utils/Util.js");
 const InternalConfig = require("./internal-config.json");
 const RequireAll = require("require-all");
+const Levenshtein = require('js-levenshtein');
 
 const cmdPrefix = InternalConfig.commandPrefix;
 
@@ -28,6 +29,9 @@ function handleServerMessage(client, message, commands) {
 
 function handleServerCommand(client, message, commands, serverData) {
 	const { botName, isMemberAdmin, params, command } = parseDetails(message, commands, serverData);
+
+	CoreUtil.dateLog("SERVER DATA:");
+	CoreUtil.dateLog(serverData);
 
 	//CoreUtil.dateLog(`Command: `,command);
 	if (!command) {
@@ -69,7 +73,7 @@ function parseDetails(message, commands, serverData) {
 
 	return {
 		botName: "@" + (message.guild.me.nickname || message.guild.me.user.username),
-		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.officerRoleID),
+		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.officerRoleId),
 		isMemberAdmin: message.member.permissions.has("ADMINISTRATOR"),
 		params: split.slice(cmdPos+1, split.length),
 		command: commands[commandName]

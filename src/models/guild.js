@@ -16,7 +16,7 @@ module.exports = function() {
 		game: String,
 		emoji: String,
 		server_id: String,
-		member_role_id: String,
+		member_role_id: String
 	});
 
 	guildSchema.statics.findAllGuilds = function() {

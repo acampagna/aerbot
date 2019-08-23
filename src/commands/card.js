@@ -17,7 +17,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-async function invoke({ message, params, guildData, client }) {
+async function invoke({ message, params, serverData, client }) {
 	try{
 		console.log(message.member.user.fetchProfile());
 		/*const canvas = new Canvas.createCanvas(600, 200);

@@ -18,7 +18,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	return new Promise(function(resolve, reject) {
 		gifClient.random('gifs', {"tag": params[0]})
          .then((response) => {

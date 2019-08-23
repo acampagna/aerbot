@@ -16,7 +16,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	if (message.mentions.members.size > 0) {
 		return new Promise(function(resolve, reject) {
 			let referrer = message.mentions.members.first();

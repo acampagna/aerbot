@@ -19,7 +19,7 @@ const gs = new GuildService();
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	CoreUtil.dateLog(params);
 
 	var nparams = parseParams(params);

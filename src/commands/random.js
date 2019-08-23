@@ -17,7 +17,7 @@ module.exports = new Command({
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function invoke({ message, params, guildData, client }) {
+function invoke({ message, params, serverData, client }) {
 	//CoreUtil.dateLog(params);
 
 	let numWinners = params[0];
@@ -58,4 +58,5 @@ function invoke({ message, params, guildData, client }) {
 	}
 
 	return Promise.resolve(winners);
+	//return Promise.resolve("**Cypress Sucks**");
 }
