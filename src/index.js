@@ -18,6 +18,7 @@ const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
 const GachaGameService = require("./services/GachaGameService");
 const InternalConfig = require("./internal-config.json");
+const Group = mongoose.model('Group');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
@@ -52,6 +53,70 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 				userData || newUser(message.member.id, message.member.displayName)
 			)
 		);
+});
+
+client.on("messageReactionAdd", (messageReaction, user) => {
+	CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
+	if (messageReaction && user && !user.bot)
+		UserModel.findById(user.id).exec()
+        	.then(userData => HandleActivity(
+				client,
+				user.id, 
+				false,
+				messageReaction,
+				userData || newUser(message.member.id, message.member.displayName)
+			)
+		);
+});
+
+const events = {
+	MESSAGE_REACTION_ADD: 'messageReactionAdd',
+	MESSAGE_REACTION_REMOVE: 'messageReactionRemove',
+};
+
+client.on('raw', async event => {
+    if (!events.hasOwnProperty(event.t)) return;
+
+    const { d: data } = event;
+    const user = client.users.get(data.user_id);
+    const channel = client.channels.get(data.channel_id);
+
+    const message = await channel.fetchMessage(data.message_id);
+    const member = message.guild.members.get(user.id);
+	
+	console.log(event);
+
+	if (message.author.id === client.user.id) {
+		if (member.id !== client.user.id) {
+			console.log(data.emoji.id);
+			Group.findGroupByEmoji(data.emoji.id).then(group => {
+				console.log(group);
+				if (event.t === "MESSAGE_REACTION_ADD") {
+					channel.send("Added @" + member.displayName + " to group " + group.name);
+				} else if (event.t === "MESSAGE_REACTION_REMOVE") {
+					channel.send("Removed @" + member.displayName + " from group " + group.name);
+				}
+				 				
+			}).catch(err => {
+				console.error(err);
+			});
+		}
+	}
+
+	/*if (
+        (message.author.id === client.user.id) && (message.content !== CONFIG.initialMessage || 
+        (message.embeds[0] && (embedFooterText !== CONFIG.embedFooter)))
+    ) {
+		if (member.id !== client.user.id) {
+			const guildRole = message.guild.roles.find(r => r.name === role);
+			if (event.t === "MESSAGE_REACTION_ADD") member.addRole(guildRole.id);
+			else if (event.t === "MESSAGE_REACTION_REMOVE") member.removeRole(guildRole.id);
+		}
+    }*/
+
+	//console.log(emojiKey);
+	//console.log(reaction);
+	//console.log(event);
 });
 
 client.on("ready", () => {

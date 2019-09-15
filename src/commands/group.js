@@ -30,7 +30,16 @@ function invoke({ message, params, serverData, client }) {
 			Group.findAllGroups().then(groups => {
 				groups.forEach(group => {
 					//embed.addField(group.name, group.numMembers + " members", true);
-					desc = desc + group.name + " - " + group.numMembers + " members\n";
+					if(group.emoji) {
+						var emoji = client.emojis.get(group.emoji);
+						if(emoji) {
+							desc = desc + emoji + " " + group.name + " - " + group.numMembers + " members\n";
+						} else {
+							desc = desc + group.name + " - " + group.numMembers + " members\n";
+						}
+					} else {
+						desc = desc + group.name + " - " + group.numMembers + " members\n";
+					}
 				});
 				embed.setDescription(desc);
 				embed.setFooter("Use the !group command to join a group");
@@ -46,7 +55,11 @@ function invoke({ message, params, serverData, client }) {
 				Group.findGroupByName(groupName).then(group => {
 					console.log(group);
 					group.decrementNumMembers();
-					group.removeMember(groupName,message.member.id)
+					group.removeMember(groupName,message.member.id);
+					if(group.platforms.length > 0) {
+						console.log("platforms > 0");
+						console.log(group.platforms);
+					}
 				}).catch(console.error);
 		
 				return Promise.resolve("Removed you from group " + groupName);
@@ -55,7 +68,7 @@ function invoke({ message, params, serverData, client }) {
 				Group.findGroupByName(groupName).then(group => {
 					console.log(group);
 					group.incrementNumMembers();
-					group.addMember(groupName,message.member.id)
+					group.addMember(groupName,message.member.id);
 				}).catch(console.error);
 		
 				return Promise.resolve("Added you to group " + groupName);

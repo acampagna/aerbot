@@ -48,6 +48,19 @@ function isMemberAdmin(message, serverData) {
 	return message.member.permissions.has("ADMINISTRATOR");
 }
 
+function createParams(str) {
+	return paramStr.match(/\\?.|^$/g).reduce((p, c) => {
+        if(c === '"'){
+            p.quote ^= 1;
+        }else if(!p.quote && c === ' '){
+            p.a.push('');
+        }else{
+            p.a[p.a.length-1] += c.replace(/\\(.)/,"$1");
+        }
+        return  p;
+    }, {a: ['']}).a
+}
+
 //replacements is an object with keys of numbers starting at 1
 //No idea what this is used for....
 function doFormatting(format, replacements) {

@@ -5,12 +5,14 @@ const UserModel = mongoose.model('User');
 
 const god = "Aerbot";
 const gameName = "Battle Royale";
-const msgSpeed = 4100;
+const msgSpeed = 4500;
 
 var message = undefined;
 var day = 0;
 var todaysEvent = 0;
 var todaysEventName = "";
+var kidnapper = undefined;
+var kidnappee = undefined;
 
 var messages = [];
 
@@ -35,7 +37,8 @@ var messages = [];
 -- Finding special items to assist you in the final showdown
 */
 
-/*PATCH NOTES
+/* **BATTLE ROYALE PATCH NOTES**
+- Removed suicides (but not killing yourself. They're two different things actually....lol)
 - Added more Durango-based combat messages
 - More messages utilize the player's weapon to make their weapon choice more important
 - Changes a lot of ratios for different actions and events happening. Most importantly, less suicides.
@@ -45,8 +48,10 @@ var messages = [];
 -- Normal Day: Nothing special happens on this day
 -- Mass Protection: A small number of players gain instant resurrection for the day
 -- Vengeance: Players deal 20 damage to their killer when they're killed
--- Vampirism: Players game 20 health when they kill someone 
+-- Vampirism: Players gain 20 health when they kill someone 
 -- Bloodbath: Only player killing happens on this day
+-- Bloodlust: A small number of players 
+-- Kidnapping: A player kidnaps another player. Both players are safe from harm today but stay tuned to the end of the day to see what happens!
 */
 
 //Need to move all this to a configuration file
@@ -99,15 +104,14 @@ var mistakes = [
 ];
 
 var nearKills = [
-    "{$1} attacks {$2} with their {$w} but {$2} narrowly escapes with {$hp} hp",
+    "{$1} attacks {$2} with their {$w} but {$2} narrowly escapes with {$hp} health",
     "{$1} takes aim at {$2} with their {$w} but an angelic Festival Elephantulus saves their life with {$hp} health remaining",
-    "{$2} narrowly escapes an encounter with a wild {$a} with {$hp} hp remaining"
+    "{$2} narrowly escapes an encounter with a wild {$a} with {$hp} health remaining"
 ];
 
 var threeWayKill = [
     "{$1} and {$3} work together to cut off {$2}'s head",
-    "{$1} and {$3} toss {$2} into a pack of wild {$a}",
-    "{$1}, {$2}, and {$3} go out hunting for {$a}. {$2} was never heard from again."
+    "{$1} and {$3} toss {$2} into a pack of wild {$a}"
 ];
 
 var weapons = [
@@ -243,6 +247,8 @@ class GachaBattleRoyale {
             zombie: false,
             zeal: false,
             disease: false,
+            kidnapping: false,
+            lusted: false,
             hp: 100,
             attack: 25,
             strength: 15,
@@ -271,11 +277,17 @@ class GachaBattleRoyale {
         return (entry.entry.immune || entry.entry.dailyImmune);
     }
 
+    isValidTarget(target) {
+        return (!target.entry.kidnapping && !target.entry.dead);
+    }
+
     randomAlivePlayer(entries, dupe) {
         var found = false;
+        //console.log("Getting Random Alive Players");
         while(!found) {
             var entry = this.randomEntry(entries);
-            if(!entry.entry.dead) {
+            //console.log(entry.member.displayName + " Valid Target? " + this.isValidTarget(entry) + " Dead? " + entry.entry.dead + " Kidnapped? " + entry.entry.kidnapping);
+            if(this.isValidTarget(entry)) {
                 if(dupe) {
                     if(entry.member.displayName != dupe.member.displayName) {
                         found = true;
@@ -285,6 +297,17 @@ class GachaBattleRoyale {
                     found = true;
                     return entry;
                 }
+            }
+        }
+    }
+
+    randomLustedPlayer(entries) {
+        var found = false;
+        while(!found) {
+            var entry = this.randomEntry(entries);
+            if(this.isValidTarget(entry) && entry.entry.lusted) {
+                found = true;
+                return entry;
             }
         }
     }
@@ -314,7 +337,18 @@ class GachaBattleRoyale {
             }
         });
 
-        console.log("Num Alive: " + alive);
+        return alive;
+    }
+
+    numTargets(entries) {
+        const _this = this;
+
+        var alive = 0;
+        entries.forEach(function(value, key) {
+            if(_this.isValidTarget(value)) {
+                alive++;
+            }
+        });
 
         return alive;
     }
@@ -348,10 +382,11 @@ class GachaBattleRoyale {
     }
 
     getKillLeader(entries) {
+        const _this = this;
         var killLeader = undefined;
         var killLeaderKills = 0;
         entries.forEach(function(value, key) {
-            if(!value.entry.dead && value.entry.numKills > killLeaderKills) {
+            if(_this.isValidTarget(value) && value.entry.numKills > killLeaderKills) {
                 killLeader = value;
                 killLeaderKills = value.entry.numKills;
             }
@@ -395,16 +430,17 @@ class GachaBattleRoyale {
         day++;
         this.sendNewDayMessage(entries);
 
-        //Do Day 1
         this.doDayOne(entries);
         if(this.numAlive(entries) == 1) {
             this.processMessages(entries);
         }
+
+        /*day++;
+        this.sendNewDayMessage(entries);*/
     
-        //Other Days
         while(this.numAlive(entries) > 2) {
             day++;
-            this.sendNewDayMessage(entries)
+            this.sendNewDayMessage(entries);
             this.doDayN(entries);
         }
 
@@ -444,44 +480,51 @@ class GachaBattleRoyale {
     }
 
     doDayOne(entries) {
+        console.log("---[DAY 1]---");
         //this.doNormalDay();
         this.doMassProtection(entries);
 
         if(this.numAlive(entries) > 10) {
             this.doAnnihilation(entries);
+
             this.doThreeWayKill(entries);
+
             this.doNearKill(entries);
+
         }
-        this.doMistake(entries);
+        //this.doMistake(entries);
+
         this.doPlayerKill(entries);
+
         this.doResurrect(this.randomDeadPlayer(entries));
 
         this.resolveDailyEvent(entries);
     }
 
     doDayN(entries) {
-        var actions = Math.floor(Math.random() * 3) + (Math.floor(day/3)*2);
-        var alive = this.numAlive(entries);
-        console.log("Day " + day + " | Alive " + alive + " | Actions " + actions);
+        var actions = Math.floor(Math.random() * (3+day/2)) + 1;
+
+        console.log("---[DAY " + day + "]---");
 
         this.doDailyEvent(entries);
+        var alive = this.numAlive(entries);
+
+        console.log("Alive " + alive + " | Targets " + this.numTargets(entries) + " | Actions " + actions);
 
         while(actions > 0 && alive > 2) {
             if(todaysEventName === "Bloodbath") {
                 var action = 99;
             } else {
-                var action = Math.floor(Math.random() * 13) + 1;
+                var action = Math.floor(Math.random() * 14) + 1;
             }
-            
-            console.log("Action pick: " + action);
+
+            console.log("Action: " + action);
 
             switch (action) {
                 case 1:
                     this.doAnnihilation(entries);
                     break;
                 case 2:
-                    this.doMistake(entries);
-                    break; 
                 case 3:
                     this.doNearKill(entries);
                     break;
@@ -499,6 +542,7 @@ class GachaBattleRoyale {
                 case 11:
                 case 12:
                 case 13:
+                case 14:
                     this.doPlayerKill(entries);
                     break;
                 case 99:
@@ -517,20 +561,23 @@ class GachaBattleRoyale {
 
     doEvent(entries) {
         var action = Math.floor(Math.random() * 3) + 1;
-        var aliveTarget = this.randomAlivePlayer(entries);
-        var deadTarget = this.randomDeadPlayer(entries);
-
         console.log("Event pick: " + action);
+        var deadTarget = this.randomDeadPlayer(entries);
+        console.log("Dead Target: " + deadTarget.member.displayName);
 
         switch (action) {
             case 1:
                 this.doResurrect(deadTarget);
                 break;
             case 2:
-                this.doBlueShell(entries);
+                if(this.numTargets(entries) > 0) {
+                    this.doBlueShell(entries);
+                } else {
+                    this.doResurrect(deadTarget);
+                }
                 break;
             case 3:
-                this.doFindPotion(aliveTarget);
+                this.doFindPotion(entries);
                 break;
             default: 
                 this.doResurrect(deadTarget);
@@ -538,8 +585,11 @@ class GachaBattleRoyale {
     }
 
     doDailyEvent(entries) {
-        var action = Math.floor(Math.random() * 5) + 1;
-        var target = this.randomAlivePlayer(entries);
+        var action = Math.floor(Math.random() * 6) + 1;
+
+        if(action === 6 && this.numAlive < 5) {
+            action = 3;
+        }
 
         todaysEvent = action;
 
@@ -560,6 +610,12 @@ class GachaBattleRoyale {
                 break;
             case 5:
                 this.doVengeance();
+                break;
+            case 6:
+                this.doKidnapping(entries);
+                break;
+            case 7:
+                this.doBloodlust();
                 break;
             default: 
                 this.doMassProtection(entries);
@@ -585,12 +641,49 @@ class GachaBattleRoyale {
             case 5:
                 //this.resolveVengeance();
                 break;
+            case 6:
+                this.resolveKidnapping(entries);
+                break;
+            case 7:
+                this.resolveBloodlust();
+                break;
             default: 
                 this.resolveMassProtection(entries);
         }
 
         todaysEvent = 0;
         todaysEventName = "";
+    }
+
+    doBloodlust() {
+        todaysEventName = "Bloodlust";
+
+        var numAffected = 0;
+        var retStr = "";
+
+        entries.forEach(function(value, key) {
+            var affected = Math.random() >= 0.7;
+            if(affected && !value.entry.dead) {
+                value.entry.dailyImmune = true;
+                retStr += ", " + key;
+                numAffected++;
+            }
+        });
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("Some combatants become enraged and bloodthirsty granting them incredible killing power. Their loss of control makes it easy to hurt themselves though!\n\n");
+        embed.setFooter("Bloodlusted players will be doing all the killing today but they will take damage everytime they kill.");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+        
+        //randomLustedPlayer
+    }
+
+    resolveBloodlust() {
+        entries.forEach(function(value, key) {
+            value.entry.lusted = false;
+        });
     }
 
     doVengeance() {
@@ -663,18 +756,117 @@ class GachaBattleRoyale {
         });
     }
 
+    doKidnapping(entries) {
+        todaysEventName = "Kidnapping";
+        kidnapper = this.randomAlivePlayer(entries);
+        kidnappee = this.randomAlivePlayer(entries, kidnapper);
+
+        console.log(kidnapper.member.displayName + " kidnaps " + kidnappee.member.displayName);
+
+        kidnapper.entry.kidnapping = true;
+        kidnappee.entry.kidnapping = true;
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("**" + kidnapper.member.displayName + "** has kidnapped **" + kidnappee.member.displayName + "**! Both are hidden and immune from attack today.");
+        embed.setFooter("We'll find out the outcome of the kidnapping at the end of the day");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    resolveKidnapping(entries) {
+        var action = Math.floor(Math.random() * 4) + 1;
+
+        var alive = this.numAlive(entries);
+        console.log("Kiddnapping Resolution pick: " + action + " | Number Alive: " + alive);
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setColor(msgColors.dailyEvent);
+
+        var kidnapperName = kidnapper.member.displayName;
+        var kidnappeeName = kidnappee.member.displayName;
+
+        var randomPhraseOpts = {
+            player1: kidnapperName,
+            player2: kidnappeeName,
+            weapon: kidnapper.entry.weapon,
+            bodyPart: this.randomPhrase(bodyParts),
+            animal: this.randomPhrase(animals)
+        };
+
+        if(alive <= 3) {
+            action = 1;
+        }
+
+        var damage = Math.floor(Math.random() * 10) + 11;
+
+        switch (action) {
+            case 1:
+                embed.setDescription(
+                    this.formatMessage(
+                        "{$2} gets free after {$1} takes a bite out of {$2}'s {$b}", 
+                        randomPhraseOpts
+                    )
+                );
+                embed.setFooter(kidnapperName + " gains " + damage + " hp and " + kidnappeeName + " loses " + damage + " hp.");
+                kidnappee.entry.hp -= damage;
+                kidnapper.entry.hp += damage;
+                break;
+            case 2:
+                embed.setDescription(
+                    this.formatMessage(
+                        "{$2} escapes from {$1} unscathed", 
+                        randomPhraseOpts
+                    )
+                );
+                break;
+            case 3:
+                embed.setDescription(
+                    this.formatMessage(
+                        "{$2} injures {$1}'s {$b} while escaping captivity", 
+                        randomPhraseOpts
+                    )
+                );
+                embed.setFooter(kidnapperName + " loses " + damage + " hp.");
+                kidnapper.entry.hp -= damage;
+                break;
+            case 4:
+                embed.setDescription(
+                    this.formatMessage(
+                        "{$2} tries to escape from {$1} but " + this.randomPhrase(oneOnOneKills), 
+                        randomPhraseOpts
+                    )
+                );
+                this.killPlayer(kidnappee, kidnapper);
+                this.handleImmunity(kidnappee);
+                break;
+            default: 
+                break;
+        }
+
+        kidnapper.entry.kidnapping = false;
+        kidnappee.entry.kidnapping = false;
+
+        kidnappee = undefined;
+        kidnapper = undefined;
+
+        messages.push({ embed: embed });
+    }
+
     doResurrect(target, title) {
         if(!title || title === undefined) {
             title = "Event";
         }
 
         //var target = this.randomDeadPlayer(entries);
+
         target.entry.dead = false;
         target.entry.strength -= 2;
         target.entry.hp -= 15;
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__" + title + "- Resurrection__");
+        embed.setTitle("__" + title + " - Resurrection__");
         embed.setDescription("The favor of the gods shine upon **" + target.member.displayName + "** as they are **resurrected** and welcomed back into the fight!");
         embed.setFooter("*Resurrected players are brought back to life with reduced health and damage*");
         //embed.setThumbnail("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZU_7EfPY7-cmtUAZaTK1N0qWC6ZGJpjKP-Hk_nHt5rASBeNbk");
@@ -688,14 +880,16 @@ class GachaBattleRoyale {
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Event - Blue Shell__");
-        embed.setDescription("A flying blue shell comes zipping across the battlefield right towards " + target.member.displayName + ", a kill leader");
+        embed.setDescription("A flying blue shell comes zipping across the battlefield right towards **" + target.member.displayName + "**, a kill leader");
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
 
         this.handleImmunity(target);
     }
 
-    doFindPotion(target) {
+    doFindPotion(entries) {
+        var target = this.randomAlivePlayer(entries);
+
         var action = Math.floor(Math.random() * 6) + 1;
 
         var potionName = "";
@@ -873,7 +1067,7 @@ class GachaBattleRoyale {
     }*/
 
     doMistake(entries) {
-        if(this.numAlive(entries) > 2) {
+        if(this.numTargets(entries) > 0) {
             var target = this.randomAlivePlayer(entries);
             this.killPlayer(target, target);
 
@@ -909,7 +1103,7 @@ class GachaBattleRoyale {
         
         entries.forEach(function(value, key) {
             var dies = Math.random() >= 0.8;
-            if(dies && !value.entry.dead && alive > 2 && !_this.isPlayerImmune(value)) {
+            if(dies && _this.isValidTarget(value) && alive > 2 && !_this.isPlayerImmune(value)) {
                 _this.killPlayer(value, god);
                 annihilatedStr += ", " + key;
                 killed++;
@@ -917,22 +1111,23 @@ class GachaBattleRoyale {
             }
         });
 
-        const embed = new Discord.RichEmbed();
-		embed.setTitle("__**Annihilation!**__");
-		embed.setDescription(
-            this.formatMessage(
-                this.randomPhrase(annihilations), 
-                {number: killed, weapon: this.randomPhrase(weapons), animal: this.randomPhrase(animals)}
-            ) + "\n\n" + annihilatedStr.slice(2)
-        );
-        embed.setColor(msgColors.annihilation);
+        if(killed > 0) {
+            const embed = new Discord.RichEmbed();
+            embed.setTitle("__**Annihilation!**__");
+            embed.setDescription(
+                this.formatMessage(
+                    this.randomPhrase(annihilations), 
+                    {number: killed, weapon: this.randomPhrase(weapons), animal: this.randomPhrase(animals)}
+                ) + "\n\n" + annihilatedStr.slice(2)
+            );
+            embed.setColor(msgColors.annihilation);
 
-        //message.channel.send("", { embed: embed })
-        messages.push({ embed: embed });
+            messages.push({ embed: embed });
+        }
     }
 
     doPlayerKill(entries) {
-        if(this.numAlive(entries) > 2) {
+        if(this.numTargets(entries) > 1) {
             var target = this.randomAlivePlayer(entries);
             var killer = this.randomAlivePlayer(entries);
             this.killPlayer(target, killer);
@@ -970,7 +1165,7 @@ class GachaBattleRoyale {
     
 
     doThreeWayKill(entries) {
-        if(this.numAlive(entries) > 3) {
+        if(this.numTargets(entries) > 2) {
             var target = this.randomAlivePlayer(entries);
             var killer = this.randomAlivePlayer(entries);
             var assistant = this.randomAlivePlayer(entries, killer);
@@ -1009,34 +1204,45 @@ class GachaBattleRoyale {
         }
     }
 
+    randomPlayerDamageAmount(factor) {
+        if(!factor || factor === undefined) {
+            factor = 1;
+        }
+
+        return (((Math.floor(Math.random() * 10) + 10) + 1) * factor);
+    }
+
     doNearKill(entries) {
-        var target = this.randomAlivePlayer(entries);
-        var killer = this.randomAlivePlayer(entries, target);
-        var damage = Math.floor(Math.random() * 10) + 10;
-        //this.killPlayer(target, killer);
-
-        target.entry.hp -= damage;
-        //target.entry.strength -= 3;
-
-        const embed = new Discord.RichEmbed();
-        //embed.setTitle("__Battle Royale | **Annihilation!**__");
-        embed.setDescription(
-            this.formatMessage(
-                this.randomPhrase(nearKills), 
-                {
-                    player1: killer.member.displayName,
-                    player2: target.member.displayName,
-                    weapon: killer.entry.weapon,
-                    hp: target.entry.hp,
-                    bodyPart: this.randomPhrase(bodyParts),
-                    animal: this.randomPhrase(animals)
-                }
-            )
-        );
-
-        embed.setColor(msgColors.mistake);
-
-        messages.push({ embed: embed });
+        if(this.numTargets > 1) {
+            var target = this.randomAlivePlayer(entries);
+            var killer = this.randomAlivePlayer(entries, target);
+            var damage = Math.floor(Math.random() * 10) + 11;
+            //this.killPlayer(target, killer);
+    
+            target.entry.hp -= damage;
+            //target.entry.strength -= 3;
+    
+            const embed = new Discord.RichEmbed();
+            //embed.setTitle("__Battle Royale | **Annihilation!**__");
+            embed.setDescription(
+                this.formatMessage(
+                    this.randomPhrase(nearKills), 
+                    {
+                        player1: killer.member.displayName,
+                        player2: target.member.displayName,
+                        weapon: killer.entry.weapon,
+                        hp: target.entry.hp,
+                        bodyPart: this.randomPhrase(bodyParts),
+                        animal: this.randomPhrase(animals)
+                    }
+                )
+            );
+    
+            embed.setColor(msgColors.mistake);
+    
+            messages.push({ embed: embed });
+        }
+        
         //message.channel.send("", { embed: embed })
     }
 

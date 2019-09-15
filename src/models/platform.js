@@ -35,11 +35,6 @@ module.exports = function() {
 		return this.findOne({name: new RegExp(name, 'i')}).exec();
 	};
 
-	groupSchema.statics.findGroupByEmoji = function(emoji) {
-		console.log("Finding group by emoji");
-		return this.findOne({emoji: new RegExp(emoji, 'i')}).exec();
-	};
-
 	groupSchema.statics.findAllGroups = function() {
 		return this.find().exec();
 	};
@@ -59,20 +54,6 @@ module.exports = function() {
 		return this.model('Group').findOneAndUpdate(
 			{name: new RegExp(groupName, 'i')},
 			{$pull: {memberIds: userId}},
-			{new: true}).exec();
-	}
-
-	groupSchema.methods.addPlatform = function (groupName, groupId) {
-		return this.model('Group').findOneAndUpdate(
-			{name: new RegExp(groupName, 'i')},
-			{$addToSet: {platforms: groupId}},
-			{new: true}).exec();
-	}
-
-	groupSchema.methods.removePlatform = function (groupName, groupId) {
-		return this.model('Group').findOneAndUpdate(
-			{name: new RegExp(groupName, 'i')},
-			{$pull: {platforms: groupId}},
 			{new: true}).exec();
 	}
 
