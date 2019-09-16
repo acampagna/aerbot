@@ -16,6 +16,7 @@ module.exports = function() {
 		name: String,
 		type: String,
 		emoji: String,
+		genre: String,
 		platforms: { type: Array, of: String },
 		list: {type: Boolean, default: true},
 		numMembers: {type: Number, default: 0},
@@ -28,6 +29,16 @@ module.exports = function() {
 
 	groupSchema.methods.decrementNumMembers = function () {
 		this.model('Group').updateOne({_id: this.id},{numMembers: this.numMembers-1}).exec();
+	};
+
+	/*groupSchema.statics.findGroupById = function(id) {
+		id = id.toString().replace(/\D/g,'');
+		return this.findById(id).exec();
+	};*/
+
+	groupSchema.statics.findGroupById = function(id) {
+		console.log("Finding group by ID");
+		return this.findOne({_id: id}).exec();
 	};
 
 	groupSchema.statics.findGroupByName = function(name) {
