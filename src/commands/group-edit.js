@@ -76,8 +76,9 @@ function invoke({ message, params, serverData, client }) {
 						case 'add-platform':
 							if (value.length > 0) {
 								Group.findGroupByName(groupName).then(group => {
-									console.log(group);
-									group.addPlatform(groupName, value);
+									Group.findGroupByName(value).then(platform => {
+										group.addPlatform(groupName, platform.id);
+									}).catch(console.error);
 								}).catch(console.error);
 							} else {
 								resolve("You must add a valid group id");
@@ -85,7 +86,9 @@ function invoke({ message, params, serverData, client }) {
 							break;
 						case 'remove-platform':
 							if (value.length > 0) {
-								Group.removePlatform(groupName, value);
+								Group.findGroupByName(value).then(platform => {
+									Group.removePlatform(groupName, platform.id);
+								}).catch(console.error);
 							} else {
 								resolve("You must add a valid group id");
 							}

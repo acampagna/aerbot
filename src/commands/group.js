@@ -23,6 +23,7 @@ function invoke({ message, params, serverData, client }) {
 
 	if(groupName.length === 0) {
 		return new Promise(function(resolve, reject) {
+			var emojis = new Array();
 			const embed = new Discord.RichEmbed();
 			var desc = "";
 			embed.setColor("BLUE");
@@ -31,6 +32,7 @@ function invoke({ message, params, serverData, client }) {
 				groups.forEach(group => {
 					//embed.addField(group.name, group.numMembers + " members", true);
 					if(group.emoji) {
+						emojis.push(group.emoji);
 						var emoji = client.emojis.get(group.emoji);
 						if(emoji) {
 							desc = desc + emoji + " " + group.name + " - " + group.numMembers + " members\n";
@@ -42,15 +44,15 @@ function invoke({ message, params, serverData, client }) {
 					}
 				});
 				embed.setDescription(desc);
-				embed.setFooter("Use the !group command to join a group");
-				resolve ({embed});
+				embed.setFooter("Click the corresponding reactions or use the !group command to join a group");
+				resolve ({message: embed, reactions: emojis });
 			});
 		});
 	} else {
-		var role = message.guild.roles.find(role => role.name.toLowerCase().trim() === groupName);
+		var role = message.guild.roles.find(role => role.name.toLowerCase().trim() === groupName.toLowerCase().trim());
 
 		if(role) {
-			if(message.member.roles.find(role => role.name.toLowerCase().trim() === groupName)) {
+			if(message.member.roles.find(role => role.name.toLowerCase().trim() === groupName.toLowerCase().trim())) {
 				message.member.removeRole(role);
 				Group.findGroupByName(groupName).then(group => {
 					console.log(group);

@@ -52,7 +52,17 @@ function handleServerCommand(client, message, commands, serverData) {
 				} else if(response.here && response.message) {
 					message.channel.send("@here", { embed: response.message });
 				}
-			} else {
+			} else if (typeof response === 'object' && response.reactions) {
+				message.reply(response.message).then(function (message) {
+					if(response.reactions) {
+						response.reactions.forEach(data => {
+							message.react(data);
+						});
+					}
+				}).catch(function() {
+					//Something
+				});
+		    } else {
 				if(response) {
 					message.reply(response);
 				}

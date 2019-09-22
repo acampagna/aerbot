@@ -40,9 +40,36 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing role");
 			}
 			break;
+		case 'set_moderator_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updateModeratorRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
+		case 'set_admin_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updateAdminRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
+		case 'set_level_role':
+			if (message.mentions.roles.size > 0 && !isNaN(params[1])) {
+				if(!serverData.levelRoles) {
+					serverData.levelRoles = {};
+				}
+				serverData.levelRoles.set(params[1], message.mentions.roles.first().id);
+				serverData.save();
+			} else {
+				return Promise.resolve("You must select a minimum level and @mention an existing role");
+			}
+			break;
 		default:
 			return Promise.resolve(params[0] + " is an invalid configuration");
 	}
+	
+	//updateSpotlightChannel
 
 	return Promise.resolve(params[0] + " set to " + params[1]);
 }

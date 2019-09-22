@@ -24,7 +24,7 @@ function handleActivity(client, id, message, reaction, userData) {
 		exp = MemberUtil.calculateNewExp("activity", exp);
 
 		if(message) {
-			newUserData.last_message = date;
+			newUserData.lastMessage = date;
 			userData.messages++;
 			exp = MemberUtil.calculateNewExp("message", exp);
 
@@ -55,7 +55,11 @@ function handleActivity(client, id, message, reaction, userData) {
 }
 
 function calculateLevel(exp) {
-	//CoreUtil.dateLog(`New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	/*CoreUtil.dateLog(`New Level: ${Math.round(0.1 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`New Level: ${Math.round(0.2 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`New Level: ${Math.round(0.5 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);*/
 	return Math.max(1,Math.round(0.25 * Math.sqrt(exp)));
 }
 

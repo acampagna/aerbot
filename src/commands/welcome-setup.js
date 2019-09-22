@@ -18,7 +18,7 @@ module.exports = new Command({
 function invoke({ message, params, serverData, client }) {
 	//Deletes existing channel if an id exists in database
 	if(serverData.welcomeChannelId) {
-		message.guild.channels.get(serverData.welcomeChannelId).delete();
+		//message.guild.channels.get(serverData.welcomeChannelId).delete();
 	}
 
 	let role = message.guild.roles.get(serverData.welcomeRole);
@@ -43,42 +43,42 @@ function invoke({ message, params, serverData, client }) {
 		const embedOne = new Discord.RichEmbed();
 		embedOne.setTitle("Welcome to Dauntless!")
 		embedOne.setColor("GOLD");
-		embedOne.setDescription("Welcome to Dauntless and the Dauntless discord! Discord is a tool that will allow us to organize and communicate more effectively. Because of this it's very important that everyone checks discord regularly for announcements and events.  Our discord is very basic right now but it will grow over time. \n\nDauntless exists so that all of it's members can have fun and enjoy ROM together as a guild. We are a semi-casual guild which means we want to experience all of the content but we aren't hardcore and don't expect to do it all right away. We will learn together, push each other, and progress at a fun but meaningful pace. There is lots to do and enjoy in ROM and we will strive to enjoy it all together.");
+		embedOne.setDescription("Welcome to Dauntless and the Dauntless Gaming Community discord! Dauntless is a multi-game & multi-platform gaming community. Our goal is to create a large, functional, and fun gaming community for all gamers no matter your platform, culture, gender, region, etc.\n\nWe are just getting started and hope to start growing more rapidly. Please keep up with discord for the latest games, announcements, events, etc.\n\nThe most important step is to add yourself to some game and platform groups. See below for more details on groups.");
 		embedOne.setThumbnail("https://i.imgur.com/6bv1ti2.png");
 		channel.send(embedOne);
 
 		const embedTwo = new Discord.RichEmbed();
 		embedTwo.setTitle("Get Started with Dauntless!");
-		embedTwo.setDescription("There are somethings you need to do as a new member that will help you get catch you up with things going on in Dauntless. Please do the following three steps as soon as you're able to.");
+		embedTwo.setDescription("There are somethings you sould to do as a new member that will help you get catch you up with things going on in Dauntless. Please do the following three steps as soon as you're able to.");
 		embedTwo.setColor("RED");
-		embedTwo.addField("ONE", "Catch up with the\nlatest \#announcements.", true);
+		embedTwo.addField("ONE", "Add yourself to\nsome groups.", true);
 		embedTwo.addField("TWO", "Read all the\ncurrently scheduled \#events.", true);
 		embedTwo.addField("THREE", "Introduce yourself\nin the \#introductions\nchannel.", true);
 		embedOne.setFooter("This is a welcome channel. You will be removed in 14 days!");
 		channel.send(embedTwo);
 
 		//Super proud of this part. "embedThree1"...lol
-		/*const embedThree1 = new Discord.RichEmbed();
-		embedThree1.setDescription("**:tickets: Welcome to Dauntless Raffles! :tickets:**\nEvery Sunday for the next 2 weeks there will be 2 raffles for a $15 iTunes or Google Play gift card. Every member on discord that has given an #introductions will be entered into the first raffle automatically each week. There will be a second raffle each week for the top 50% of donation contributors. Members within the top 50% of donation contributors that have given an #introductions will automatically be entered into this second raffle.")
+		const embedThree1 = new Discord.RichEmbed();
+		embedThree1.setDescription("**:tickets: Recruit your Friends :tickets:**\nDauntless will be better and more vibrant if we all invite our friends to join in on our gaming fun. Please consider inviting your friends to this Discord. http://www.discord.gg/JtWe5ND")
 		embedThree1.setColor("RED");
 		embedThree1.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
-		channel.send(embedThree1);*/
+		channel.send(embedThree1);
 
 		//Super proud of this part. "embedThree2"...lol
-		const embedThree2 = new Discord.RichEmbed();
+		/*const embedThree2 = new Discord.RichEmbed();
 		embedThree2.setDescription("**:cop: Looking for @Officer :cop:**\nI am looking for 1-2 officers to help run the guild. This comes with the burden of being partially responsible for the success of Dauntless and the happiness of it's members. As an officer you would be expected to help organize events, promote interaction between guild members, and help lead the guild. If you're interested in being an officer then please private message me on discord.")
 		embedThree2.setColor("RED");
 		embedThree2.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
-		channel.send(embedThree2);
+		channel.send(embedThree2);*/
 
 		//Super proud of this part. "embedThree3"...lol
-		const embedThree3 = new Discord.RichEmbed();
+		/*const embedThree3 = new Discord.RichEmbed();
 		embedThree3.setDescription("**:eye: Keep an Eye on Discord :eye:**\nNew #announcements , #events , #guides , and more are posted on Discord everyday. It's important that you check back daily.");
 		embedThree3.setColor("RED");
 		embedThree3.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
-		channel.send(embedThree3);
+		channel.send(embedThree3);*/
 
-		const embedFour = new Discord.RichEmbed();
+		/*const embedFour = new Discord.RichEmbed();
 		embedFour.setTitle(":scales: Guild Rules :scales:")
 		embedFour.setColor("GOLD");
 		embedFour.addField("Rule 1", "All members are expected to Contribute/Donate every day they play ROM. This is necessary for us to grow as a guild and enjoy all the game has to offer us. Please refer to the guides above about donating.");
@@ -87,7 +87,7 @@ function invoke({ message, params, serverData, client }) {
 		embedFour.addField("Rule 4", "Please to be respectful and tolerant towards one another. That being said, I'm not the word police. Ideally everyone gets along and can poke fun at each other while keeping it civil :)");
 		embedFour.addField("Rule 5", "Don't make Dauntless or it's members (including yourself) look bad in public.");
 		embedFour.setFooter("Note: I'm not a huge fan of too many rules so this list is unlikely to grow");
-		channel.send(embedFour);
+		channel.send(embedFour);*/
 
 		//Guides disabled because it ends up sending at the top of the channel. Probably need to use promises to enforce the order of messages.
 		/*let guides = "";
@@ -107,7 +107,6 @@ function invoke({ message, params, serverData, client }) {
 		embedFour.setColor("RED");
 		embedFour.setURL("http://www.dauntlessgc.com");
 		channel.send(embedFour);
-
 		//Keep for template ideas
 		const embedFive = new Discord.RichEmbed();
 		embedFive.setColor("AQUA");

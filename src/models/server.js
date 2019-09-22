@@ -15,7 +15,14 @@ module.exports = function() {
 		memberRoleId: String,
 		groupCategory: String,
 		welcomeRole: String,
-		welcomeChannelId: String
+		welcomeChannelId: String,
+		spotlightChannel: String,
+		adminRoleId: String,
+		moderatorRoleId: String,
+		levelRoles: {
+			type: Map,
+			of: String
+		}
 	});
 
 	serverSchema.methods.updateMemberRoleId = function (roleId) {
@@ -24,6 +31,18 @@ module.exports = function() {
 
 	serverSchema.methods.updateOfficerRoleId = function (roleId) {
 		this.model('Server').updateOne({_id: this.id},{OfficerRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updateAdminRoleId = function (roleId) {
+		this.model('Server').updateOne({_id: this.id},{adminRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updateModeratorRoleId = function (roleId) {
+		this.model('Server').updateOne({_id: this.id},{moderatorRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updateSpotlightChannel = function (id) {
+		this.model('Server').updateOne({_id: this.id},{spotlightChannel: id}).exec();
 	};
 
 	serverSchema.methods.updateGroupCategory = function (categoryId) {

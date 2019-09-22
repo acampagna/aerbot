@@ -4,12 +4,16 @@
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-
+const Discord = require("discord.js");
 const Console = require("console");
 const SimpleFileWriter = require("simple-file-writer");
 
 const logWriter = new SimpleFileWriter("./console.log");
 const debugLogWriter = new SimpleFileWriter("./debug.log");
+
+function aerLog(client, message) {
+	client.channels.get("625025213171499011").send(message);
+}
 
 function log(...args) {
 	doDateLog(Console.log, logWriter, args, "INFO");
@@ -100,5 +104,6 @@ module.exports = {
 	dateDebugError,
 	isMemberAdmin,
 	doFormatting,
-	isNumber
+	isNumber,
+	aerLog
 };
