@@ -31,7 +31,8 @@ module.exports = function() {
 		referrer: String,
 		gachaWins: {type: Number, default: 0},
 		brWins: {type: Number, default: 0},
-		characters: { type: Array, of: String }
+		characters: { type: Array, of: String },
+		levelRole: String
 	});
 
 	userSchema.methods.getAccounts = function () {

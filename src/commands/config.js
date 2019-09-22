@@ -26,6 +26,9 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must specify a category ID.");
 			}
 			break;
+		case 'set_bot_channel':
+			//updateBotChannelId
+			break;
 		case 'set_mod_role':
 			if (message.mentions.roles.size > 0) {
 				serverData.updateOfficerRoleId(message.mentions.roles.first().id)

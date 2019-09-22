@@ -22,7 +22,12 @@ function invoke({ message, params, guildData, client }) {
 			} else {
 				return new Promise(function(resolve, reject) {
 					const now = new Date();
-					var memberId = message.mentions.users.first().id;
+					if(message.mentions.users.first()) {
+						var memberId = message.mentions.users.first().id;
+					} else {
+						var memberId = params[1];
+					}
+					
 					User.findById(memberId).exec().then(user => {
 						CoreUtil.dateLog("Member Found: " + user.username);
 						const embed = new Discord.RichEmbed().setTitle(`__${user.username} Stats__`);

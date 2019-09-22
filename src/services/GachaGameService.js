@@ -52,8 +52,8 @@ class GachaGameService {
         let entry = game.generateEntry(message, params);
         entries.set(message.member.displayName, {member: message.member, entry: entry});
         if(message.member.displayName === "Aerfalle") {
-            entries.set("Bot1", {member: {displayName: "Bot1"}, entry: game.generateEntry(message)});
-            entries.set("Bot2", {member: {displayName: "Bot2"}, entry: game.generateEntry(message)});
+            entries.set("Bot1", {member: {displayName: "LaytinBot"}, entry: game.generateEntry(message)});
+            entries.set("Bot2", {member: {displayName: "TBaronBot"}, entry: game.generateEntry(message)});
             entries.set("Bot3", {member: {displayName: "Bot3"}, entry: game.generateEntry(message)});
             entries.set("Bot4", {member: {displayName: "Bot4"}, entry: game.generateEntry(message)});
             entries.set("Bot5", {member: {displayName: "Bot5"}, entry: game.generateEntry(message)});
@@ -62,11 +62,6 @@ class GachaGameService {
             entries.set("Bot8", {member: {displayName: "Bot8"}, entry: game.generateEntry(message)});
             entries.set("Bot9", {member: {displayName: "Bot9"}, entry: game.generateEntry(message)});
             entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message)});
-            entries.set("Bot11", {member: {displayName: "Bot11"}, entry: game.generateEntry(message)});
-            entries.set("Bot12", {member: {displayName: "Bot12"}, entry: game.generateEntry(message)});
-            entries.set("Bot13", {member: {displayName: "Bot13"}, entry: game.generateEntry(message)});
-            entries.set("Bot14", {member: {displayName: "Bot14"}, entry: game.generateEntry(message)});
-            entries.set("Bot15", {member: {displayName: "Bot15"}, entry: game.generateEntry(message)});
         }
         
         //console.log(member.user);

@@ -19,6 +19,7 @@ module.exports = function() {
 		spotlightChannel: String,
 		adminRoleId: String,
 		moderatorRoleId: String,
+		botChannelId: String,
 		levelRoles: {
 			type: Map,
 			of: String
@@ -27,6 +28,10 @@ module.exports = function() {
 
 	serverSchema.methods.updateMemberRoleId = function (roleId) {
 		this.model('Server').updateOne({_id: this.id},{memberRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updateBotChannelId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{botChannelId: id}).exec();
 	};
 
 	serverSchema.methods.updateOfficerRoleId = function (roleId) {
