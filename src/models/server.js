@@ -16,10 +16,12 @@ module.exports = function() {
 		groupCategory: String,
 		welcomeRole: String,
 		welcomeChannelId: String,
+		introChannelId: String,
 		spotlightChannel: String,
 		adminRoleId: String,
 		moderatorRoleId: String,
 		botChannelId: String,
+		publicChannelId: String,
 		levelRoles: {
 			type: Map,
 			of: String
@@ -30,8 +32,16 @@ module.exports = function() {
 		this.model('Server').updateOne({_id: this.id},{memberRoleId: roleId}).exec();
 	};
 
+	serverSchema.methods.updateIntroChannelId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{introChannelId: id}).exec();
+	};
+
 	serverSchema.methods.updateBotChannelId = function (id) {
 		this.model('Server').updateOne({_id: this.id},{botChannelId: id}).exec();
+	};
+
+	serverSchema.methods.updatePublicChannelId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{publicChannelId: id}).exec();
 	};
 
 	serverSchema.methods.updateOfficerRoleId = function (roleId) {

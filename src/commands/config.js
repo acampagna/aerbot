@@ -33,6 +33,20 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing channel");
 			}
 			break;
+		case 'set_intro_channel':
+			if (message.mentions.channels.size > 0) {
+				serverData.updateIntroChannelId(message.mentions.channels.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing channel");
+			}
+			break;
+		case 'set_public_channel':
+			if (message.mentions.channels.size > 0) {
+				serverData.updatePublicChannelId(message.mentions.channels.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing channel");
+			}
+			break;
 		case 'set_mod_role':
 			if (message.mentions.roles.size > 0) {
 				serverData.updateOfficerRoleId(message.mentions.roles.first().id)

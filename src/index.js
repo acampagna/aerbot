@@ -121,7 +121,7 @@ client.on('raw', async event => {
 						//channel.send("Added @" + member.displayName + " to group " + group.name);
 						CoreUtil.aerLog(client,member.displayName + " joined " + group.name);
 					} else {
-						msgText = "Hey " + member.displayName + "! You tried to join **" + group.name + "** but are already a member. If you intended to leave the group then please remove your reaction that triggered this message.";
+						msgText = "Hey " + member.displayName + "! You tried to join **" + group.name + "** but are already a member.";
 					}
 					
 				} else if (event.t === "MESSAGE_REACTION_REMOVE" && alreadyGroupMember) {
@@ -210,14 +210,21 @@ client.on("guildMemberAdd", (member) => {
 	if(!member.user.bot) {
 		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
 		//Need to make this a command or configuration
-		member.send("@everyone Welcome to the Dauntless Gaming Community! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
-
+		member.send("Welcome to the Dauntless Gaming Community! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
+		
 		client.serverModel.findById(member.guild.id).exec().then(server =>{
-			CoreUtil.dateLog("Adding welcome role to " + member.user.username);
-			CoreUtil.dateLog(server.welcomeRole);
+			var welcomeChannel = client.channels.get(server.welcomeChannelId);
+			//var introChannel = client.channels.get(server.introChannelId);
+			client.channels.get(server.publicChannelId).send("Welcome " + member + " to the Dauntless Gaming Community! Please read the " + welcomeChannel + " channel. It will explain everything you need to get started in Dauntless!");
 			member.addRole(server.welcomeRole);
 			CoreUtil.aerLog(client,member.user.username + " joined the server and was assigned the welcome role.");
 		});
+	}
+});
+
+client.on("guildMemberRemove", (member) => {
+	if(!member.user.bot) {
+		CoreUtil.aerLog(client,member.user.username + " left the server. :(");
 	}
 });
 
