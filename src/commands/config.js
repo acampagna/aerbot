@@ -27,7 +27,11 @@ function invoke({ message, params, serverData, client }) {
 			}
 			break;
 		case 'set_bot_channel':
-			//updateBotChannelId
+			if (message.mentions.channels.size > 0) {
+				serverData.updateBotChannelId(message.mentions.channels.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing channel");
+			}
 			break;
 		case 'set_mod_role':
 			if (message.mentions.roles.size > 0) {

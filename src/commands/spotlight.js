@@ -51,7 +51,7 @@ function invoke({ message, params, serverData, client }) {
 	embedOne.setAuthor("Dota Underlords","https://i.imgur.com/896Mhm3.png", "https://www.underlords.com/");
 	embedOne.setImage("https://i.imgur.com/3Tac0uS.jpg");*/
 
-	const embedOne = new Discord.RichEmbed();
+	/*const embedOne = new Discord.RichEmbed();
 	embedOne.setTitle("Game Spotlight - Brawl Stars")
 	embedOne.setColor("GOLD");
 	embedOne.setDescription("Brawl Stars is a free-to-play mobile top-down arcade arena shooter developed and published by Supercell."
@@ -64,10 +64,33 @@ function invoke({ message, params, serverData, client }) {
 	embedOne.addField("Price", "Free", true);
 	embedOne.setFooter("Please be sure to join the Brawl Stars group by clicking the :brawlStars: reaction below");
 	embedOne.setAuthor("Brawl Stars","https://i.imgur.com/UGPXIAy.jpg", "https://supercell.com/en/games/brawlstars/");
-	embedOne.setImage("https://i.imgur.com/0kn9XL8.jpg");
+	embedOne.setImage("https://i.imgur.com/0kn9XL8.jpg");*/
 
-	newMessage = message.channel.send("@everyone Today's Game Spotlight is Brawl Stars! If this sounds interesting to you please click the Brawl Stars reaction below to join the Brawl Stars group.", { embed: embedOne }).then(function (message) {
-		message.react("623525210846658571");
+	const emojiId = "624999051493900309";
+	const gameName = "Call of Duty Mobile";
+	const gameWebsite = "https://www.callofduty.com/mobile";
+
+	var gameEmoji = client.emojis.get(emojiId);
+	var eventsChannel = client.channels.get("612175461551833129");
+
+	const embedOne = new Discord.RichEmbed();
+	embedOne.setTitle("Game Spotlight - " + gameName);
+	embedOne.setColor("GOLD");
+	embedOne.setDescription("Call of Duty: Mobile is a free-to-play first-person shooter game for Android and iOS. CoD: Mobile allows you to play 5v5 games in many of the great "
+	+ "CoD game modes that you've come to love such as Team Deathmatch, Domination, and Search & Destroy. It also has a 100 player Battle Royale with classes, guns, gun upgrades, vehicles, resurrection, zombies, and more!"
+	+ " This truly is a great interpretation of CoD on a mobile device. Come join the COD group and lets play together!"
+	+ "\n\n[CoD:M Website](" + gameWebsite + ") | [CoD:M Trailer](https://www.youtube.com/watch?v=n4b8FRUDNZo) | [CoD:M Walkthrough](https://www.youtube.com/watch?v=eiYQ4jGf4wE)");
+	embedOne.addField("Platforms", "Mobile", true);
+	embedOne.addField("Genre", "FPS & BR", true);
+	embedOne.addField("Players", "5+", true);
+	embedOne.addField("Price", "Free", true);
+	embedOne.addField("Clan", "Join the DauntlessGC clan once you hit level 5!");
+	embedOne.setFooter("Please be sure to join the " + gameName + " group by clicking the reaction below");
+	embedOne.setAuthor(gameName,"https://i.imgur.com/PZ9xsSI.png", gameWebsite);
+	embedOne.setImage("https://i.imgur.com/3QzEjH6.jpg");
+
+	newMessage = message.channel.send("@everyone Today's Game Spotlight is " + gameName + "! If this game sounds interesting to you please click the " + gameEmoji + " reaction below to join the group. Please check out " + eventsChannel + " for " + gameName + " events happening soon!", { embed: embedOne }).then(function (message) {
+		message.react(emojiId);
 		//message.pin();
 	}).catch(function() {
 		//Something

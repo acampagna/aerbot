@@ -39,6 +39,7 @@ function invoke({ message, params, guildData, client }) {
 						embed.addField("# messages", `${user.messages}`);
 						embed.addField("# reactions", `${user.reactions}`);
 						embed.addField("Activity Points", `${user.activityPoints}`);
+						embed.addField("Battle Royale Wins", `${user.brWins}`);
 						embed.addField("Last Online", `${user.lastOnline}\n*${new DateDiff(now, user.lastOnline).days()} days ago*`);
 						embed.addField("Last Message", `${user.lastMessage}\n*${new DateDiff(now, user.lastMessage).days()} days ago*`);
 						embed.addField("Last Reaction", `${user.lastReaction}\n*${new DateDiff(now, user.lastReaction).days()} days ago*`);

@@ -7,7 +7,7 @@ const MemberUtil = require("./utils/MemberUtil.js");
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-function handleActivity(client, id, message, reaction, userData) {
+function handleActivity(client, server, message, reaction, userData) {
     if (userData) {
 		let date = new Date();
 
@@ -18,6 +18,7 @@ function handleActivity(client, id, message, reaction, userData) {
 
 		//handle exp
 		var exp = userData.exp;
+		var startLvl = userData.level;
 
 		//give activity points
 		userData.activityPoints++;
@@ -42,8 +43,19 @@ function handleActivity(client, id, message, reaction, userData) {
 			exp = MemberUtil.calculateNewExp("reaction", exp);
 		}
 
+		var member = server.members.get(userData.id);
+
 		newUserData.exp = exp;
-		newUserData.level = calculateLevel(exp);
+		newUserData.level = MemberUtil.calculateLevel(exp);
+
+		if(newUserData.level > startLvl) {
+			//Handle Leveling Up
+			client.serverModel.findById(message.guild.id).exec()
+			.then(serverData => {
+				client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + newUserData.level + "!");
+				MemberUtil.handleLevelRoles(userData, member, server, serverData);
+			});
+		}
 
 		//CoreUtil.dateLog(`Registering Activity ${id} - ${newUserData}`);
 
@@ -52,15 +64,6 @@ function handleActivity(client, id, message, reaction, userData) {
 		//TODO: Fix this being a promise on newUser
 		userData.save();
 	}
-}
-
-function calculateLevel(exp) {
-	/*CoreUtil.dateLog(`New Level: ${Math.round(0.1 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.2 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.5 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);*/
-	return Math.max(1,Math.round(0.25 * Math.sqrt(exp)));
 }
 
 module.exports = handleActivity;
