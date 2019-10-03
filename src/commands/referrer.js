@@ -23,9 +23,14 @@ function invoke({ message, params, serverData, client }) {
 			User.findById(message.member.id).exec().then(user => {
 				user.updateReferrer(referrer.id);
 			});
-			resolve("Successfully set " + referrer.displayName + " as your referrer. Thank You!");
+
+			User.countDocuments({referrer: referrer.id}, function (err, count) {
+				resolve(referrer + " now has **" + (count+1) + "** referrals. Your friend thanks you!");
+			});
+
+			//resolve("Successfully set " + referrer + " as your referrer. Thank You!");
 		});
 	} else {
-		return Promise.resolve("You must @mention an existing users");
+		return Promise.resolve("You must @mention an existing user. i.e. `!referrer " + message.member + "`");
 	}
 }

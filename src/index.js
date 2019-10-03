@@ -37,8 +37,7 @@ client.on("message", message => {
         	.then(userData => HandleActivity(
 				client,
 				message.guild,
-				message,
-				false,
+				{message: message},
 				userData || newUser(message.member.id, message.member.displayName)
 			)
 		);
@@ -52,25 +51,11 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 				client,
 				messageReaction.message.guild,
 				false,
-				messageReaction,
+				{reaction: messageReaction},
 				userData || newUser(message.member.id, message.member.displayName)
 			)
 		);
 });
-
-/*client.on("messageReactionAdd", (messageReaction, user) => {
-	CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-	if (messageReaction && user && !user.bot)
-		UserModel.findById(user.id).exec()
-        	.then(userData => HandleActivity(
-				client,
-				messageReaction.message.guild,
-				false,
-				messageReaction,
-				userData || newUser(message.member.id, message.member.displayName)
-			)
-		);
-});*/
 
 const events = {
 	MESSAGE_REACTION_ADD: 'messageReactionAdd',
@@ -83,8 +68,6 @@ client.on('raw', async event => {
 	const { d: data } = event;
 	
 	if(data.user_id === "524905193372909579") return;
-
-	//console.log(event);
 
     const user = client.users.get(data.user_id);
     const channel = client.channels.get(data.channel_id);
@@ -246,8 +229,7 @@ function doServerIteration() {
 				.then(userData => HandleActivity(
 					client,
 					server,
-					false,
-					false,
+					{},
 					userData || newUser(member.id, member.displayName)
 				));
 			}

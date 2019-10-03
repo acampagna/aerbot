@@ -7,6 +7,70 @@ const MemberUtil = require("./utils/MemberUtil.js");
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
+
+async function handleActivityNew(client, server, activity, userData) {
+	if(userData) {
+		let date = new Date();
+
+		newUserData = {
+			lastOnline: date,
+			lastActive: date
+		};
+
+		var exp = userData.exp;
+		var startLvl = userData.level;
+
+		//give activity points
+		userData.activityPoints++;
+		exp = MemberUtil.calculateNewExp("activity", exp);
+
+		//Handle Message
+		if(activity.message) {
+			newUserData.lastMessage = date;
+			userData.messages++;
+			exp = MemberUtil.calculateNewExp("message", exp);
+
+			//Fix username
+			if(activity.message.member.displayName) {
+				newUserData.username = activity.message.member.displayName;
+			}
+		}
+
+		//Handle Reaction
+		if(activity.reaction) {
+			newUserData.lastReaction = date;
+			userData.reactions++;
+			exp = MemberUtil.calculateNewExp("reaction", exp);
+		}
+
+		//Handle Event
+		if(activity.event) {
+			userData.events++;
+			exp = MemberUtil.calculateNewExp("event", exp);
+		}
+
+		var member = server.members.get(userData.id);
+
+		newUserData.exp = exp;
+		newUserData.level = MemberUtil.calculateLevel(exp);
+
+		if(newUserData.level != startLvl) {
+			//Handle Leveling Up
+			await client.serverModel.findById(server.id).exec().then(serverData => {
+				if(serverData.botChannelId) {
+					client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + newUserData.level + "!");
+					MemberUtil.handleLevelRoles(userData, member, server, serverData);
+				}
+			});
+		}
+
+		Object.assign(userData, newUserData);
+
+		//TODO: Fix this being a promise on newUser
+		userData.save();
+	}
+}
+
 function handleActivity(client, server, message, reaction, userData) {
     if (userData) {
 		let date = new Date();
@@ -48,6 +112,8 @@ function handleActivity(client, server, message, reaction, userData) {
 		newUserData.exp = exp;
 		newUserData.level = MemberUtil.calculateLevel(exp);
 
+		console.log(server.id);
+
 		if(newUserData.level > startLvl) {
 			//Handle Leveling Up
 			client.serverModel.findById(message.guild.id).exec()
@@ -57,8 +123,6 @@ function handleActivity(client, server, message, reaction, userData) {
 			});
 		}
 
-		//CoreUtil.dateLog(`Registering Activity ${id} - ${newUserData}`);
-
 		Object.assign(userData, newUserData);
 
 		//TODO: Fix this being a promise on newUser
@@ -66,4 +130,4 @@ function handleActivity(client, server, message, reaction, userData) {
 	}
 }
 
-module.exports = handleActivity;
+module.exports = handleActivityNew;

@@ -19,6 +19,7 @@ module.exports = function() {
 		rank: { type: String, default: "Padawan" },
 		class: { type: String, default: "Padawan" },
 		messages: { type: Number, default: 0, min: 0 },
+		events: { type: Number, default: 0, min: 0 },
 		reactions: { type: Number, default: 0, min: 0 },
 		praise: { type: Number, default: 0, min: 0 },
 		activityPoints: { type: Number, default: 0, min: 0 },
@@ -61,11 +62,19 @@ module.exports = function() {
 		return this.find().exec();
 	};
 
+	userSchema.statics.countReferals = function(id) {
+		return this.countDocuments({referrer: id}).exec();
+	};
+
 	// TODO: Either replace all instances of User.findById with this function, or remove this function
 	userSchema.statics.byId = function(id) {
 		id = id.toString().replace(/\D/g,'');
 		return this.findById(id).exec();
 	};
+
+	userSchema.statics.findInIds = function(ids) {
+		return this.find({_id: {$in:ids} }).exec();
+	}
 
 	userSchema.statics.byUsername = function(username) {
 		return this.findOne({ username: new RegExp(`^${username}$`, 'i') }).exec();

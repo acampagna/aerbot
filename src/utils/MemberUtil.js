@@ -21,6 +21,12 @@ function calculateActionExp(action) {
 		case 'praise':
 			return 10;
 			break;
+		case 'event':
+			return 50;
+			break;
+		case 'br_win':
+			return 100;
+			break;
 		case 'message':
 			return 1;
 			break;
@@ -66,7 +72,7 @@ function handleLevelRoles(user, member, server, serverData) {
 				}
 			}
 			user.levelRole = roleId;
-			user.save();
+			//user.save();
 			member.addRole(server.roles.get(roleId));
 			console.log(user.username + " adding role");
 		} else {
