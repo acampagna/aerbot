@@ -13,6 +13,7 @@ const debugLogWriter = new SimpleFileWriter("./debug.log");
 
 function aerLog(client, message) {
 	client.channels.get("625025213171499011").send(message);
+	dateError(message);
 }
 
 function log(...args) {
@@ -93,6 +94,15 @@ function formatArgsForFile(args) {
 	return args.join(" ") + "\n";
 }
 
+async function asyncForEach(array, callback) {
+	for (let index = 0; index < array.length; index++) {
+		await callback(array[index], index, array);
+	}
+}
+function waitFor(ms) {
+	new Promise(r => setTimeout(r, ms));
+}
+
 module.exports = {
 	error,
 	dateError,
@@ -105,5 +115,7 @@ module.exports = {
 	isMemberAdmin,
 	doFormatting,
 	isNumber,
-	aerLog
+	aerLog,
+	asyncForEach,
+	waitFor
 };

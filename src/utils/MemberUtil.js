@@ -32,16 +32,17 @@ function calculateActionExp(action) {
 			break;
 		default:
 			return 1;
+			break;
 	}
 }
 
 function calculateLevel(exp) {
-	/*CoreUtil.dateLog(`New Level: ${Math.round(0.1 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.2 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`New Level: ${Math.round(0.5 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);*/
-	return Math.max(1,Math.round(0.25 * Math.sqrt(exp)));
+	/*CoreUtil.dateLog(`0.1 New Level: ${Math.round(0.1 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`0.2 New Level: ${Math.round(0.2 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`0.25 (current) New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`0.3 New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+	CoreUtil.dateLog(`0.5 New Level: ${Math.round(0.5 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);*/
+	return Math.max(1,Math.round(0.3 * Math.sqrt(exp)));
 }
 
 function handleLevelRoles(user, member, server, serverData) {
@@ -54,7 +55,9 @@ function handleLevelRoles(user, member, server, serverData) {
 		}
 	});
 
-	//console.log("Highest Level: " + highestLevel);
+	console.log(user);
+	console.log(user.username + " leveled up!");
+	console.log("usrLvl: " + usrLvl + " | Highest Level: " + highestLevel);
 
 	if(highestLevel > 0) {
 		var roleId = serverData.levelRoles.get(highestLevel.toString());

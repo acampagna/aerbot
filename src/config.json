@@ -1,3 +1,4 @@
 {
-	"onlineIterationInterval": "3600000"
+	"onlineIterationInterval": "3600000",
+	"onlineIterationInterval2": "60000"
 }

@@ -9,16 +9,17 @@ const MemberUtil = require("./utils/MemberUtil.js");
  */
 
 async function handleActivityNew(client, server, activity, userData) {
-	if(userData) {
+	if(userData && userData.id) {
 		let date = new Date();
 
-		newUserData = {
-			lastOnline: date,
-			lastActive: date
-		};
+		userData.lastOnline = date;
+		userData.lastActive = date;
 
 		var exp = userData.exp;
 		var startLvl = userData.level;
+
+		var originalExp = userData.exp;
+		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4);
 
 		//give activity points
 		userData.activityPoints++;
@@ -26,21 +27,22 @@ async function handleActivityNew(client, server, activity, userData) {
 
 		//Handle Message
 		if(activity.message) {
-			newUserData.lastMessage = date;
+			userData.lastMessage = date;
 			userData.messages++;
 			exp = MemberUtil.calculateNewExp("message", exp);
 
 			//Fix username
 			if(activity.message.member.displayName) {
-				newUserData.username = activity.message.member.displayName;
+				userData.username = activity.message.member.displayName;
 			}
 		}
 
 		//Handle Reaction
 		if(activity.reaction) {
-			newUserData.lastReaction = date;
+			userData.lastReaction = date;
 			userData.reactions++;
 			exp = MemberUtil.calculateNewExp("reaction", exp);
+			//console.log(server);
 		}
 
 		//Handle Event
@@ -49,84 +51,40 @@ async function handleActivityNew(client, server, activity, userData) {
 			exp = MemberUtil.calculateNewExp("event", exp);
 		}
 
+		console.log(userData.id);
 		var member = server.members.get(userData.id);
+		//console.log(member);
 
-		newUserData.exp = exp;
-		newUserData.level = MemberUtil.calculateLevel(exp);
-
-		if(newUserData.level != startLvl) {
-			//Handle Leveling Up
-			await client.serverModel.findById(server.id).exec().then(serverData => {
-				if(serverData.botChannelId) {
-					client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + newUserData.level + "!");
-					MemberUtil.handleLevelRoles(userData, member, server, serverData);
-				}
-			});
-		}
-
-		Object.assign(userData, newUserData);
+		userData.exp = exp;
+		userData.level = MemberUtil.calculateLevel(exp);
 
 		//TODO: Fix this being a promise on newUser
-		userData.save();
-	}
-}
+		if(exp >= originalExp && exp >= expectedExp) {
 
-function handleActivity(client, server, message, reaction, userData) {
-    if (userData) {
-		let date = new Date();
+			if(userData.level != startLvl) {
+				await client.serverModel.findById(server.id).exec().then(serverData => {
+					if(serverData.botChannelId) {
+						client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + userData.level + "!");
+						MemberUtil.handleLevelRoles(userData, member, server, serverData);
+					}
+				});
+			}
 
-		newUserData = {
-			lastOnline: date,
-			lastActive: date
-		};
-
-		//handle exp
-		var exp = userData.exp;
-		var startLvl = userData.level;
-
-		//give activity points
-		userData.activityPoints++;
-		exp = MemberUtil.calculateNewExp("activity", exp);
-
-		if(message) {
-			newUserData.lastMessage = date;
-			userData.messages++;
-			exp = MemberUtil.calculateNewExp("message", exp);
-
-			//Fix username
-			if(message.member.displayName) {
-				if(message.member.displayName !== userData.username) {
-					newUserData.username = message.member.displayName;
-				}
+			userData.save();
+		} else {
+			var errStr = "*exp: " + exp + " | originalExp: " + originalExp + " | expectedExp: " + expectedExp + "*";
+			CoreUtil.aerLog(client,userData.username + "'s experience points are corrupted! Attempting to fix...");
+			if(originalExp > expectedExp) {
+				CoreUtil.aerLog(client,userData.username + "'s experience points almost got corrupted, aborting save. Check Logs!\n" + errStr);
+				CoreUtil.dateLog(activity);
+			} else {
+				CoreUtil.aerLog(client,userData.username + "'s experience points are corrupted. Fixing their exp right now!\n" + errStr);
+				userData.exp = expectedExp;
+				userData.save();
 			}
 		}
 
-		if(reaction) {
-			newUserData.lastReaction = date;
-			userData.reactions++;
-			exp = MemberUtil.calculateNewExp("reaction", exp);
-		}
-
-		var member = server.members.get(userData.id);
-
-		newUserData.exp = exp;
-		newUserData.level = MemberUtil.calculateLevel(exp);
-
-		console.log(server.id);
-
-		if(newUserData.level > startLvl) {
-			//Handle Leveling Up
-			client.serverModel.findById(message.guild.id).exec()
-			.then(serverData => {
-				client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + newUserData.level + "!");
-				MemberUtil.handleLevelRoles(userData, member, server, serverData);
-			});
-		}
-
-		Object.assign(userData, newUserData);
-
-		//TODO: Fix this being a promise on newUser
-		userData.save();
+		console.log(userData.username + "(" + userData.level + ")[" + startLvl + "] exp: " + exp + " | originalExp: " + originalExp + " | expectedExp: " + expectedExp);
 	}
 }
 

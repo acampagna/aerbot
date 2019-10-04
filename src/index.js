@@ -50,9 +50,8 @@ client.on("messageReactionAdd", (messageReaction, user) => {
         	.then(userData => HandleActivity(
 				client,
 				messageReaction.message.guild,
-				false,
 				{reaction: messageReaction},
-				userData || newUser(message.member.id, message.member.displayName)
+				userData || newUser(user.id, user.username)
 			)
 		);
 });
@@ -89,82 +88,84 @@ client.on('raw', async event => {
 		if (member.id !== client.user.id) {
 			//console.log(data.emoji.id);
 			Group.findGroupByEmoji(data.emoji.id).then(async group => {
-				//console.log(group);
-				var role = eventGuild.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim());
-				var alreadyGroupMember = (member.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim()));
+				if(group) {
+					//console.log(group);
+					var role = eventGuild.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim());
+					var alreadyGroupMember = (member.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim()));
 
-				var msgText = "";
+					var msgText = "";
 
-				if (event.t === "MESSAGE_REACTION_ADD") {
-					if(!alreadyGroupMember) {
-						member.addRole(role);
-						group.incrementNumMembers();
-						group.addMember(group.name,member.id);
-						msgText = "Hey " + member.displayName + "! I just added you to the **" + group.name + "** group.";
-						//channel.send("Added @" + member.displayName + " to group " + group.name);
-						CoreUtil.aerLog(client,member.displayName + " joined " + group.name);
-					} else {
-						msgText = "Hey " + member.displayName + "! You tried to join **" + group.name + "** but are already a member.";
+					if (event.t === "MESSAGE_REACTION_ADD") {
+						if(!alreadyGroupMember) {
+							member.addRole(role);
+							group.incrementNumMembers();
+							group.addMember(group.name,member.id);
+							msgText = "Hey " + member.displayName + "! I just added you to the **" + group.name + "** group.";
+							//channel.send("Added @" + member.displayName + " to group " + group.name);
+							CoreUtil.aerLog(client,member.displayName + " joined " + group.name);
+						} else {
+							msgText = "Hey " + member.displayName + "! You tried to join **" + group.name + "** but are already a member.";
+						}
+						
+					} else if (event.t === "MESSAGE_REACTION_REMOVE" && alreadyGroupMember) {
+						member.removeRole(role);
+						group.decrementNumMembers();
+						group.removeMember(group.name,member.id);
+						CoreUtil.aerLog(client,member.displayName + " left " + group.name);
+						//channel.send("Removed @" + member.displayName + " from group " + group.name);
+						msgText = "Hey " + member.displayName + "! I just removed you from the **" + group.name + "** group.";
 					}
-					
-				} else if (event.t === "MESSAGE_REACTION_REMOVE" && alreadyGroupMember) {
-					member.removeRole(role);
-					group.decrementNumMembers();
-					group.removeMember(group.name,member.id);
-					CoreUtil.aerLog(client,member.displayName + " left " + group.name);
-					//channel.send("Removed @" + member.displayName + " from group " + group.name);
-					msgText = "Hey " + member.displayName + "! I just removed you from the **" + group.name + "** group.";
-				}
 
 
-				//TODO: NEEDS TO BE REFACTORED! I need to make promises work properly. Currently in a rush for a community deadline.
-				if(group.platforms.length > 0 && event.t === "MESSAGE_REACTION_ADD" && !alreadyGroupMember) {
-					console.log("platforms > 0");
-					if(group.platforms.length === 1) {
-						Group.findGroupById(group.platforms[0]).then(platformGroup => {
-							console.log("platforms === 1");
-							var role2 = eventGuild.roles.find(role => role.name.toLowerCase().trim() === platformGroup.name.toLowerCase().trim());
+					//TODO: NEEDS TO BE REFACTORED! I need to make promises work properly. Currently in a rush for a community deadline.
+					if(group.platforms.length > 0 && event.t === "MESSAGE_REACTION_ADD" && !alreadyGroupMember) {
+						console.log("platforms > 0");
+						if(group.platforms.length === 1) {
+							Group.findGroupById(group.platforms[0]).then(platformGroup => {
+								console.log("platforms === 1");
+								var role2 = eventGuild.roles.find(role => role.name.toLowerCase().trim() === platformGroup.name.toLowerCase().trim());
 
-							if(!member.roles.find(role => role.name.toLowerCase().trim() === platformGroup.name.toLowerCase().trim())) {
-								member.addRole(role2);
-								platformGroup.incrementNumMembers();
-								platformGroup.addMember(platformGroup.name,member.id);
-								msgText += "\nI've also automatically added you to the **" + platformGroup.name + " platform group because it's related to **" + group.name + "**";	
-							}
+								if(!member.roles.find(role => role.name.toLowerCase().trim() === platformGroup.name.toLowerCase().trim())) {
+									member.addRole(role2);
+									platformGroup.incrementNumMembers();
+									platformGroup.addMember(platformGroup.name,member.id);
+									msgText += "\nI've also automatically added you to the **" + platformGroup.name + " platform group because it's related to **" + group.name + "**";	
+								}
 
-							member.send(msgText);
-						}).catch(console.error);
-					} else if(event.t === "MESSAGE_REACTION_ADD"){
-						var platforms = new Map();
-						//TODO: Should refactor to query all platforms at once
-						group.platforms.forEach( platform => {
-							platforms.set(platform, {});
-						});
-
-						let platformsData = await Group.find( { _id: { $in : Array.from(platforms.keys()) } }).exec();
-
-						//console.log(platformsData);
-						msgText += "\nWould you also like to join one of **" + group.name + "'s** associated platform groups? If so, click on the appropriate reaction below to join.\n";
-
-						platformsData.forEach(data => {
-							platforms.set(data.id, data);
-							let emoji = client.emojis.get(data.emoji);
-							msgText += "\n" + emoji + " : " + data.name;
-						});
-
-						member.send(msgText).then(function (message) {
-							platformsData.forEach(data => {
-								message.react(data.emoji);
+								member.send(msgText);
+							}).catch(console.error);
+						} else if(event.t === "MESSAGE_REACTION_ADD"){
+							var platforms = new Map();
+							//TODO: Should refactor to query all platforms at once
+							group.platforms.forEach( platform => {
+								platforms.set(platform, {});
 							});
-						}).catch(function() {
-							//Something
-						});
+
+							let platformsData = await Group.find( { _id: { $in : Array.from(platforms.keys()) } }).exec();
+
+							//console.log(platformsData);
+							msgText += "\nWould you also like to join one of **" + group.name + "'s** associated platform groups? If so, click on the appropriate reaction below to join.\n";
+
+							platformsData.forEach(data => {
+								platforms.set(data.id, data);
+								let emoji = client.emojis.get(data.emoji);
+								msgText += "\n" + emoji + " : " + data.name;
+							});
+
+							member.send(msgText).then(function (message) {
+								platformsData.forEach(data => {
+									message.react(data.emoji);
+								});
+							}).catch(function() {
+								//Something
+							});
+						} else {
+							member.send(msgText);
+						}
 					} else {
 						member.send(msgText);
-					}
-				} else {
-					member.send(msgText);
-				} 				
+					} 
+				}
 			}).catch(err => {
 				console.error(err);
 			});
@@ -192,8 +193,12 @@ client.on("voiceStateUpdate", member => {
 client.on("guildMemberAdd", (member) => {
 	if(!member.user.bot) {
 		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
+		var aerMem = mainGuild.members.get("151473524974813184");
 		//Need to make this a command or configuration
-		member.send("Welcome to the Dauntless Gaming Community! Please read the `welcome-readme` channel at the top of our Discord server. It will explain everything you need to get started in Dauntless!");
+		member.send("**Welcome** *(again)* **to the Dauntless Gaming Community!**\n\nPlease stick around with us as we are still setting up and preparing for our official launch on Oct 12. At that point we should start to grow quite quickly. "
+		+ "If you have any questions, comments, or suggestions please feel free to message any of our staff. \n\n "
+		+ "> If you decide to leave: __Please__ message " + aerMem + " before you do and let us know you're unhappy here. Your feedback would be greatly appreciated and will help future members of Dauntless!"
+		+ "\n > If you're here to spam your own Discord server, stream, website, etc please just message " + aerMem + " and we can discuss a potential partnership or advertisement swap!");
 		
 		client.serverModel.findById(member.guild.id).exec().then(server =>{
 			var welcomeChannel = client.channels.get(server.welcomeChannelId);
@@ -213,7 +218,7 @@ client.on("guildMemberRemove", (member) => {
 
 client.bootstrap();
 
-function doServerIteration() {
+async function doServerIteration() {
 	CoreUtil.dateLog(`[Online Interval]`);
 	client.guilds.forEach(server => {
 		//checkOnlineStatus(server);
@@ -222,16 +227,17 @@ function doServerIteration() {
 			mainGuild = server;
 		}
 
-		server.members.forEach(member =>{
+		CoreUtil.asyncForEach(server.members.array(), async (member) => {
+			//console.log("Processing");
 			if(member.presence.status != "offline" && !member.user.bot) {
 				CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
-				UserModel.findById(member.id).exec()
-				.then(userData => HandleActivity(
+				UserModel.findById(member.id).exec().then(userData => HandleActivity(
 					client,
 					server,
 					{},
 					userData || newUser(member.id, member.displayName)
 				));
+				await CoreUtil.waitFor(500);
 			}
 		});
 	})

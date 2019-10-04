@@ -56,6 +56,9 @@ function invoke({ message, params, serverData, client }) {
 							console.log(user.username + " has the proper role set.");
 						}
 					}
+					if(user.exp < user.messages + user.activityPoints + (user.reactions*4)) {
+						console.log(user.username + " does not have enough experience!!!");
+					}
 				} else {
 					console.log(member.displayName + " doesn't have a user record!");
 				}
