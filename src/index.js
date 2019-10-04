@@ -9,12 +9,13 @@ const Client = require("./Client.js");
 const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
-const HandleActivity = require("./HandleActivity");
+require('./models/dailyActivity.js')();
 require('./models/server.js')();
 require('./models/group.js')();
 require('./models/user.js')();
 require('./models/guild.js')();
 require('./models/spotlight.js')();
+const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
 const GachaGameService = require("./services/GachaGameService");
@@ -26,13 +27,14 @@ const client = new Client(require("../token.json"), __dirname + "/commands", Ser
 const cmdPrefix = InternalConfig.commandPrefix;
 
 var mainGuild;
+var qotdChanId;
 
 client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
 });
 client.on("message", message => {
 	//TODO: Should only do then on non-bot commands
-	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix)
+	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix) {
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,
@@ -41,6 +43,30 @@ client.on("message", message => {
 				userData || newUser(message.member.id, message.member.displayName)
 			)
 		);
+
+		if(message.channel.id === qotdChanId) {
+			ServerModel.findById(message.guild.id).exec().then(serverData => {
+				var msgDeleted = false;
+				var first = true;
+				message.channel.fetchMessages({ limit: serverData.msgsSinceNewQotd }).then(msgs => {
+					msgs.array().forEach(msg =>{
+						if(msg.author.id === message.author.id && !msg.deleted && !first) {
+							message.delete();
+							msgDeleted = true;
+						}
+						first = false;
+					});
+					if(!msgDeleted) {
+						serverData.incMsgsSinceNewQotd();
+						message.channel.fetchMessage(serverData.qotdMessageId).then(message => {
+							message.delete();
+							CoreUtil.sendQotd(serverData.qotd, client, serverData);
+						}).catch(console.error);
+					}
+				}).catch(console.error);
+			}).catch(console.error);
+		}
+	}
 });
 
 client.on("messageReactionAdd", (messageReaction, user) => {
@@ -178,7 +204,12 @@ client.on("ready", () => {
 	var ggs = new GachaGameService();
 	client.guilds.forEach(server => {
 		//CoreUtil.dateLog(server);
-		let doc = ServerModel.upsert({_id: server.id});
+		ServerModel.upsert({_id: server.id}).then(doc => {
+			if(server.id === "524900292836458497") {
+				qotdChanId = doc.qotdChannelId;
+				console.log(qotdChanId);
+			}
+		});
 
 		if(server.id === "524900292836458497") {
 			mainGuild = server;

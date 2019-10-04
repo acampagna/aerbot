@@ -103,6 +103,25 @@ function waitFor(ms) {
 	new Promise(r => setTimeout(r, ms));
 }
 
+function sendQotd(qotd, client, serverData) {
+	var date = new Date();
+	var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+
+	const embed = new Discord.RichEmbed();
+	embed.setTitle("Question of the Day - " + date.toLocaleDateString("en-US", options));
+	embed.setColor("GOLD");
+	embed.setDescription("**" + qotd + "**");
+	embed.setFooter("Please share your answer with us today! *Note: Only 1 post in this channel per person per day so make it count. To make a new post you must delete the original*");
+	
+	var qotdChan = client.channels.get(serverData.qotdChannelId);
+	
+	qotdChan.send(embed).then(function (message) {
+		serverData.updateQotdMessageId(message.id);
+	}).catch(function() {
+		//Something
+	});
+}
+
 module.exports = {
 	error,
 	dateError,
@@ -117,5 +136,6 @@ module.exports = {
 	isNumber,
 	aerLog,
 	asyncForEach,
-	waitFor
+	waitFor,
+	sendQotd
 };

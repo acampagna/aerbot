@@ -22,11 +22,35 @@ module.exports = function() {
 		moderatorRoleId: String,
 		botChannelId: String,
 		publicChannelId: String,
+		qotdChannelId: String,
+		qotdMessageId: String,
+		qotd: String,
+		msgsSinceNewQotd: { type: Number, default: 0, min: 0 },
 		levelRoles: {
 			type: Map,
 			of: String
 		}
 	});
+
+	serverSchema.methods.resetMsgsSinceNewQotd = function () {
+		this.model('Server').updateOne({_id: this.id},{msgsSinceNewQotd: 0}).exec();
+	};
+
+	serverSchema.methods.incMsgsSinceNewQotd = function () {
+		this.model('Server').updateOne({_id: this.id},{msgsSinceNewQotd: this.msgsSinceNewQotd+1}).exec();
+	};
+
+	serverSchema.methods.updateQotd = function (qotd) {
+		this.model('Server').updateOne({_id: this.id},{qotd: qotd}).exec();
+	};
+
+	serverSchema.methods.updateQotdChannelId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{qotdChannelId: id}).exec();
+	};
+
+	serverSchema.methods.updateQotdMessageId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{qotdMessageId: id}).exec();
+	};
 
 	serverSchema.methods.updateMemberRoleId = function (roleId) {
 		this.model('Server').updateOne({_id: this.id},{memberRoleId: roleId}).exec();

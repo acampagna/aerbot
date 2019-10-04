@@ -18,30 +18,40 @@ module.exports = new Command({
  */
 function invoke({ message, params, serverData, client }) {
 	CoreUtil.dateLog(`Running Cleanup`);
-	client.guilds.forEach(server => {
-		server.members.forEach(member =>{
-			console.log("Processing " + member.displayName);
-			User.findById(member.id).exec()
+	/*client.guilds.forEach(server => {
+		server.members.forEach(member =>{*/
+			var memberId = params[0];
+var server = client.guilds.get("524900292836458497");
+var member = server.members.get(memberId);
+			
+			User.findById(memberId).exec()
 			.then(user => {
 				if(user && user.level) {
+					console.log("Processing " + user.username);
 					var usrLvl = user.level;
 					var highestLevel = 0;
 
 					serverData.levelRoles.forEach(function(value, key) {
 						if(key > highestLevel && key <= usrLvl) {
 							highestLevel = parseInt(key);
+							//REMOVE ME IF CHANGED TO ALL AGAIN!
+						}
+						if(server.roles.get(value)) {
+							member.removeRole(server.roles.get(value));
 						}
 					});
 
 					if(highestLevel > 0) {
 						var roleId = serverData.levelRoles.get(highestLevel.toString());
-						var alreadyGroupMember = (member.roles.get(roleId));
+						//var alreadyGroupMember = (member.roles.get(roleId));
 
 						if(!user.levelRole) {
 							user.levelRole = "0";
 						}
 
-						if(!alreadyGroupMember) {
+						//if(!alreadyGroupMember) {
+							if(true){
+
 							if(user.levelRole != roleId) {
 								console.log(user.username + " removing role");
 								if(server.roles.get(user.levelRole)) {
@@ -63,7 +73,7 @@ function invoke({ message, params, serverData, client }) {
 					console.log(member.displayName + " doesn't have a user record!");
 				}
 			});
-		});
-	});
+		/*});
+	});*/
 	return Promise.resolve("Cleanup in progress!");
 }

@@ -1,5 +1,7 @@
 const CoreUtil = require("./utils/Util.js");
 const MemberUtil = require("./utils/MemberUtil.js");
+const mongoose = require('mongoose');
+const DailyActivity = mongoose.model('DailyActivity');
 
 /**
  * Main function to handle user activity. Mostly just deals with adding exp based on user actions.
@@ -19,7 +21,6 @@ async function handleActivityNew(client, server, activity, userData) {
 		var startLvl = userData.level;
 
 		var originalExp = userData.exp;
-		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4);
 
 		//give activity points
 		userData.activityPoints++;
@@ -55,12 +56,12 @@ async function handleActivityNew(client, server, activity, userData) {
 		var member = server.members.get(userData.id);
 		//console.log(member);
 
+		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4);
 		userData.exp = exp;
 		userData.level = MemberUtil.calculateLevel(exp);
 
 		//TODO: Fix this being a promise on newUser
-		if(exp >= originalExp && exp >= expectedExp) {
-
+		if(exp >= originalExp && exp >= expectedExp && exp < (expectedExp*1.5)) {
 			if(userData.level != startLvl) {
 				await client.serverModel.findById(server.id).exec().then(serverData => {
 					if(serverData.botChannelId) {
@@ -69,12 +70,11 @@ async function handleActivityNew(client, server, activity, userData) {
 					}
 				});
 			}
-
 			userData.save();
 		} else {
 			var errStr = "*exp: " + exp + " | originalExp: " + originalExp + " | expectedExp: " + expectedExp + "*";
 			CoreUtil.aerLog(client,userData.username + "'s experience points are corrupted! Attempting to fix...");
-			if(originalExp > expectedExp) {
+			if(originalExp > exp) {
 				CoreUtil.aerLog(client,userData.username + "'s experience points almost got corrupted, aborting save. Check Logs!\n" + errStr);
 				CoreUtil.dateLog(activity);
 			} else {

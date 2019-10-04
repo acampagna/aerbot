@@ -33,6 +33,30 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing channel");
 			}
 			break;
+		case 'set_qotd': {
+			var paramStr = params.join(" ");
+			paramStr = paramStr.substr(paramStr.indexOf(" ") + 1);
+			params[1] = paramStr;
+
+			if (paramStr.length > 0) {
+				serverData.updateQotd(paramStr);
+				serverData.updateQotdMessageId("");
+				serverData.resetMsgsSinceNewQotd();
+				client.channels.get(serverData.qotdChannelId).send("Previous Question of the Day has ended!");
+
+				CoreUtil.sendQotd(paramStr, client, serverData);
+			} else {
+				return Promise.resolve("You must specify a question!");
+			}
+			break;
+		}
+		case 'set_qotd_channel':
+			if (message.mentions.channels.size > 0) {
+				serverData.updateQotdChannelId(message.mentions.channels.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing channel");
+			}
+			break;
 		case 'set_intro_channel':
 			if (message.mentions.channels.size > 0) {
 				serverData.updateIntroChannelId(message.mentions.channels.first().id)
