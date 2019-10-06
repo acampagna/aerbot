@@ -53,7 +53,7 @@ function handleServerCommand(client, message, commands, serverData) {
 					message.channel.send("@here", { embed: response.message });
 				}
 			} else if (typeof response === 'object' && response.reactions) {
-				message.reply(response.message).then(function (message) {
+				message.channel.send(response.message).then(function (message) {
 					if(response.reactions) {
 						response.reactions.forEach(data => {
 							message.react(data);

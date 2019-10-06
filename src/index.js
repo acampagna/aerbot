@@ -9,6 +9,7 @@ const Client = require("./Client.js");
 const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
+require('./models/weeklyActivity.js')();
 require('./models/dailyActivity.js')();
 require('./models/server.js')();
 require('./models/group.js')();
@@ -21,6 +22,8 @@ const UserModel = mongoose.model('User');
 const GachaGameService = require("./services/GachaGameService");
 const InternalConfig = require("./internal-config.json");
 const Group = mongoose.model('Group');
+const DailyActivity = mongoose.model('DailyActivity');
+const WeeklyActivity = mongoose.model('WeeklyActivity');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
@@ -31,10 +34,12 @@ var qotdChanId;
 
 client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
+	setInterval(doVoiceChannelScan, Config.voiceIterationInterval);
+	doActivityConversion();
 });
 client.on("message", message => {
 	//TODO: Should only do then on non-bot commands
-	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix) {
+	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888") {
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,
@@ -48,7 +53,13 @@ client.on("message", message => {
 			ServerModel.findById(message.guild.id).exec().then(serverData => {
 				var msgDeleted = false;
 				var first = true;
-				message.channel.fetchMessages({ limit: serverData.msgsSinceNewQotd }).then(msgs => {
+				//console.log(serverData.msgsSinceNewQotd);
+				var limit = serverData.msgsSinceNewQotd;
+				if(limit === 0) {
+					limit = 1;
+				}
+				message.channel.fetchMessages({ limit: limit }).then(msgs => {
+					//console.log(msgs.array().length);
 					msgs.array().forEach(msg =>{
 						if(msg.author.id === message.author.id && !msg.deleted && !first) {
 							message.delete();
@@ -80,6 +91,18 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 				userData || newUser(user.id, user.username)
 			)
 		);
+});
+
+client.on("messageReactionRemove", (messageReaction, user) => {
+	CoreUtil.dateLog(`Reaction Removed: ${messageReaction} - ${user.id}`);
+	if (messageReaction && user && !user.bot)
+		UserModel.findById(user.id).exec()
+		.then(userData => {
+			userData.reactions--;
+			userData.activityPoints--;
+			userData.exp = userData.exp - 5;
+			userData.save();
+		});
 });
 
 const events = {
@@ -226,10 +249,10 @@ client.on("guildMemberAdd", (member) => {
 		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
 		var aerMem = mainGuild.members.get("151473524974813184");
 		//Need to make this a command or configuration
-		member.send("**Welcome** *(again)* **to the Dauntless Gaming Community!**\n\nPlease stick around with us as we are still setting up and preparing for our official launch on Oct 12. At that point we should start to grow quite quickly. "
-		+ "If you have any questions, comments, or suggestions please feel free to message any of our staff. \n\n "
-		+ "> If you decide to leave: __Please__ message " + aerMem + " before you do and let us know you're unhappy here. Your feedback would be greatly appreciated and will help future members of Dauntless!"
-		+ "\n > If you're here to spam your own Discord server, stream, website, etc please just message " + aerMem + " and we can discuss a potential partnership or advertisement swap!");
+		member.send("**Welcome to the Dauntless Gaming Community!**\n\nPlease stick around with us as we are still setting up and preparing for our official launch on Oct 12. At that point we should start to grow quite quickly. "
+		+ "If you have any questions, comments, or suggestions please feel free to message any of our staff.");
+		//+ "\n\n > If you decide to leave: __Please__ message " + aerMem + " before you do and let us know you're unhappy here. Your feedback would be greatly appreciated and will help future members of Dauntless!"
+		//+ "\n > If you're here to spam your own Discord server, stream, website, etc please just message " + aerMem + " and we can discuss a potential partnership or advertisement swap!");
 		
 		client.serverModel.findById(member.guild.id).exec().then(server =>{
 			var welcomeChannel = client.channels.get(server.welcomeChannelId);
@@ -272,6 +295,38 @@ async function doServerIteration() {
 			}
 		});
 	})
+}
+
+async function doVoiceChannelScan() {
+
+}
+
+async function doActivityConversion() {
+	var userActivity = new Map();
+	var expectedDocs = 0;
+
+	/*DailyActivity.findAllActivity().then(activities => {
+		activities.forEach(activity =>{
+			var uid = activity.userId;
+			var type = activity.type;
+			var xp = activity.exp;
+
+			if(userActivity.has(uid)) {
+				var ua = userActivity.get(uid);
+				ua.has(type) ? ua.set(type, ua.get(type)+xp) : ua.set(type, xp);
+			} else {
+				userActivity.set(uid, new Map([[type,xp]]));
+			}
+		});
+
+		userActivity.forEach(function(activityMap, userId) {
+			expectedDocs += activityMap.size;
+			WeeklyActivity.addMap(userId, activityMap);
+		});
+
+		console.log(userActivity);
+		//DailyActivity.deleteMany({}).exec();
+	});*/
 }
 
 function checkOnlineStatus(server) {

@@ -18,9 +18,11 @@ module.exports = function() {
 		emoji: String,
 		genre: String,
 		platforms: { type: Array, of: String },
+		genres: { type: Array, of: String },
 		list: {type: Boolean, default: true},
 		numMembers: {type: Number, default: 0},
-		memberIds: { type: Array, of: String }
+		memberIds: { type: Array, of: String },
+		public: {type: Boolean, default: true}
 	});
 
 	groupSchema.methods.incrementNumMembers = function () {
@@ -51,8 +53,17 @@ module.exports = function() {
 		return this.findOne({emoji: new RegExp(emoji, 'i')}).exec();
 	};
 
+	groupSchema.statics.findGroupByType = function(type) {
+		console.log("Finding group by type");
+		return this.findOne({type: type}).exec();
+	};
+
 	groupSchema.statics.findAllGroups = function() {
 		return this.find().exec();
+	};
+
+	groupSchema.statics.findAllPublicGroups = function() {
+		return this.find({public: true}).exec();
 	};
 
 	groupSchema.statics.findAllUsersByGroupName = function(name) {
@@ -84,6 +95,20 @@ module.exports = function() {
 		return this.model('Group').findOneAndUpdate(
 			{name: new RegExp(groupName, 'i')},
 			{$pull: {platforms: groupId}},
+			{new: true}).exec();
+	}
+
+	groupSchema.methods.addGenre = function (groupName, groupId) {
+		return this.model('Group').findOneAndUpdate(
+			{name: new RegExp(groupName, 'i')},
+			{$addToSet: {genres: groupId}},
+			{new: true}).exec();
+	}
+
+	groupSchema.methods.removeGenre = function (groupName, groupId) {
+		return this.model('Group').findOneAndUpdate(
+			{name: new RegExp(groupName, 'i')},
+			{$pull: {genres: groupId}},
 			{new: true}).exec();
 	}
 

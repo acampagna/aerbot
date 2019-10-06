@@ -99,6 +99,13 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing role");
 			}
 			break;
+		case 'set_welcome_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updateWelcomeRole(message.mentions.roles.first().id);
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
 		case 'set_level_role':
 			if (message.mentions.roles.size > 0 && !isNaN(params[1])) {
 				if(!serverData.levelRoles) {

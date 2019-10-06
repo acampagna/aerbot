@@ -61,7 +61,7 @@ var players = [
 ]
 
 var annihilations = [
-    "Briyukii creates a stew out of {$n} of our tastiest combatants!",
+    "zRed creates a stew out of {$n} of our tastiest combatants!",
     "An avalanche of {$w}s crushes {$n} players in the arena. Oh the horror!",
     "Thanos just snapped {$n} mortals out of existence",
     "A wild Electrode has appeared, It used Self-Destruct. {$n} contestants fainted...",
@@ -79,10 +79,10 @@ var oneOnOneKills = [
     "{$1} sticks {$2} with the pointy end of their {$w}",
     //"{$1} shows {$2} how they got their smile",
     //"{$1} drops a acme safe in {$2}",
-    //"{$1} covers {$2} in tuna and throws them into a pit of hungry kittens",
+    "{$1} covers {$2} in tuna and throws them into a pit of hungry kittens",
     "{$1} shoves a mayonnaise covered {$w} up {$2}'s ass and pulls the trigger",
     //"{$2} intelligently stuck their tongue on an icy pole and was killed by {$1}",
-    "{$1} drowns {$2} in the Dauntless Compy Pool",
+    //"{$1} drowns {$2} in the Dauntless Compy Pool",
     "{$1} sacrificed {$2} to a herd of wild {$a}"
 ];
 
@@ -97,10 +97,10 @@ var mistakes = [
     "{$1} didn't actually want to win and turns their {$w} on themselves. Oh the humanity!",
     "{$1} decides to do the tide challenge and dies of regret, stupidity, and poison",
     //"{$1} steps onto a landmine and blows up into million pieces",
-    "{$1} yeeted themselves out of existence",
-    "{$1} gets squashed by a {$a}",
-    "{$1} gets their {$b} bitten off by a wild {$a}",
-    "{$1} dies waiting for savage islands to reopen"
+    //"{$1} yeeted themselves out of existence",
+    "{$1} gets crushed by a {$a}",
+    "{$1} gets their {$b} bitten off by a wild {$a}"
+    //"{$1} dies waiting for savage islands to reopen"
 ];
 
 var nearKills = [
@@ -126,9 +126,9 @@ var weapons = [
     "Dirty Socks",
     //"cat-o-nine-tail",
     "Pickle",
-    "Seagull Bone Crossbow",
-    "Thorny Spine Hammer",
-    "Pet Direwolf",
+    //"Seagull Bone Crossbow",
+    //"Thorny Spine Hammer",
+    //"Pet Direwolf",
     "$100 Bill"
 ];
 

@@ -10,10 +10,15 @@ module.exports = function() {
 
 	const dailyActivitySchema = new Schema({
 		userId: String,
-		username: String,
+		//username: String,
 		type: String,
 		exp: { type: Number, default: 0, min: 0 }
 	});
+
+	dailyActivitySchema.statics.add = function(userId, type, exp) {
+		console.log("Adding Daily Activity");
+		this.create({userId: userId, type: type, exp: exp});
+	};
 
 	dailyActivitySchema.statics.findByUserId = function(id) {
 		console.log("Finding all activity by userId");
@@ -21,12 +26,18 @@ module.exports = function() {
 	};
 
 	dailyActivitySchema.statics.findByUserIdType = function(id, type) {
-		console.log("Finding group by userId and type");
+		console.log("Finding activity by userId and type");
 		return this.find({userId: id, type: type}).exec();
 	};
 
 	dailyActivitySchema.statics.findAllActivity = function() {
+		console.log("Finding ALL Activity");
 		return this.find().exec();
+	};
+
+	dailyActivitySchema.statics.findActivityByType = function() {
+		console.log("Finding activity by type");
+		return this.find({type: type}).exec();
 	};
 
 	let DailyActivityModel = mongoose.model('DailyActivity', dailyActivitySchema);

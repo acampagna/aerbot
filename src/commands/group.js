@@ -28,32 +28,30 @@ function invoke({ message, params, serverData, client }) {
 			var desc = "";
 			embed.setColor("BLUE");
 			embed.setTitle(`__Groups__`)
-			Group.findAllGroups().then(groups => {
+			Group.findAllPublicGroups().then(groups => {
 				groups.forEach(group => {
 					//embed.addField(group.name, group.numMembers + " members", true);
 					var groupName = group.name;
 					if(group.emoji) {
 						emojis.push(group.emoji);
 						var emoji = client.emojis.get(group.emoji);
-						/*if(emoji) {
-							desc = desc + emoji + " " + group.name + " - " + group.numMembers + " members\n";
-						} else {
-							desc = desc + group.name + " - " + group.numMembers + " members\n";
-						}*/
 						if(emoji) {
-							/*if(groupName.length >= 18) {
-								groupName = groupName.split(' ').join('\n');
-							}*/
-							embed.addField(emoji + " " + groupName, group.numMembers + " gamers", true);
+							desc = desc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
+						} else {
+							desc = desc + group.name + " - " + group.numMembers + " gamers\n";
+						}
+						/*if(emoji) {
+							embed.addField(emoji, groupName, true);
 						} else {
 							embed.addField(groupName, group.numMembers + " gamers", true);
-						}
+						}*/
 						
 					} else {
-						embed.addField(groupName, group.numMembers + " gamers", true);
+						//embed.addField(groupName, group.numMembers + " gamers");
+						desc = desc + group.name + " - " + group.numMembers + " gamers\n";
 					}
 				});
-				//embed.setDescription(desc);
+				embed.setDescription(desc);
 				embed.setFooter("Click the corresponding reactions below or use the !group command to join a group");
 				resolve ({message: embed, reactions: emojis });
 			});

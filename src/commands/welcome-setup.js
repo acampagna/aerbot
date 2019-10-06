@@ -43,14 +43,18 @@ function invoke({ message, params, serverData, client }) {
 		const embedOne = new Discord.RichEmbed();
 		embedOne.setTitle("Welcome to Dauntless!")
 		embedOne.setColor("GOLD");
-		embedOne.setDescription("Welcome to Dauntless and the Dauntless Gaming Community discord! Dauntless is a multi-game & multi-platform gaming community. Our goal is to create a large, functional, and fun gaming community for all gamers no matter your platform, culture, gender, region, etc.\n\nWe are just getting started and hope to start growing more rapidly. Please keep up with discord for the latest games, announcements, events, etc.\n\nThe most important step is to add yourself to some game and platform groups. See below for more details on groups.");
+		embedOne.setDescription("Welcome to Dauntless and the Dauntless Gaming Community discord! Dauntless is a multi-game & multi-platform gaming community. Our goal is to create "
+		+ "a large, functional, and fun gaming community for all gamers no matter your platform, culture, gender, region, etc.\n\nWe are just getting started and hope to start "
+		+ "growing more rapidly. Please keep up with discord for the latest games, announcements, events, etc.\n\nThe most important step is to add yourself to some game and "
+		+ "platform groups. See below for more details on groups.");
 		embedOne.setThumbnail("https://i.imgur.com/6bv1ti2.png");
 		channel.send(embedOne);
 
 		const embedTwo = new Discord.RichEmbed();
 		embedTwo.setTitle("Get Started with Dauntless!");
-		embedTwo.setDescription("There are somethings you sould to do as a new member that will help you get catch you up with things going on in Dauntless. Please do the following three steps as soon as you're able to.");
-		embedTwo.setColor("RED");
+		embedTwo.setDescription("There are somethings you sould to do as a new member that will help you get catch you up with things going on in Dauntless. "
+		+ "Please do the following three steps as soon as you're able to.");
+		embedTwo.setColor("RANDOM");
 		embedTwo.addField("ONE", "Add yourself to\nsome groups.", true);
 		embedTwo.addField("TWO", "Read all the\ncurrently scheduled \#events.", true);
 		embedTwo.addField("THREE", "Introduce yourself\nin the \#introductions\nchannel.", true);
@@ -59,10 +63,21 @@ function invoke({ message, params, serverData, client }) {
 
 		//Super proud of this part. "embedThree1"...lol
 		const embedThree1 = new Discord.RichEmbed();
-		embedThree1.setDescription("**:tickets: Recruit your Friends :tickets:**\nDauntless will be better and more vibrant if we all invite our friends to join in on our gaming fun. Please consider inviting your friends to this Discord. http://www.discord.gg/JtWe5ND")
-		embedThree1.setColor("RED");
+		embedThree1.setDescription("**:tickets: Recruit your Friends :tickets:**\nDauntless will be better and more vibrant if we all invite our friends to join in on our gaming "
+		+ "fun. Please consider inviting your friends to this Discord.\nhttp://www.discord.gg/JtWe5ND")
+		embedThree1.setColor("RANDOM");
 		embedThree1.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
 		channel.send(embedThree1);
+
+		const embedThree3 = new Discord.RichEmbed();
+		embedThree3.setDescription("**:sparkles: Discord Tips :sparkles:**\n"
+		+ "1. Mute channels that are too noisy");
+		embedThree3.setColor("RANDOM");
+		embedThree3.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
+		channel.send(embedThree3);
+
+		//https://www.discoverdiscord.com/blog/discord-notifications-under-control
+		//:sparkles: 
 
 		//Super proud of this part. "embedThree2"...lol
 		/*const embedThree2 = new Discord.RichEmbed();

@@ -25,17 +25,16 @@ function invoke({ message, params, serverData, client }) {
 		var nameMentions = "";
 		message.mentions.members.forEach(mention => {
 			ids.push(mention.id);
-			//nameMentions += mention + " ";
+			nameMentions += mention + " ";
 		});
 		User.findInIds(ids).then(users => {
 			users.forEach(user => {
 				console.log(user.username);
 				var server = client.guilds.get(message.guild.id);
-				//HandleActivity(client,message.guild,{event: true},user);
-				//handleActivityNew(client, server, activity, userData)
+				HandleActivity(client,server,{event: true},user);
 			});
 		});
-		return Promise.resolve("Gave event credit to " + nameMentions);
+		return Promise.resolve("Gave 25 exp for participating in an event to " + nameMentions);
 	} else {
 		return Promise.resolve("You must @mention at least 1 user to give event credit to.");
 	}

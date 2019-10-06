@@ -22,7 +22,7 @@ function calculateActionExp(action) {
 			return 10;
 			break;
 		case 'event':
-			return 50;
+			return 25;
 			break;
 		case 'br_win':
 			return 100;

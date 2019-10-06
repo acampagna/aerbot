@@ -111,6 +111,22 @@ function sendQotd(qotd, client, serverData) {
 	embed.setTitle("Question of the Day - " + date.toLocaleDateString("en-US", options));
 	embed.setColor("GOLD");
 	embed.setDescription("**" + qotd + "**");
+	embed.setFooter("Please share your answer with us today! Note: Only 1 post in this channel per person per day so make it count. To make a new post you must delete the original");
+	
+	var qotdChan = client.channels.get(serverData.qotdChannelId);
+	
+	qotdChan.send(embed).then(function (message) {
+		serverData.updateQotdMessageId(message.id);
+	}).catch(function() {
+		//Something
+	});
+}
+
+function sendOneWordStory(client, serverData) {
+	const embed = new Discord.RichEmbed();
+	embed.setTitle("One Word Story - Halloweed");
+	embed.setColor("GOLD");
+	embed.setDescription("The rules are simple. Everyone ");
 	embed.setFooter("Please share your answer with us today! *Note: Only 1 post in this channel per person per day so make it count. To make a new post you must delete the original*");
 	
 	var qotdChan = client.channels.get(serverData.qotdChannelId);

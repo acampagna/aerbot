@@ -7,7 +7,7 @@ module.exports = new Command({
 	name: "card",
 	description: "Prints user card",
 	syntax: "card",
-	admin: false,
+	admin: true,
 	invoke
 });
 

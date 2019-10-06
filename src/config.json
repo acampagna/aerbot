@@ -1,4 +1,6 @@
 {
-	"onlineIterationInterval": "3600000",
-	"onlineIterationInterval2": "60000"
+	"onlineIterationInterval": "7200000",
+	"onlineIterationInterval3": "3600000",
+	"onlineIterationInterval2": "60000",
+	"voiceIterationInterval2": "300000"
 }

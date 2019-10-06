@@ -30,7 +30,11 @@ async function handleActivityNew(client, server, activity, userData) {
 		if(activity.message) {
 			userData.lastMessage = date;
 			userData.messages++;
-			exp = MemberUtil.calculateNewExp("message", exp);
+
+			var newExp = MemberUtil.calculateActionExp("message");
+			exp += newExp; 
+
+			DailyActivity.add(userData.id, "message", newExp);
 
 			//Fix username
 			if(activity.message.member.displayName) {
@@ -42,21 +46,28 @@ async function handleActivityNew(client, server, activity, userData) {
 		if(activity.reaction) {
 			userData.lastReaction = date;
 			userData.reactions++;
-			exp = MemberUtil.calculateNewExp("reaction", exp);
-			//console.log(server);
+
+			var newExp = MemberUtil.calculateActionExp("reaction");
+			exp += newExp; 
+
+			DailyActivity.add(userData.id, "reaction", newExp);
 		}
 
 		//Handle Event
 		if(activity.event) {
 			userData.events++;
-			exp = MemberUtil.calculateNewExp("event", exp);
+
+			var newExp = MemberUtil.calculateActionExp("event");
+			exp += newExp; 
+
+			DailyActivity.add(userData.id, "event", newExp);
 		}
 
 		console.log(userData.id);
 		var member = server.members.get(userData.id);
 		//console.log(member);
 
-		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4);
+		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4) + (userData.events*25);
 		userData.exp = exp;
 		userData.level = MemberUtil.calculateLevel(exp);
 
