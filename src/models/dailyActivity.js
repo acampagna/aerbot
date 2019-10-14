@@ -16,7 +16,7 @@ module.exports = function() {
 	});
 
 	dailyActivitySchema.statics.add = function(userId, type, exp) {
-		console.log("Adding Daily Activity");
+		//console.log("Adding Daily Activity");
 		this.create({userId: userId, type: type, exp: exp});
 	};
 

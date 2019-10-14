@@ -115,7 +115,6 @@ var threeWayKill = [
 ];
 
 var weapons = [
-    //"BFG",
     "Frying Pan",
     //"Poring Wand",
     //"Fooling Laser Gun",
@@ -129,7 +128,16 @@ var weapons = [
     //"Seagull Bone Crossbow",
     //"Thorny Spine Hammer",
     //"Pet Direwolf",
-    "$100 Bill"
+    "$100 Bill",
+    "Buster Sword",
+    "Humerun Bat",
+    "BFG 9000",
+    "Gravity Gun",
+    "Fire Flower",
+    "Fatman and Little Boy",
+    "Banana Peel",
+    "Star Rod",
+    "Master Sword"
 ];
 
 var showdownHits = [
@@ -152,11 +160,19 @@ var showdownArenas = [
     "in Aerfalle's closet",
     "in Deathsfew's sex dungeon",
     "on top of Mt. Doom",
-    "at the Dauntless Enclave",
     "in Realm's Meme Haven",
-    "at Fallen's Tailor Shop",
-    "in Millie's Dank Cave",
-    "at the Teri Motor Inn"
+    "in Summoner's Rift",
+    "in King's Canyon",
+    "at the Raccoon City Police Department",
+    "in Hyrule Castle",
+    "at the Silent Hill Elementary School",
+    "somewhere in Azeroth",
+    "in Green Hill Zone",
+    "in Dust2",
+    "at the Apollo Square in Rapture",
+    "in BriarRose's Magical Library",
+    "in Skye's Chamber of Horrors",
+    "in Fibonacci's Spiral Outlet"
 ];
 
 var bodyParts = [
@@ -176,17 +192,18 @@ var bodyParts = [
 ];
 
 var animals = [
-    "Brachio",
     "Mammoth",
-    "Sabertooth",
-    "Compy",
-    "Toujiangosaurus",
-    "Apatosaurus",
-    "Allosaurus",
-    "Bonosaurus",
-    "Tarbosaurus",
-    "Ornithomimus",
-    "Skunkodus"
+    "Sabertooth Tiger",
+    "Pikachu",
+    "Pikman",
+    "Pachimari",
+    "Epona",
+    "Magikarp",
+    "Chocobo",
+    "Caterpie",
+    "Yoshi",
+    "Claptrap"
+
 ]
 
 var showdownMisses = [

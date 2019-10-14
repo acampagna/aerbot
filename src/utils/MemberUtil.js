@@ -30,6 +30,9 @@ function calculateActionExp(action) {
 		case 'message':
 			return 1;
 			break;
+		case 'voice':
+			return 2;
+			break;
 		default:
 			return 1;
 			break;

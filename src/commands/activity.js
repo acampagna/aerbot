@@ -3,6 +3,7 @@ const Command = require("../Command.js");
 const mongoose = require('mongoose');
 const DailyActivity = mongoose.model('DailyActivity');
 const WeeklyActivity = mongoose.model('WeeklyActivity');
+const MonthlyActivity = mongoose.model('MonthlyActivity');
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -39,10 +40,10 @@ function invoke({ message, params, serverData, client }) {
 	return new Promise(function(resolve, reject) {
 		switch(newParams[0]) {
 			case 'durations':
-				resolve("Supported activity durations: `daily`");
+				resolve("Supported activity durations: `daily`, `weekly`, and `monthly`");
 				break;
 			case 'types':
-				resolve("Supported activity types: `message`, `reaction`, `event`");
+				resolve("Supported activity types: `message`, `reaction`, `event`, `voice`");
 				break
 		}
 
@@ -52,6 +53,8 @@ function invoke({ message, params, serverData, client }) {
 			ActivityClass = DailyActivity;
 		} else if(activityDuration.toLowerCase() === "weekly") {
 			ActivityClass = WeeklyActivity;
+		} else if(activityDuration.toLowerCase() === "monthly") {
+			ActivityClass = MonthlyActivity;
 		} else {
 			resolve(activityDuration + " activity has not been implemented yet!");
 		}
@@ -65,6 +68,7 @@ function invoke({ message, params, serverData, client }) {
 					case 'message':
 					case 'reaction':
 					case 'event':
+					case 'voice':
 						ActivityClass.countDocuments({type: newParams[2]}, function (err, count) {
 							resolve("Total " + activityDuration + " " + newParams[2] + " activity: " + count);
 						});
@@ -113,14 +117,17 @@ function invoke({ message, params, serverData, client }) {
 						total++;
 						if(total <= limit) {
 							let member = client.guilds.get(serverData._id).members.get(key);
-							let username = member.displayName;
 
 							if(total === 1) {
 								let avatar = member.user.avatarURL;
 								embed.setThumbnail(avatar);
 							}
 
-							embed.addField(total + ". " + username, value + " exp");
+							if(member){
+								embed.addField(total + ". " +  member.displayName, value + " exp");
+							} else {
+								total--;
+							}	
 						}
 					});
 					resolve({embed});

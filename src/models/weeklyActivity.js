@@ -18,7 +18,7 @@ module.exports = function() {
 	});
 
 	weeklyActivitySchema.statics.add = function(userId, type, exp) {
-		console.log("Adding Weekly Activity");
+		//console.log("Adding Weekly Activity");
 		this.create({userId: userId, type: type, exp: exp});
 	};
 

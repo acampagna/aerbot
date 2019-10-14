@@ -63,11 +63,21 @@ async function handleActivityNew(client, server, activity, userData) {
 			DailyActivity.add(userData.id, "event", newExp);
 		}
 
+		//Handle Voice
+		if(activity.voice) {
+			userData.voiceActivity++;
+
+			var newExp = MemberUtil.calculateActionExp("voice");
+			exp += newExp; 
+
+			DailyActivity.add(userData.id, "voice", newExp);
+		}
+
 		console.log(userData.id);
 		var member = server.members.get(userData.id);
 		//console.log(member);
 
-		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4) + (userData.events*25);
+		var expectedExp = userData.messages + userData.activityPoints + (userData.reactions*4) + (userData.events*25) + (userData.voiceActivity * 2);
 		userData.exp = exp;
 		userData.level = MemberUtil.calculateLevel(exp);
 

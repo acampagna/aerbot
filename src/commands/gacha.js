@@ -19,8 +19,8 @@ const ggs = new GachaGameService();
  * @copyright Dauntless Gaming Community 2019
  */
 function invoke({ message, params, serverData, client }) {
-	CoreUtil.dateLog("SERVER DATA:");
-	CoreUtil.dateLog(serverData);
+	//CoreUtil.dateLog("SERVER DATA:");
+	//CoreUtil.dateLog(serverData);
 
 	if(ggs.getGameInProgress()) {
 		if(CoreUtil.isMemberAdmin(message, serverData) && params[0] === "end") {

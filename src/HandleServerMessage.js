@@ -30,8 +30,8 @@ function handleServerMessage(client, message, commands) {
 function handleServerCommand(client, message, commands, serverData) {
 	const { botName, isMemberAdmin, params, command } = parseDetails(message, commands, serverData);
 
-	CoreUtil.dateLog("SERVER DATA:");
-	CoreUtil.dateLog(serverData);
+	//CoreUtil.dateLog("SERVER DATA:");
+	//CoreUtil.dateLog(serverData);
 
 	//CoreUtil.dateLog(`Command: `,command);
 	if (!command) {
@@ -63,7 +63,7 @@ function handleServerCommand(client, message, commands, serverData) {
 					//Something
 				});
 		    } else {
-				if(response) {
+				if(response && response != "") {
 					message.reply(response);
 				}
 			}

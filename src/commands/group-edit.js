@@ -48,7 +48,7 @@ function invoke({ message, params, serverData, client }) {
 	var cmd = newParams[1];
 	var value = newParams[2];
 
-	if(groupName && cmd && value) {
+	if(groupName && cmd && value && groupName.length > 0) {
 		return new Promise(function(resolve, reject) {
 			Group.findGroupByName(groupName).then(group => {
 				if(!group) {

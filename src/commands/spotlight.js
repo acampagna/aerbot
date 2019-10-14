@@ -1,7 +1,7 @@
 const CoreUtil = require("../utils/Util.js");
 const Command = require("../Command.js");
 const mongoose = require('mongoose');
-const User = mongoose.model('Spotlight');
+//const User = mongoose.model('Spotlight');
 const Discord = require("discord.js");
 
 module.exports = new Command({
@@ -66,30 +66,31 @@ function invoke({ message, params, serverData, client }) {
 	embedOne.setAuthor("Brawl Stars","https://i.imgur.com/UGPXIAy.jpg", "https://supercell.com/en/games/brawlstars/");
 	embedOne.setImage("https://i.imgur.com/0kn9XL8.jpg");*/
 
-	const emojiId = "624999051493900309";
-	const gameName = "Call of Duty Mobile";
-	const gameWebsite = "https://www.callofduty.com/mobile";
+	const emojiId = "633161258136240138";
+	const gameName = "Dauntless";
+	const gameWebsite = "https://playdauntless.com/";
 
 	var gameEmoji = client.emojis.get(emojiId);
 	var eventsChannel = client.channels.get("612175461551833129");
+	//var refRole = client.roles.get("");
 
 	const embedOne = new Discord.RichEmbed();
 	embedOne.setTitle("Game Spotlight - " + gameName);
 	embedOne.setColor("GOLD");
-	embedOne.setDescription("Call of Duty: Mobile is a free-to-play first-person shooter game for Android and iOS. CoD: Mobile allows you to play 5v5 games in many of the great "
-	+ "CoD game modes that you've come to love such as Team Deathmatch, Domination, and Search & Destroy. It also has a 100 player Battle Royale with classes, guns, gun upgrades, vehicles, resurrection, zombies, and more!"
-	+ " This truly is a great interpretation of CoD on a mobile device. Come join the COD group and lets play together!"
-	+ "\n\n[CoD:M Website](" + gameWebsite + ") | [CoD:M Trailer](https://www.youtube.com/watch?v=n4b8FRUDNZo) | [CoD:M Walkthrough](https://www.youtube.com/watch?v=eiYQ4jGf4wE)");
-	embedOne.addField("Platforms", "Mobile", true);
-	embedOne.addField("Genre", "FPS & BR", true);
-	embedOne.addField("Players", "5+", true);
+	embedOne.setDescription("Craft legendary weapons and slay massive Behemoths. Forge your legend in a fast-paced co-op action RPG - always free to play."
+	+ "\n\nThink of Dauntless as Monster Hunter but free and more focused on the online and co-op aspects of the genre. Download the game for free from the Epic Game Store and come play with us!"
+	+ "\n\nFun Fact: We are not named after this game. They stole our name!"
+	+ "\n\n[Website](" + gameWebsite + ") | [Trailer](https://www.youtube.com/watch?v=XeOOofWljhU) | [Walkthrough](https://www.youtube.com/watch?v=501V5zOJMjk)\n");
+	embedOne.addField("Platforms", "PC, PS4, Xbone, Switch", true);
+	embedOne.addField("Genre", "Action RPG", true);
+	embedOne.addField("Players", "4", true);
 	embedOne.addField("Price", "Free", true);
-	embedOne.addField("Clan", "Join the DauntlessGC clan once you hit level 5!");
+	embedOne.addField("Clan", "Join the 'DauntlessGC' clan!");
 	embedOne.setFooter("Please be sure to join the " + gameName + " group by clicking the reaction below");
-	embedOne.setAuthor(gameName,"https://i.imgur.com/PZ9xsSI.png", gameWebsite);
-	embedOne.setImage("https://i.imgur.com/3QzEjH6.jpg");
+	embedOne.setAuthor(gameName,"https://i.imgur.com/Ctg3egF.jpg", gameWebsite);
+	embedOne.setImage("https://i.imgur.com/OMep6jr.jpg");
 
-	newMessage = message.channel.send("@everyone Today's Game Spotlight is " + gameName + "! If this game sounds interesting to you please click the " + gameEmoji + " reaction below to join the group. Please check out " + eventsChannel + " for " + gameName + " events happening soon!", { embed: embedOne }).then(function (message) {
+	newMessage = message.channel.send("Today's Game Spotlight is " + gameName + "! If this game sounds interesting to you please click the " + gameEmoji + " reaction below to join the group. Please check out " + eventsChannel + " for " + gameName + " events happening soon!", { embed: embedOne }).then(function (message) {
 		message.react(emojiId);
 		//message.pin();
 	}).catch(function() {

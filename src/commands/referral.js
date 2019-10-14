@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 module.exports = new Command({
-	name: "referrer",
+	name: "referral",
 	description: "Set who recruited you to the Dauntless discord server",
-	syntax: "referrer",
+	syntax: "referral",
 	admin: false,
 	invoke
 });
@@ -31,6 +31,11 @@ function invoke({ message, params, serverData, client }) {
 			//resolve("Successfully set " + referrer + " as your referrer. Thank You!");
 		});
 	} else {
-		return Promise.resolve("You must @mention an existing user. i.e. `!referrer " + message.member + "`");
+		return new Promise(function(resolve, reject) {
+			User.countDocuments({referrer: message.member.id}, function (err, count) {
+				resolve(" has referred " + count + " members.\n\nTo identify who referred you please use this command and @mention your referrer. i.e. `!referrer @Aerbot`");
+			});
+		});
+		//return Promise.resolve("You must @mention an existing user. i.e. `!referrer " + message.member + "`");
 	}
 }

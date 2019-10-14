@@ -14,18 +14,18 @@ module.exports = function() {
 		value: String
 	});
 	
-	userSchema.methods.get = function (key) {
+	aerbotSchema.statics.get = function (key) {
 		return this.model('Aerbot').findOne({key: key}).exec();
 	}
 
-	userSchema.methods.set = function (key, value) {
+	aerbotSchema.statics.set = function (key, value) {
 		return this.model('Aerbot').findOneAndUpdate(
 			{key: key},
 			{key: key, value: value},
 			{upsert: true, new: true}).exec();
 	}
 
-	let AerbotModel = mongoose.model('Aerbot', serverSchema);
+	let AerbotModel = mongoose.model('Aerbot', aerbotSchema);
 
 	AerbotModel.upsert = function(doc){
 		return AerbotModel.findOneAndUpdate(

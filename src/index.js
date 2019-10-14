@@ -9,21 +9,25 @@ const Client = require("./Client.js");
 const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
+const DateDiff = require("date-diff");
+require('./models/monthlyActivity.js')();
 require('./models/weeklyActivity.js')();
 require('./models/dailyActivity.js')();
 require('./models/server.js')();
 require('./models/group.js')();
 require('./models/user.js')();
 require('./models/guild.js')();
-require('./models/spotlight.js')();
+require('./models/aerbot.js')();
 const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
 const GachaGameService = require("./services/GachaGameService");
 const InternalConfig = require("./internal-config.json");
 const Group = mongoose.model('Group');
+const Aerbot = mongoose.model('Aerbot');
 const DailyActivity = mongoose.model('DailyActivity');
 const WeeklyActivity = mongoose.model('WeeklyActivity');
+const MonthlyActivity = mongoose.model('MonthlyActivity');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
@@ -35,6 +39,8 @@ var qotdChanId;
 client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
 	setInterval(doVoiceChannelScan, Config.voiceIterationInterval);
+	setInterval(doActivityConversion, Config.activityIterationInterval);
+
 	doActivityConversion();
 });
 client.on("message", message => {
@@ -238,6 +244,8 @@ client.on("ready", () => {
 			mainGuild = server;
 		}
 	});
+
+	//doVoiceChannelScan();
 });
 
 client.on("voiceStateUpdate", member => {
@@ -254,7 +262,7 @@ client.on("guildMemberAdd", (member) => {
 		//+ "\n\n > If you decide to leave: __Please__ message " + aerMem + " before you do and let us know you're unhappy here. Your feedback would be greatly appreciated and will help future members of Dauntless!"
 		//+ "\n > If you're here to spam your own Discord server, stream, website, etc please just message " + aerMem + " and we can discuss a potential partnership or advertisement swap!");
 		
-		client.serverModel.findById(member.guild.id).exec().then(server =>{
+		client.serverModel.findById(member.guild.id).exec().then(server => {
 			var welcomeChannel = client.channels.get(server.welcomeChannelId);
 			//var introChannel = client.channels.get(server.introChannelId);
 			client.channels.get(server.publicChannelId).send("Welcome " + member + " to the Dauntless Gaming Community! Please read the " + welcomeChannel + " channel. It will explain everything you need to get started in Dauntless!");
@@ -281,52 +289,125 @@ async function doServerIteration() {
 			mainGuild = server;
 		}
 
-		CoreUtil.asyncForEach(server.members.array(), async (member) => {
-			//console.log("Processing");
-			if(member.presence.status != "offline" && !member.user.bot) {
-				CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
-				UserModel.findById(member.id).exec().then(userData => HandleActivity(
-					client,
-					server,
-					{},
-					userData || newUser(member.id, member.displayName)
-				));
-				await CoreUtil.waitFor(500);
-			}
+		client.serverModel.findById(server.id).exec().then(serverData => {
+			CoreUtil.asyncForEach(server.members.array(), async (member) => {
+				if(member.presence.status != "offline" && !member.user.bot) {
+					CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
+					UserModel.findById(member.id).exec().then(userData => { 
+						console.log(new DateDiff(new Date(), new Date(userData.joined)).days());
+	
+						if(new DateDiff(new Date(), new Date(userData.joined)).days() >= 14) {
+							console.log(member.displayName + " joined over 14 days ago!");
+							if(member.roles.find(role => role.id === serverData.welcomeRole)) {
+								console.log(member.displayName + " is also in the welcome role! Removing Welcome Role & Adding Member Role.");
+								//member.removeRole(serverData.welcomeRole);
+								//member.addRole(serverData.memberRoleId);
+							}
+						}
+						HandleActivity(client,server,{},userData || newUser(member.id, member.displayName));
+					});
+					await CoreUtil.waitFor(500);
+				}
+			});
 		});
 	})
 }
 
 async function doVoiceChannelScan() {
+	CoreUtil.dateLog(`[Voice Interval]`);
+	const channels = client.guilds.get("524900292836458497").channels.filter(c => c.type === 'voice' && c.name.toLowerCase() != "afk");
 
+	for (const [channelID, channel] of channels) {
+		//console.log("Channel " + channelID + " " + channel.name);
+		for (const [memberID, member] of channel.members) {
+			//console.log("Member " + memberID + " " + member.user.username);
+			UserModel.findById(memberID).exec().then(userData => {
+				if(userData) {
+					HandleActivity(client,client.guilds.get("524900292836458497"),{voice: true},userData || newUser(user.id, user.username));
+				}
+			});
+		}
+	}
 }
 
 async function doActivityConversion() {
+	CoreUtil.dateLog(`[Activity Interval]`);
 	var userActivity = new Map();
 	var expectedDocs = 0;
+	var lastDailyToWeekly;
+	var lastWeeklyToMonthly;
 
-	/*DailyActivity.findAllActivity().then(activities => {
-		activities.forEach(activity =>{
-			var uid = activity.userId;
-			var type = activity.type;
-			var xp = activity.exp;
+	Aerbot.get("lastDailyToWeeklyActivityConversion").then(meta => {
+		lastDailyToWeekly = new Date(meta.value);
+		
+		//console.log(meta);
+		//console.log(lastDailyToWeekly);
+		
+		console.log("Daily to Weekly Hours: " + new DateDiff(new Date(), lastDailyToWeekly).hours());
+		//console.log("Daily to Weekly Days: " + new DateDiff(new Date(), lastDailyToWeekly).days());
 
-			if(userActivity.has(uid)) {
-				var ua = userActivity.get(uid);
-				ua.has(type) ? ua.set(type, ua.get(type)+xp) : ua.set(type, xp);
-			} else {
-				userActivity.set(uid, new Map([[type,xp]]));
-			}
+		/*if(new DateDiff(new Date(), new Date(lastDailyToWeekly)).hours() >= 24) {
+			Aerbot.set("lastDailyToWeeklyActivityConversion", new Date());
+			DailyActivity.findAllActivity().then(activities => {
+				activities.forEach(activity =>{
+					var uid = activity.userId;
+					var type = activity.type;
+					var xp = activity.exp;
+
+					if(userActivity.has(uid)) {
+						var ua = userActivity.get(uid);
+						ua.has(type) ? ua.set(type, ua.get(type)+xp) : ua.set(type, xp);
+					} else {
+						userActivity.set(uid, new Map([[type,xp]]));
+					}
+				});
+
+				userActivity.forEach(function(activityMap, userId) {
+					expectedDocs += activityMap.size;
+					WeeklyActivity.addMap(userId, activityMap);
+				});
+
+				console.log(userActivity);
+				DailyActivity.deleteMany({}).exec();
+			});
+		}*/
+
+		Aerbot.get("lastWeeklyToMonthlyActivityConversion").then(meta => {
+			lastWeeklyToMonthly = new Date(meta.value);
+	
+			//console.log(meta);
+			//console.log(lastWeeklyToMonthly);
+	
+			console.log("Weekly to Monthly Hours: " + new DateDiff(new Date(), lastWeeklyToMonthly).hours());
+			//console.log("Weekly to Monthly Days: " + new DateDiff(new Date(), lastWeeklyToMonthly).days());
+	
+			/*if(new DateDiff(new Date(), new Date(lastWeeklyToMonthly)).hours() >= 168) {
+				//Aerbot.set("lastWeeklyToMonthlyActivityConversion", new Date());
+				WeeklyActivity.findAllActivity().then(activities => {
+					activities.forEach(activity =>{
+						var uid = activity.userId;
+						var type = activity.type;
+						var xp = activity.exp;
+	
+						if(userActivity.has(uid)) {
+							var ua = userActivity.get(uid);
+							ua.has(type) ? ua.set(type, ua.get(type)+xp) : ua.set(type, xp);
+						} else {
+							userActivity.set(uid, new Map([[type,xp]]));
+						}
+					});
+	
+					userActivity.forEach(function(activityMap, userId) {
+						expectedDocs += activityMap.size;
+						MonthlyActivity.addMap(userId, activityMap);
+					});
+	
+					console.log(userActivity);
+					//WeeklyActivity.deleteMany({}).exec();
+				});
+			}*/
 		});
-
-		userActivity.forEach(function(activityMap, userId) {
-			expectedDocs += activityMap.size;
-			WeeklyActivity.addMap(userId, activityMap);
-		});
-
-		console.log(userActivity);
-		//DailyActivity.deleteMany({}).exec();
-	});*/
+	});
 }
 
 function checkOnlineStatus(server) {

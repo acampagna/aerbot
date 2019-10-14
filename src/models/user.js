@@ -20,6 +20,7 @@ module.exports = function() {
 		class: { type: String, default: "Padawan" },
 		messages: { type: Number, default: 0, min: 0 },
 		events: { type: Number, default: 0, min: 0 },
+		voiceActivity: { type: Number, default: 0, min: 0 },
 		reactions: { type: Number, default: 0, min: 0 },
 		praise: { type: Number, default: 0, min: 0 },
 		activityPoints: { type: Number, default: 0, min: 0 },
