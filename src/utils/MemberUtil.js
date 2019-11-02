@@ -22,7 +22,7 @@ function calculateActionExp(action) {
 			return 10;
 			break;
 		case 'event':
-			return 25;
+			return 50;
 			break;
 		case 'br_win':
 			return 100;
@@ -31,7 +31,13 @@ function calculateActionExp(action) {
 			return 1;
 			break;
 		case 'voice':
-			return 2;
+			return 4;
+			break;
+		case 'trivia_question':
+			return 10;
+			break;
+		case 'trivia_game':
+			return 100;
 			break;
 		default:
 			return 1;

@@ -18,6 +18,14 @@ module.exports = function() {
 		return this.model('Aerbot').findOne({key: key}).exec();
 	}
 
+	aerbotSchema.statics.getVal = function (key) {
+		console.log("Aerbot getVal");
+		this.model('Aerbot').findOne({key: key}).exec().then(meta => { 
+			console.log("Value: " + meta.value);
+			return meta.value; 
+		});
+	}
+
 	aerbotSchema.statics.set = function (key, value) {
 		return this.model('Aerbot').findOneAndUpdate(
 			{key: key},

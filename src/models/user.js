@@ -21,6 +21,8 @@ module.exports = function() {
 		messages: { type: Number, default: 0, min: 0 },
 		events: { type: Number, default: 0, min: 0 },
 		voiceActivity: { type: Number, default: 0, min: 0 },
+		triviaCorrect: { type: Number, default: 0, min: 0 },
+		triviaWon: { type: Number, default: 0, min: 0 },
 		reactions: { type: Number, default: 0, min: 0 },
 		praise: { type: Number, default: 0, min: 0 },
 		activityPoints: { type: Number, default: 0, min: 0 },
@@ -75,6 +77,11 @@ module.exports = function() {
 
 	userSchema.statics.findInIds = function(ids) {
 		return this.find({_id: {$in:ids} }).exec();
+	}
+
+	userSchema.statics.findActiveSince = function(date) {
+		//console.log("{\"lastActive\" : {\"$gte\": " + date + "}}");
+		return this.find({lastActive : {"$gte": date}}).exec();
 	}
 
 	userSchema.statics.byUsername = function(username) {

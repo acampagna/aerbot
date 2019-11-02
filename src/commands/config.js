@@ -64,6 +64,13 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing channel");
 			}
 			break;
+		case 'set_trivia_channel':
+			if (message.mentions.channels.size > 0) {
+				serverData.updateTriviaChannelId(message.mentions.channels.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing channel");
+			}
+			break;
 		case 'set_public_channel':
 			if (message.mentions.channels.size > 0) {
 				serverData.updatePublicChannelId(message.mentions.channels.first().id)

@@ -22,6 +22,7 @@ module.exports = function() {
 		moderatorRoleId: String,
 		botChannelId: String,
 		publicChannelId: String,
+		triviaChannelId: String,
 		qotdChannelId: String,
 		qotdMessageId: String,
 		qotd: String,
@@ -58,6 +59,10 @@ module.exports = function() {
 
 	serverSchema.methods.updateIntroChannelId = function (id) {
 		this.model('Server').updateOne({_id: this.id},{introChannelId: id}).exec();
+	};
+
+	serverSchema.methods.updateTriviaChannelId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{triviaChannelId: id}).exec();
 	};
 
 	serverSchema.methods.updateBotChannelId = function (id) {

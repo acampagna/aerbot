@@ -35,6 +35,7 @@ var messages = [];
 -- Stealing Weapons from other players
 -- Finding weapons and armor to improve attack and hp for the final showdown
 -- Finding special items to assist you in the final showdown
+- Don't kill yourself
 */
 
 /* **BATTLE ROYALE PATCH NOTES**
@@ -155,7 +156,6 @@ var showdownHits = [
 ];
 
 var showdownArenas = [
-    "in Cypress' Dark Basement",
     "at the Kiki factory",
     "in Aerfalle's closet",
     "in Deathsfew's sex dungeon",
@@ -1349,8 +1349,14 @@ class GachaBattleRoyale {
             //console.log(aliveString);
             //console.log(deadString);
 
-            embed.addField("Alive *(" + numAlive + ")*", aliveString, true);
-		    embed.addField("Dead *(" + numDead + ")*", deadString, true);
+            if(aliveString){
+                embed.addField("Alive *(" + numAlive + ")*", aliveString, true);
+            }
+            
+            if(deadString) {
+                embed.addField("Dead *(" + numDead + ")*", deadString, true);
+            }
+		    
         }
 
         return embed;

@@ -19,76 +19,28 @@ module.exports = new Command({
  * @copyright Dauntless Gaming Community 2019
  */
 function invoke({ message, params, serverData, client }) {
-	/*return new Promise(function(resolve, reject) {
-		const embed = new Discord.RichEmbed();
-		embed.setColor("GREEN");
-		embed.setTitle(`__ACCOUNTS__`)
-		User.findById(message.member.id).exec().then(user => {
-			let accounts = user.getAccounts();
-			for (var [key, value] of accounts) {
-				if(key != "" && value != "")
-					embed.addField(key, value); 
-			}
-			resolve ({embed});
-		});
-	});*/
-
-	/*const embedOne = new Discord.RichEmbed();
-	embedOne.setTitle("Game Spotlight - Dota Underlords *(Not a MOBA)*")
-	embedOne.setColor("GOLD");
-	embedOne.setDescription("A few of us have been playing Dota Underlords lately and it's been a blast. It's a fun cross-platform strategy game without too much time commitment"
-	+ " that can be played on a phone or computer. We think it would be great if more people tried it out and started playing together.\n\n"
-	+ "[Underlords Website](https://www.underlords.com/) | [Underlords Trailer](https://www.youtube.com/watch?v=z5HPrRBZptY) | [Underlords Intro Guide](https://www.youtube.com/watch?v=5866Pt1o3EI)");
-	embedOne.addField("Dota Underlords", "Dota Underlords is a free-to-play strategy game in the fast-growing Auto Chess genre (It is NOT a MOBA). "
-	+ "The game is based on a popular Dota 2 community created game mode called Dota Auto Chess. Underlords pits you against seven opponents in a battle of wits that will have "
-	+ "you building, combining, and leveling-up a crew in a battle of dominance.")
-	embedOne.addField("Platforms", "Mobile & PC", true);
-	embedOne.addField("Genre", "Auto Chess", true);
-	embedOne.addField("Players", "2-8", true);
-	embedOne.addField("Price", "Free", true);
-	embedOne.addField("Crossplay", "Players across Android, iOS, Windows, macOS, and Linux can all play together");
-	embedOne.setFooter("Please be sure to join the Underlords group by clicking the :dotaUnderlords: reaction below");
-	embedOne.setAuthor("Dota Underlords","https://i.imgur.com/896Mhm3.png", "https://www.underlords.com/");
-	embedOne.setImage("https://i.imgur.com/3Tac0uS.jpg");*/
-
-	/*const embedOne = new Discord.RichEmbed();
-	embedOne.setTitle("Game Spotlight - Brawl Stars")
-	embedOne.setColor("GOLD");
-	embedOne.setDescription("Brawl Stars is a free-to-play mobile top-down arcade arena shooter developed and published by Supercell."
-	+ " Brawl Stars is centered around shooting other players to bring down their health and defeat them.\n\nPlayers can choose between many different brawlers, "
-	+ "each with their own main and ultimate attacks. Games are very quick, fast-paced, and fun which is perfect for a mobile shooter. \n\n"
-	+ "[Website](https://supercell.com/en/games/brawlstars/) | [Trailer](https://www.youtube.com/watch?v=CaryjOdYFa0) | [Intro Guide](https://www.youtube.com/watch?v=6_0Sph8YB9E)");
-	embedOne.addField("Platforms", "Mobile", true);
-	embedOne.addField("Genre", "Arcade Shooter", true);
-	embedOne.addField("Players", "2-10", true);
-	embedOne.addField("Price", "Free", true);
-	embedOne.setFooter("Please be sure to join the Brawl Stars group by clicking the :brawlStars: reaction below");
-	embedOne.setAuthor("Brawl Stars","https://i.imgur.com/UGPXIAy.jpg", "https://supercell.com/en/games/brawlstars/");
-	embedOne.setImage("https://i.imgur.com/0kn9XL8.jpg");*/
-
-	const emojiId = "633161258136240138";
-	const gameName = "Dauntless";
-	const gameWebsite = "https://playdauntless.com/";
+	const emojiId = "633583934806032387";
+	const gameName = "Minecraft";
+	const gameWebsite = "https://www.minecraft.net/";
 
 	var gameEmoji = client.emojis.get(emojiId);
 	var eventsChannel = client.channels.get("612175461551833129");
 	//var refRole = client.roles.get("");
 
+
 	const embedOne = new Discord.RichEmbed();
 	embedOne.setTitle("Game Spotlight - " + gameName);
 	embedOne.setColor("GOLD");
-	embedOne.setDescription("Craft legendary weapons and slay massive Behemoths. Forge your legend in a fast-paced co-op action RPG - always free to play."
-	+ "\n\nThink of Dauntless as Monster Hunter but free and more focused on the online and co-op aspects of the genre. Download the game for free from the Epic Game Store and come play with us!"
-	+ "\n\nFun Fact: We are not named after this game. They stole our name!"
-	+ "\n\n[Website](" + gameWebsite + ") | [Trailer](https://www.youtube.com/watch?v=XeOOofWljhU) | [Walkthrough](https://www.youtube.com/watch?v=501V5zOJMjk)\n");
-	embedOne.addField("Platforms", "PC, PS4, Xbone, Switch", true);
-	embedOne.addField("Genre", "Action RPG", true);
-	embedOne.addField("Players", "4", true);
-	embedOne.addField("Price", "Free", true);
-	embedOne.addField("Clan", "Join the 'DauntlessGC' clan!");
+	embedOne.setDescription("Explore infinite worlds and build everything from the simplest of homes to the grandest of castles. Play in creative mode with unlimited resources or mine deep into the world in survival mode, crafting weapons and armor to fend off dangerous mobs. Create, explore and survive alone or with friends on mobile devices, Switch, Xbox One and Windows 10."
+	+ "\n\n[Website](" + gameWebsite + ") | [Trailer](https://www.youtube.com/watch?v=gcf9FM4TbN4) | [Starter Guide](https://www.youtube.com/watch?v=e-LpPTnme_M)\n");
+	embedOne.addField("Platforms", "All?", true);
+	embedOne.addField("Genre", "Open world Sandbox", true);
+	embedOne.addField("Players", "Many", true);
+	embedOne.addField("Price", "$20-$30", true);
+	embedOne.addField("Server", "Come chat in the minecraft channel to join the discussion about us getting a Dauntless private server!");
 	embedOne.setFooter("Please be sure to join the " + gameName + " group by clicking the reaction below");
-	embedOne.setAuthor(gameName,"https://i.imgur.com/Ctg3egF.jpg", gameWebsite);
-	embedOne.setImage("https://i.imgur.com/OMep6jr.jpg");
+	embedOne.setAuthor(gameName,"https://i.imgur.com/42WV3Lg.jpg", gameWebsite);
+	embedOne.setImage("https://i.imgur.com/Ck3rbFt.jpg");
 
 	newMessage = message.channel.send("Today's Game Spotlight is " + gameName + "! If this game sounds interesting to you please click the " + gameEmoji + " reaction below to join the group. Please check out " + eventsChannel + " for " + gameName + " events happening soon!", { embed: embedOne }).then(function (message) {
 		message.react(emojiId);

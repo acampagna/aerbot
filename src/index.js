@@ -18,6 +18,10 @@ require('./models/group.js')();
 require('./models/user.js')();
 require('./models/guild.js')();
 require('./models/aerbot.js')();
+require('./models/war.js')();
+require('./models/warTeam.js')();
+require('./models/Activity.js')();
+require('./models/trivia.js')();
 const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
@@ -25,9 +29,13 @@ const GachaGameService = require("./services/GachaGameService");
 const InternalConfig = require("./internal-config.json");
 const Group = mongoose.model('Group');
 const Aerbot = mongoose.model('Aerbot');
+const Activity = mongoose.model('Activity');
 const DailyActivity = mongoose.model('DailyActivity');
 const WeeklyActivity = mongoose.model('WeeklyActivity');
 const MonthlyActivity = mongoose.model('MonthlyActivity');
+const War = mongoose.model('War');
+const WarTeam = mongoose.model('WarTeam');
+const Trivia = mongoose.model('Trivia');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
@@ -87,16 +95,35 @@ client.on("message", message => {
 });
 
 client.on("messageReactionAdd", (messageReaction, user) => {
-	CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-	if (messageReaction && user && !user.bot)
+	
+	if (messageReaction && user && !user.bot) {
+		CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
 		UserModel.findById(user.id).exec()
-        	.then(userData => HandleActivity(
+		.then(userData => {
+			HandleActivity(
 				client,
 				messageReaction.message.guild,
 				{reaction: messageReaction},
 				userData || newUser(user.id, user.username)
-			)
-		);
+			);
+		});
+
+		Aerbot.get("currentTriviaId").then(triviaMsgId => {
+			if(messageReaction.message.id === triviaMsgId.value) {
+				var msgReactions = messageReaction.message.reactions;
+	
+				msgReactions.forEach(react => {
+					if(react.users.has(user.id)) {
+						console.log("Reaction has user");
+						if(messageReaction._emoji != react._emoji){
+							console.log("emoji different");
+							react.remove(user.id);
+						}
+					}
+				});
+			}
+		});
+	}
 });
 
 client.on("messageReactionRemove", (messageReaction, user) => {
@@ -147,10 +174,15 @@ client.on('raw', async event => {
 					//console.log(group);
 					var role = eventGuild.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim());
 					var alreadyGroupMember = (member.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim()));
+					var memberRole = eventGuild.roles.get("524900839651803157");
+					var alreadyMember = member.roles.get("524900839651803157");
 
 					var msgText = "";
 
 					if (event.t === "MESSAGE_REACTION_ADD") {
+						if(!alreadyMember) {
+							member.addRole(memberRole);
+						}
 						if(!alreadyGroupMember) {
 							member.addRole(role);
 							group.incrementNumMembers();
@@ -257,8 +289,8 @@ client.on("guildMemberAdd", (member) => {
 		CoreUtil.dateLog("Sending welcome message to " + member.user.username);
 		var aerMem = mainGuild.members.get("151473524974813184");
 		//Need to make this a command or configuration
-		member.send("**Welcome to the Dauntless Gaming Community!**\n\nPlease stick around with us as we are still setting up and preparing for our official launch on Oct 12. At that point we should start to grow quite quickly. "
-		+ "If you have any questions, comments, or suggestions please feel free to message any of our staff.");
+		/*member.send("**Welcome to the Dauntless Gaming Community!**\n\nAt that point we should start to grow quite quickly. "
+		+ "If you have any questions, comments, or suggestions please feel free to message any of our staff.");*/
 		//+ "\n\n > If you decide to leave: __Please__ message " + aerMem + " before you do and let us know you're unhappy here. Your feedback would be greatly appreciated and will help future members of Dauntless!"
 		//+ "\n > If you're here to spam your own Discord server, stream, website, etc please just message " + aerMem + " and we can discuss a potential partnership or advertisement swap!");
 		
@@ -294,17 +326,21 @@ async function doServerIteration() {
 				if(member.presence.status != "offline" && !member.user.bot) {
 					CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
 					UserModel.findById(member.id).exec().then(userData => { 
-						console.log(new DateDiff(new Date(), new Date(userData.joined)).days());
+						if(userData) {
+							console.log(new DateDiff(new Date(), new Date(userData.joined)).days());
 	
-						if(new DateDiff(new Date(), new Date(userData.joined)).days() >= 14) {
-							console.log(member.displayName + " joined over 14 days ago!");
-							if(member.roles.find(role => role.id === serverData.welcomeRole)) {
-								console.log(member.displayName + " is also in the welcome role! Removing Welcome Role & Adding Member Role.");
-								//member.removeRole(serverData.welcomeRole);
-								//member.addRole(serverData.memberRoleId);
+							if(new DateDiff(new Date(), new Date(userData.joined)).days() >= 14) {
+								console.log(member.displayName + " joined over 14 days ago!");
+								if(member.roles.find(role => role.id === serverData.welcomeRole)) {
+									console.log(member.displayName + " is also in the welcome role! Removing Welcome Role & Adding Member Role.");
+									//member.removeRole(serverData.welcomeRole);
+									//member.addRole(serverData.memberRoleId);
+								}
 							}
+							HandleActivity(client,server,{},userData);
+						} else {
+							newUser(member.id, member.displayName).save();
 						}
-						HandleActivity(client,server,{},userData || newUser(member.id, member.displayName));
 					});
 					await CoreUtil.waitFor(500);
 				}
@@ -336,7 +372,7 @@ async function doActivityConversion() {
 	var expectedDocs = 0;
 	var lastDailyToWeekly;
 	var lastWeeklyToMonthly;
-
+//THIS MIGHT BE WRONG! MIGHT NEED TO RESET userActivity after Daily to Weekly!!!
 	Aerbot.get("lastDailyToWeeklyActivityConversion").then(meta => {
 		lastDailyToWeekly = new Date(meta.value);
 		
@@ -346,7 +382,7 @@ async function doActivityConversion() {
 		console.log("Daily to Weekly Hours: " + new DateDiff(new Date(), lastDailyToWeekly).hours());
 		//console.log("Daily to Weekly Days: " + new DateDiff(new Date(), lastDailyToWeekly).days());
 
-		/*if(new DateDiff(new Date(), new Date(lastDailyToWeekly)).hours() >= 24) {
+		if(new DateDiff(new Date(), new Date(lastDailyToWeekly)).hours() >= 24) {
 			Aerbot.set("lastDailyToWeeklyActivityConversion", new Date());
 			DailyActivity.findAllActivity().then(activities => {
 				activities.forEach(activity =>{
@@ -370,7 +406,9 @@ async function doActivityConversion() {
 				console.log(userActivity);
 				DailyActivity.deleteMany({}).exec();
 			});
-		}*/
+		}
+
+		userActivity = new Map();
 
 		Aerbot.get("lastWeeklyToMonthlyActivityConversion").then(meta => {
 			lastWeeklyToMonthly = new Date(meta.value);
@@ -381,8 +419,8 @@ async function doActivityConversion() {
 			console.log("Weekly to Monthly Hours: " + new DateDiff(new Date(), lastWeeklyToMonthly).hours());
 			//console.log("Weekly to Monthly Days: " + new DateDiff(new Date(), lastWeeklyToMonthly).days());
 	
-			/*if(new DateDiff(new Date(), new Date(lastWeeklyToMonthly)).hours() >= 168) {
-				//Aerbot.set("lastWeeklyToMonthlyActivityConversion", new Date());
+			if(new DateDiff(new Date(), new Date(lastWeeklyToMonthly)).hours() >= 168) {
+				Aerbot.set("lastWeeklyToMonthlyActivityConversion", new Date());
 				WeeklyActivity.findAllActivity().then(activities => {
 					activities.forEach(activity =>{
 						var uid = activity.userId;
@@ -403,9 +441,9 @@ async function doActivityConversion() {
 					});
 	
 					console.log(userActivity);
-					//WeeklyActivity.deleteMany({}).exec();
+					WeeklyActivity.deleteMany({}).exec();
 				});
-			}*/
+			}
 		});
 	});
 }

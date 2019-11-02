@@ -62,6 +62,34 @@ function invoke({ message, params, serverData, client }) {
 		switch(cmd) {
 			case 'member':
 				break;
+			case 'stats':
+				//if(activityDuration.toLowerCase() === "monthly") {
+					ActivityClass.getStatistics().then(response => {
+						//console.log(response);
+						const embed = new Discord.RichEmbed();
+						embed.setTitle(activityDuration + " Statistics");
+						embed.setColor("RANDOM");
+
+						let message = response.typeActivity.get("message");
+						let reaction = response.typeActivity.get("reaction");
+						let event = response.typeActivity.get("event");
+						let voice = response.typeActivity.get("voice");
+						let total = response.typeActivity.get("total");
+
+						embed.addField("Message Exp", message);
+						embed.addField("Reaction Exp", reaction);
+						embed.addField("Event Exp", event);
+						embed.addField("Voice Exp", voice);
+						//embed.addField("Trivia Question Exp", event);
+						//embed.addField("Trivia Game Exp", voice);
+						embed.addField("Total Exp", total);
+						embed.addField("Active Users", response.activeUsers);
+						embed.addField("Mean Exp", response.avgExp);
+
+						resolve({embed});
+					});
+				//}
+				break;
 			case 'total':
 				var actionType = "all";
 				switch(newParams[2]) {
@@ -69,6 +97,8 @@ function invoke({ message, params, serverData, client }) {
 					case 'reaction':
 					case 'event':
 					case 'voice':
+					case 'trivia_question':
+					case 'trivia_game':
 						ActivityClass.countDocuments({type: newParams[2]}, function (err, count) {
 							resolve("Total " + activityDuration + " " + newParams[2] + " activity: " + count);
 						});
@@ -93,6 +123,11 @@ function invoke({ message, params, serverData, client }) {
 					limit = newParams[2];
 				}
 
+				var skip = 0;
+				if(!isNaN(newParams[3])) {
+					skip = newParams[3];
+				}
+
 				var userActivity = new Map();
 
 				ActivityClass.findAllActivity().then(activities => {
@@ -112,10 +147,12 @@ function invoke({ message, params, serverData, client }) {
 					//embed.setDescription("The rules are simple. Everyone ");
 					//embed.setFooter("Currently this is showing ALL users with " + activityDuration + " activity. Soon it will show top 10 (or top x) members with the most activity");
 
-					var total = 0;
+					var total = -skip;
+					console.log(skip);
+					console.log(total);
 					sortedUserActivity.forEach(function(value, key) {
 						total++;
-						if(total <= limit) {
+						if(total <= limit && total > 0) {
 							let member = client.guilds.get(serverData._id).members.get(key);
 
 							if(total === 1) {
@@ -124,7 +161,7 @@ function invoke({ message, params, serverData, client }) {
 							}
 
 							if(member){
-								embed.addField(total + ". " +  member.displayName, value + " exp");
+								embed.addField((total + skip) + ". " +  member.displayName, value + " exp");
 							} else {
 								total--;
 							}	

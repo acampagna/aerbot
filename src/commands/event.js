@@ -34,7 +34,7 @@ function invoke({ message, params, serverData, client }) {
 				HandleActivity(client,server,{event: true},user);
 			});
 		});
-		return Promise.resolve("Gave 25 exp for participating in an event to " + nameMentions);
+		return Promise.resolve("Gave 50 exp for participating in an event to " + nameMentions);
 	} else {
 		return Promise.resolve("You must @mention at least 1 user to give event credit to.");
 	}
