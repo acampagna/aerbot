@@ -7,6 +7,8 @@ const TriviaConfig = require("../trivia.json");
 const TriviaUtil = require("../utils/TriviaUtil.js");
 const Discord = require("discord.js");
 const HandleActivity = require("../HandleActivity");
+const UserModel = mongoose.model('User');
+const TriviaService = require("../services/TriviaService");
 
 module.exports = new Command({
 	name: "trivia",
@@ -16,14 +18,19 @@ module.exports = new Command({
 	invoke
 });
 
-const timeToAnswer = 10000;
-const bufferTime = 2500;
+var testMode = false;
+const timeToAnswer = 30000;
+var timeLeftToAnswer = 0;
+const bufferTime = 4000;
 var currentTriviaId = undefined;
+var currentTriviaMessageId = undefined;
 var totalQuestions = 0;
 var currentQuestion = 0;
 var currentStage = 0; // 0 = Ended, 1 = Started, 2 = Asking Question, 3 = Concluding Question, 4 = Displaying Leaderboard
 //var client = undefined;
 //var serverData = undefined;
+
+const TS = new TriviaService();
 
 /**
  * General command to set configuration. I decided to go with specific commands for this bot but I might fall back to a single config command.
@@ -34,23 +41,29 @@ var currentStage = 0; // 0 = Ended, 1 = Started, 2 = Asking Question, 3 = Conclu
 async function invoke({ message, params, serverData, client }) {
 	CoreUtil.dateLog(params);
 
-	router(params[0]);
+	//router(params[0]);
+
+	if(params[2] === "test"){
+		testMode = true;
+	}
+
 	switch(params[0]) {
 		case 'start':
 			if(currentTriviaId) {
 				return Promise.resolve("Trivia already in progress!");
 			} else {
-				if(!isNaN(params[1])) {
+				if(!isNaN(params[1]) && parseInt(params[1]) <= 20) {
 					totalQuestions = parseInt(params[1]);
+				} else {
+					totalQuestions = 10;
 				}
-				startTrivia();
-				sendQuestion(client, serverData);
+				TS.startGame(client,serverData,totalQuestions,testMode);
 			}
 			break;
 		case 'end':
 			if(currentTriviaId) {
-				sendLeaderboard(client, serverData);
-				resetTrivia();
+				TS.sendLeaderboard(client, serverData);
+				TS.resetTrivia();
 				return Promise.resolve("Trivia Ended!");
 			} else {
 				return Promise.resolve("Trivia not in progress!");
@@ -58,14 +71,16 @@ async function invoke({ message, params, serverData, client }) {
 			break;
 		case 'leaderboard':
 			if(currentTriviaId) {
-				sendLeaderboard(client, serverData);
+				TS.sendLeaderboard(client, serverData);
 			} else {
 				return Promise.resolve("Trivia not in progress!");
 			}
 			break;
 		case 'question':
 			console.log("Doing Trivia Question");
-			sendQuestion(client, serverData);
+			//TS.initClientServer(client, serverData);
+			TS.sendQuestion(client, serverData);
+			//TS.deinitClientServer();
 			//console.log(question);
 			return Promise.resolve("");
 		default:
@@ -95,9 +110,11 @@ async function router(client, serverData) {
 
 function resetTrivia() {
 	currentTriviaId = undefined;
+	currentTriviaMessageId = undefined;
 	currentQuestion = 0;
 	totalQuestions = 0;
 	currentStage = 0;
+	testMode = false;
 }
 
 async function startTrivia() {
@@ -109,9 +126,34 @@ async function startTrivia() {
 
 async function sendQuestion(client, serverData) {
 	currentQuestion++;
-	var question = TriviaUtil.sendTriviaQuestion(client, serverData, currentQuestion, totalQuestions);
 
-	await setTimeout(async function() {concludeQuestion(question, client, serverData);}, timeToAnswer);
+	timeLeftToAnswer = timeToAnswer;
+
+	var question = TriviaUtil.sendTriviaQuestion(client, serverData, currentQuestion, totalQuestions, timeLeftToAnswer);
+
+	await setTimeout(async function() {tickDownAndEdit(question, client, serverData);}, 2000);
+}
+
+async function tickDownAndEdit(question, client, serverData){
+	timeLeftToAnswer = timeLeftToAnswer - 2000;
+
+	if(timeLeftToAnswer <= 0) {
+		var triviaMessage = client.channels.get(serverData.triviaChannelId).messages.get(currentTriviaMessageId);
+		triviaMessage.edit(TriviaUtil.getQuestionEmbed(question, currentQuestion, totalQuestions, timeLeftToAnswer));
+
+		currentTriviaMessageId = undefined;
+		concludeQuestion(question, client, serverData);
+	} else {
+		await setTimeout(async function() {tickDownAndEdit(question, client, serverData);}, 2000);
+		
+		if(!currentTriviaMessageId) {
+			var triviaMsgId = await Aerbot.get("currentTriviaId");
+			currentTriviaMessageId = triviaMsgId.value;
+		}
+		var triviaMessage = client.channels.get(serverData.triviaChannelId).messages.get(currentTriviaMessageId);
+
+		triviaMessage.edit(TriviaUtil.getQuestionEmbed(question, currentQuestion, totalQuestions, timeLeftToAnswer));
+	}
 }
 
 async function concludeQuestion(question, client, serverData) {
@@ -128,9 +170,20 @@ async function concludeQuestion(question, client, serverData) {
 	var winnerStr = "";
 
 	answer.users.forEach(user => {
-		if(!user.bot) {
+		if(!user.bot && user.id) {
+			if(!testMode) {
+				UserModel.findById(user.id).exec()
+				.then(userData => {
+					HandleActivity(
+						client,
+						messageReaction.message.guild,
+						{trivia: "question"},
+						userData
+					);
+				});
+			}
 			winnerStr += user.username + ", ";
-			Trivia.saveOrUpdate(currentTriviaId, user.id, 1);
+			Trivia.saveOrUpdate(currentTriviaId, user.id, question.points);
 		}
 	});
 
@@ -142,7 +195,7 @@ async function concludeQuestion(question, client, serverData) {
 	triviaChannel.send(embed);
 
 	if(currentTriviaId) {
-		if(Math.floor(totalQuestions / 2) == currentQuestion) {
+		if(Math.floor(totalQuestions / 2) == currentQuestion || currentQuestion >= totalQuestions) {
 			await setTimeout(async function() {sendLeaderboard(client, serverData);}, bufferTime);
 		} else {
 			await setTimeout(async function() {sendQuestion(client, serverData);}, bufferTime);
@@ -162,10 +215,24 @@ async function sendWinner(client, serverData) {
 		var winner = triviaData[0];
 		//HandleActivity(client,server,{trivia: "game"},user);
 
-		let member = client.guilds.get(serverData._id).members.get(winner.userId);
-		embed.setThumbnail(member.user.avatarURL);
-
-		embed.setDescription("And the winner is... " + member + " with " + winner.points + " points!");
+		if(winner && winner.userId) {
+			if(!testMode) {
+				UserModel.findById(winner.userId).exec()
+				.then(userData => {
+					HandleActivity(
+						client,
+						messageReaction.message.guild,
+						{trivia: "game"},
+						userData
+					);
+				});
+			}
+			let member = client.guilds.get(serverData._id).members.get(winner.userId);
+			embed.setThumbnail(member.user.avatarURL);
+			embed.setDescription("And the winner is... " + member + " with " + winner.points + " points!");
+		} else {
+			embed.setDescription("And the winner is... nobody?!");
+		}
 
 		triviaChannel.send(embed);
 
@@ -205,7 +272,7 @@ async function sendLeaderboard(client, serverData) {
 			}
 		});
 
-		triviaChannel.send(embed).then(m => {
+		triviaChannel.send(embed).then(async m => {
 			if(currentQuestion < totalQuestions) {
 				await setTimeout(async function() {sendQuestion(client, serverData);}, bufferTime);
 			} else {

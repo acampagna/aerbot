@@ -15,6 +15,7 @@ module.exports = function() {
 		username: String,
 		level: { type: Number, default: 1, min: 1, max: 99 },
 		exp: { type: Number, default: 0, min: 0},
+		expAdjustment: { type: Number, default: 0, min: 0},
 		currency: { type: Number, default: 0, min: 0},
 		rank: { type: String, default: "Padawan" },
 		class: { type: String, default: "Padawan" },

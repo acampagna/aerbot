@@ -49,7 +49,7 @@ function dateDebug(...args) {
 }
 
 function isMemberAdmin(message, serverData) {
-	//return message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.officerRoleId);
+	//return message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.moderatorRoleId);
 	return message.member.permissions.has("ADMINISTRATOR");
 }
 
@@ -175,6 +175,18 @@ function arraySearch(arr,val) {
     return false;
 }
 
+
+function removeArrayItemByValue(arr, val) {
+	var index = arr.indexOf(val);
+	if (index !== -1) arr.splice(index, 1);
+
+	return arr;
+}
+
+function isObject(obj) {
+	return obj === Object(obj);
+}
+
 module.exports = {
 	error,
 	dateError,
@@ -194,5 +206,7 @@ module.exports = {
 	getRandomArray,
 	getLowerNumber,
 	getHigherNumber,
-	arraySearch
+	arraySearch,
+	removeArrayItemByValue,
+	isObject
 };

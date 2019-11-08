@@ -22,6 +22,7 @@ require('./models/war.js')();
 require('./models/warTeam.js')();
 require('./models/Activity.js')();
 require('./models/trivia.js')();
+const TriviaService = require("../services/TriviaService");
 const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
@@ -43,6 +44,7 @@ const cmdPrefix = InternalConfig.commandPrefix;
 
 var mainGuild;
 var qotdChanId;
+const TS = new TriviaService();
 
 client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
@@ -53,7 +55,8 @@ client.on("beforeLogin", () => {
 });
 client.on("message", message => {
 	//TODO: Should only do then on non-bot commands
-	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888") {
+	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && 
+	message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888") {
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,
@@ -97,45 +100,55 @@ client.on("message", message => {
 client.on("messageReactionAdd", (messageReaction, user) => {
 	
 	if (messageReaction && user && !user.bot) {
-		CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-		UserModel.findById(user.id).exec()
-		.then(userData => {
-			HandleActivity(
-				client,
-				messageReaction.message.guild,
-				{reaction: messageReaction},
-				userData || newUser(user.id, user.username)
-			);
-		});
+		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
+			var msgReactions = messageReaction.message.reactions;
 
-		Aerbot.get("currentTriviaId").then(triviaMsgId => {
-			if(messageReaction.message.id === triviaMsgId.value) {
-				var msgReactions = messageReaction.message.reactions;
-	
-				msgReactions.forEach(react => {
-					if(react.users.has(user.id)) {
-						console.log("Reaction has user");
-						if(messageReaction._emoji != react._emoji){
-							console.log("emoji different");
-							react.remove(user.id);
+			msgReactions.forEach(react => {
+				if(react.users.has(user.id)) { //user reacted to this reaction
+					if(messageReaction._emoji != react._emoji) { //this reaction ISN'T the answer
+						if(TS.userAnsweredCorrectly(user.id)) { //this user already had the right answer
+							TS.removeUserFromAnsweredCorrectly(user.id);
 						}
+					} else { //this reaction IS the right answer
+						TS.addUserFromAnsweredCorrectly(user.id);
 					}
-				});
-			}
-		});
+				}
+			});
+			react.remove(user.id);
+		} else {
+			UserModel.findById(user.id).exec()
+			.then(userData => {
+				if(userData.reactions > 50 && userData.reactions < userData.messages) {
+					CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
+					HandleActivity(
+						client,
+						messageReaction.message.guild,
+						{reaction: messageReaction},
+						userData || newUser(user.id, user.username)
+					);
+				}
+			});
+		}
 	}
 });
 
 client.on("messageReactionRemove", (messageReaction, user) => {
-	CoreUtil.dateLog(`Reaction Removed: ${messageReaction} - ${user.id}`);
-	if (messageReaction && user && !user.bot)
-		UserModel.findById(user.id).exec()
-		.then(userData => {
-			userData.reactions--;
-			userData.activityPoints--;
-			userData.exp = userData.exp - 5;
-			userData.save();
-		});
+	if (messageReaction && user && !user.bot) {
+		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
+			// Nothing right now
+		} else {
+			UserModel.findById(user.id).exec()
+			.then(userData => {
+				if(userData.reactions > 50 && userData.reactions < userData.messages) {
+					CoreUtil.dateLog(`Reaction Removed: ${messageReaction} - ${user.id}`);
+					userData.reactions--;
+					userData.activityPoints--;
+					userData.exp = userData.exp - 5;
+					userData.save();
+				}
+			});
+		}
+	}
 });
 
 const events = {

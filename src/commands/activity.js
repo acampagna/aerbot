@@ -70,6 +70,8 @@ function invoke({ message, params, serverData, client }) {
 						embed.setTitle(activityDuration + " Statistics");
 						embed.setColor("RANDOM");
 
+						console.log(typeActivity);
+
 						let message = response.typeActivity.get("message");
 						let reaction = response.typeActivity.get("reaction");
 						let event = response.typeActivity.get("event");
@@ -80,8 +82,8 @@ function invoke({ message, params, serverData, client }) {
 						embed.addField("Reaction Exp", reaction);
 						embed.addField("Event Exp", event);
 						embed.addField("Voice Exp", voice);
-						//embed.addField("Trivia Question Exp", event);
-						//embed.addField("Trivia Game Exp", voice);
+						embed.addField("Trivia Question Exp", response.typeActivity.get("trivia_question"));
+						embed.addField("Trivia Game Exp", response.typeActivity.get("trivia_game"));
 						embed.addField("Total Exp", total);
 						embed.addField("Active Users", response.activeUsers);
 						embed.addField("Mean Exp", response.avgExp);

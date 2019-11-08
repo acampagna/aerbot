@@ -42,9 +42,16 @@ function invoke({ message, params, serverData, client }) {
 			embedMobile.setTitle(`__Mobile Groups__`);
 			embedMobile.setFooter("Click the corresponding reactions below to join a Mobile group");
 
+			var emojisConsole = new Array();
+			const embedConsole = new Discord.RichEmbed();
+			embedConsole.setColor("RANDOM");
+			embedConsole.setTitle(`__Console Groups__`);
+			embedConsole.setFooter("Click the corresponding reactions below to join an Xbox, PS4, or Switch group");
+
 			var desc = "";
 			var pcDesc = "";
 			var mobileDesc = "";
+			var consoleDesc = "";
 			
 			Group.findAllPublicGroups().then(groups => {
 				groups.forEach(group => {
@@ -61,6 +68,10 @@ function invoke({ message, params, serverData, client }) {
 								mobileDesc = mobileDesc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
 								emojisMobile.push(group.emoji);
 							}
+							if(group.platforms.includes("5c44c387d521a71ed4118859") || group.platforms.includes("5c44c38bd521a71ed411885a") || group.platforms.includes("5c44c38ed521a71ed411885b")) {
+								consoleDesc = mobileDesc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
+								emojisConsole.push(group.emoji);
+							}
 							if(!group.platforms.includes("5c44c370d521a71ed4118857") && !group.platforms.includes("5c44c376d521a71ed4118858")) {
 								desc = desc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
 								emojis.push(group.emoji);
@@ -72,29 +83,30 @@ function invoke({ message, params, serverData, client }) {
 				embed.setDescription(desc);
 				embedPC.setDescription(pcDesc);
 				embedMobile.setDescription(mobileDesc);
+				embedConsole.setDescription(consoleDesc);
 
 				message.channel.send(embed).then(function (message) {
 					emojis.forEach(data => {
 						message.react(data);
 					});
-				}).catch(function() {
-					//Something
+				});
+
+				message.channel.send(embedConsole).then(function (message) {
+					emojisConsole.forEach(data => {
+						message.react(data);
+					});
 				});
 
 				message.channel.send(embedMobile).then(function (message) {
 					emojisMobile.forEach(data => {
 						message.react(data);
 					});
-				}).catch(function() {
-					//Something
 				});
 
 				message.channel.send(embedPC).then(function (message) {
 					emojisPC.forEach(data => {
 						message.react(data);
 					});
-				}).catch(function() {
-					//Something
 				});
 				
 				resolve ("");

@@ -8,9 +8,9 @@ const Discord = require("discord.js");
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  */
-var game = new GachaBattleRoyale();
+//var game = new GachaBattleRoyale();
 //var game = new GachaRPS();
-//var game = new GachaDice();
+var game = new GachaDice();
 var gameInProgress = false;
 var entries = new Map();
 var message = undefined;

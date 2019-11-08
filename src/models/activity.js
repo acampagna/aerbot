@@ -12,7 +12,8 @@ module.exports = function() {
 		userId: String,
 		//username: String,
 		type: String,
-		exp: { type: Number, default: 0, min: 0 }
+		exp: { type: Number, default: 0, min: 0 },
+		date: {type: Date, default: new Date()}
 	});
 
 	activitySchema.statics.add = function(userId, type, exp) {

@@ -34,7 +34,13 @@
 			"Solid Snake",
 			"Nathan Drake",
 			"Gordon Freeman",
-			"Cloud Strife"
+			"Cloud Strife",
+			"Jim Raynor",
+			"Tassadar",
+			"Zeratul",
+			"Sarah Kerrigan",
+			"Tom Nook",
+			"Little Mac"
 		],
 		"pokemon": [
 			"Eevee",
@@ -42,85 +48,194 @@
 			"Meowth",
 			"Bulbasaur",
 			"Growlith",
-			"Magikarp"
+			"Magikarp",
+			"Garbador",
+			"Charizard",
+			"Sylveon",
+			"Mew",
+			"Mewtwo",
+			"Gyarados",
+			"Dragonite",
+			"Snorlax",
+			"Gengar",
+			"Crobat",
+			"Electrode",
+			"Blastoise",
+			"Lucario",
+			"Vaporeon",
+			"Cubone",
+			"Venusaur",
+			"Ditto",
+			"Dewgong"
 		],
 		"years": [
-			1950,
-			1953,
-			1957,
-			1960,
-			1961,
-			1964,
-			1969,
-			1970,
-			1972,
-			1975,
-			1979,
-			1980,
-			1985,
-			1986,
-			1988,
-			1990,
-			1991,
-			1994,
-			1996,
-			1999,
-			2000,
-			2004,
-			2005,
-			2009,
-			2010,
-			2011,
-			2013,
-			2017,
-			2019,
-			2020
+			"1945",
+			"1950",
+			"1953",
+			"1957",
+			"1960",
+			"1961",
+			"1964",
+			"1969",
+			"1970",
+			"1972",
+			"1975",
+			"1979",
+			"1980",
+			"1985",
+			"1986",
+			"1988",
+			"1990",
+			"1991",
+			"1994",
+			"1996",
+			"1999",
+			"2000",
+			"2004",
+			"2005",
+			"2009",
+			"2010",
+			"2011",
+			"2014",
+			"2019"
+		],
+		"retro_games": [
+			"Mario Bros",
+			"Tetris",
+			"Asteroid",
+			"Zelda",
+			"Metroid",
+			"Ice Climbers",
+			"Missile Command",
+			"Pac-Man",
+			"Duck Hunt",
+			"Defender",
+			"Moon Lander",
+			"Space Invaders",
+			"Galaga",
+			"Street Fighter",
+			"Mega Man",
+			"Contra",
+			"Sonic",
+			"Mario Kart",
+			"Frogger",
+			"Pong",
+			"Chrono Trigger",
+			"Final Fantasy",
+			"Golden Axe",
+			"Gauntlet",
+			"Secret of Mana"
 		],
 		"games": [
-			"Pokemon Blue",
-			"Super Mario Bros",
-			"Yoshi's Island",
-			"Halo 3",
 			"Call of Duty: Modern Warfare",
+			"Chrono Trigger",
 			"Dota 2",
+			"Dwarven Fortress",
+			"Donkey Kong",
+			"Destiny 2",
+			"Diablo",
+			"Dauntless",
+			"Excite Bike",
+			"Final Fantasy VII",
+			"Final Fantasy XV",
+			"Fortnite",
+			"Gauntlet Legends",
+			"Goldeneye",
+			"Golf With Your Friends",
+			"Guild Wars",
+			"Halo 3",
+			"Ikaruga",
+			"Legend of Mana",
+
+			"Tetris 99",
+			"Metroid Prime",
+			"Mario Kart 8",
+			"Mega Man X8",
 			"League of Legends",
 			"Tetris",
 			"Minecraft",
 			"Archeage",
 			"Apex Legends",
 			"Dota Underlords",
-			"Fortnite",
+			
 			"Overwatch",
-			"Destiny 2",
+			
 			"Risk of Rain",
+			"Runescape",
 			"Warframe",
 			"Tabletop Simulator",
-			"Golf With Your Friends",
+			
 			"Mortal Kombat 3",
-			"Dauntless",
+			
 			"Fallout 3",
 			"Counterstrike",
 			"The Last of Us",
 			"Zelda: Ocarina of Time",
 			"Final Fantasy 7",
 			"Mario Kart",
-			"Super Smash Bros",
-			"Dwarven Fortress",
-			"Donkey Kong",
-			"Excite Bike"
+
+			"Pokemon Blue",
+			"Super Mario Bros",
+			"Street Fighter",
+			"Starcraft",
+			"Warcraft",
+			"World of Warcraft",
+			"Yoshi's Island"
+
 		],
 		"factions": [
 			"Flood",
 			"Hoard",
 			"Alliance",
-			"Covenant Empire",
+			"Covenant",
 			"Ecumene",
 			"Eridanus Rebels",
 			"Vex",
 			"Cabal",
 			"Fallen",
 			"Hive",
-			"Taken"
+			"Taken",
+			"Geth",
+			"Asari",
+			"Orcs",
+			"Humans",
+			"Elves",
+			"Dwarves",
+			"Undead",
+			"Terran",
+			"Zerg",
+			"Protoss"
+		],
+		"villains": [
+			"Laughing Octopus",
+			"Night Fright",
+			"The Fear",
+			"Bowser",
+			"Wario",
+			"Ganon",
+			"Big Boss"
+		],
+		"consoles": [
+			"NES",
+			"SNES",
+			"N64",
+			"Gamecube",
+			"Virtual Boy",
+			"Wii",
+			"Wii U",
+			"Switch",
+			"Gameboy",
+			"Gameboy Advance",
+			"Gameboy Color",
+			"Nintendo DS",
+			"3DS"
+		],
+		"console_companies": [
+			"Nintendo",
+			"Sega",
+			"Sony",
+			"Microsoft",
+			"Atari"
 		]
 	},
 	"questions": [
@@ -131,6 +246,7 @@
 			"explaination": "In October 1958, Physicist William Higinbotham created what is thought to be the first video game. It was a very simple tennis game, similar to the classic 1970s video game Pong.",
 			"choices": [
 			],
+			"difficulty": 3,
 			"choice_type": "years",
 			"author": "Aerfalle"
 		},
@@ -141,15 +257,17 @@
 			"explaination": "The first video game was created in 1958 by Physicist William Higinbotham",
 			"choices": [
 			],
+			"difficulty": 2,
 			"author": "Aerfalle"
 		},
 		{
-			"type": "sa",
+			"type": "mc",
 			"question": "What year was N64 release in the United States and Japan?",
 			"answer": "1996",
 			"explaination": "Named for its 64-bit central processing unit, it was released in June 1996 in Japan, September 1996 in North America and Brazil, March 1997 in Europe and Australia, and September 1997 in France.",
 			"choices": [
 			],
+			"difficulty": 3,
 			"choice_type": "years",
 			"author": "Aerfalle"
 		},
@@ -159,7 +277,8 @@
 			"answer": "Donkey Kong",
 			"choices": [
 			],
-			"choice_type": "games",
+			"difficulty": 2,
+			"choice_type": "retro_games",
 			"author": "dandyhighwayman84"
 		},
 		{
@@ -172,19 +291,473 @@
 				"Dotman",
 				"Faceman"
 			],
+			"difficulty": 2,
 			"author": "missymousey"
 		},
 		{
 			"type": "mc",
 			"question": "Who is __NOT__ one of the Nine Divines in the elder scrolls franchise?",
-			"answer": "Magnus",
+			"answer": "A and D",
 			"explaination": "",
 			"choices": [
 				"Arkay",
+				"Magnus",
 				"Talos",
-				"Kynareth"
+				"Nocturnal"
 			],
+			"difficulty": 3,
+			"randomize": false,
 			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "In the Dishonored franchise what are the infected citizens called?",
+			"answer": "Weepers",
+			"explaination": "",
+			"choices": [
+				"Cryers",
+				"Pukers",
+				"Tallboys"
+			],
+			"difficulty": 3,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "What franchise recently dethroned Tetris as the best selling franchise of all time?",
+			"answer": "Minecraft",
+			"explaination": "As of May 2019 Minecraft has dethroned Tetris as the best selling video game franchise of all time. Tetris games have sold 170,000,000 copies and Minecraft has sold 176,000,000 copies. Note: Tetris numbers are outdated and it's possible that Tetris is still the best-selling game but no such information exists to support this.",
+			"choices": [
+				"Call of Duty",
+				"Grand Theft Auto",
+				"Warcraft"
+			],
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "In Bioware's Destiny franchise which of these is not an enemy faction?",
+			"answer": "The Geth",
+			"explaination": "The geth are a cybernetic hivemind made by the Quarens in the Mass Effect franchise closely related to the vex that are a cybernetic hivemind that have no known origin.",
+			"choices": [
+				"The Cabal",
+				"The Vex",
+				"The Fallen"
+			],
+			"difficulty": 2,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "What color Yoshi was _not_ available in Super Mario World?",
+			"answer": "None of the Above",
+			"explaination": "In Super Mario World you could raise a baby Blue, Red, or Yellow Yoshi into an adult. You also had the standard Green Yoshi during most of the game.",
+			"choices": [
+				"Green Yoshi",
+				"Blue Yoshi",
+				"Red Yoshi",
+				"Yellow Yoshi"
+			],
+			"difficulty": 3,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "tf",
+			"question": "Super Mario World was a launch title for the Super Nintendo in the USA.",
+			"answer": "True",
+			"explaination": "Super Mario World and Pilotwings were launch titles for the Super Nintendo in the USA.",
+			"choices": [
+			],
+			"difficulty": 1,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "tf",
+			"question": "Super Mario World was a launch title for the NES in the USA.",
+			"answer": "False",
+			"explaination": "Super Mario World and Pilotwings were launch titles for the Super Nintendo in the USA.",
+			"choices": [
+			],
+			"difficulty": 1,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "Which of these Pokemon does not have Life Leech?",
+			"answer": "A and C",
+			"explaination": "",
+			"choices": [
+				"Dustox",
+				"Zubat",
+				"Pikachu",
+				"Nincada"
+			],
+			"difficulty": 3,
+			"randomize": false,
+			"author": "missymousey"
+		},
+		{
+			"type": "mc",
+			"question": "In the Witcher which creature does Geralt find hiding in an oven?",
+			"answer": "Godling",
+			"explaination": "A godling is a child-like humanoid that are relatively not dangerous but do like to play pranks etc. Geralt finds a godling by the name of Sarah hiding in one of the major cities in an abandoned house.",
+			"choices": [
+				"Banshee",
+				"Forktail",
+				"Spoontail"
+			],
+			"difficulty": 2,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "What was the first Grand Theft Auto game to feature a playable female character?",
+			"answer": "Grand Theft Auto",
+			"explaination": "",
+			"choices": [
+				"Grand Theft Auto 2",
+				"GTA Online",
+				"Grand Theft Auto: Chinatown Wars"
+			],
+			"difficulty": 2,
+			"author": "dandyhighwayman84"
+		},
+		{
+			"type": "mc",
+			"question": "In the Mass Effect franchise what species is fully comprised of women?",
+			"answer": "Asari",
+			"explaination": "",
+			"choices": [
+				"Turians",
+				"Geth",
+				"None of the Above"
+			],
+			"difficulty": 2,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "In the Borderlands franchise who made the Crimson Raiders?",
+			"answer": "Roland",
+			"explaination": "Roland made the Crimson Raiders to rebel against Handsome Jack and the bandit clans of Pandora.",
+			"choices": [
+				"Boom and Bewm",
+				"Captain Flynt",
+				"Handsome Jack"
+			],
+			"difficulty": 2,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "In Borderlands 3 what is the camp with Roland's memorial called?",
+			"answer": "None of the Above",
+			"explaination": "Roland's Rest is a camp on Pandora where you can see a memorial dedicated to Roland.",
+			"choices": [
+				"Roland's Redoubt",
+				"Aiur",
+				"Crimson Sand",
+				"The splinterlands"
+			],
+			"difficulty": 3,
+			"author": "Renegade"
+		},
+		{
+			"type": "tf",
+			"question": "In the fallout series deathclaws are a product of radiation.",
+			"answer": "False",
+			"explaination": "Deathclaws are actually a product of a pre-war project conducted by the U.S Army to be deployed in the battle of Anchorage but never saw battle due to problems with domestication.",
+			"choices": [
+			],
+			"difficulty": 1,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "In the fallout series what drug was not made by pre-war scientists?",
+			"answer": "Jet",
+			"explaination": "Psycho and Daddy-O was made by the U.S military to increase soldiers capabilities on the battlefield and mentats was made by scientists to empower the brains capabilities while jet was made by a mad scientist kid in post-war California.",
+			"choices": [
+				"Psycho",
+				"Mentats",
+				"Daddy-O"
+			],
+			"difficulty": 2,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "Which video game featured the first easter egg?",
+			"answer": "Adventure",
+			"explaination": "If you’ve seen Ready Player One the answer is right there. Adventure was released in 1979 on an Atari game system. The first Easter egg, which was the name of its creator hidden in the game.",
+			"choices": [
+			],
+			"difficulty": 2,
+			"choice_type": "retro_games",
+			"author": "Shindesu"
+		},
+		{
+			"type": "mc",
+			"question": "Excluding Animal Crossing: New Leaf, who is the Town Mayor throughout the Animal Crossing Series?",
+			"answer": "Tortimer",
+			"explaination": "Tortimer is the Mayor of your town in each of the Animal Crossing Games leading up to New Leaf.",
+			"choices": [
+				"Tom Nook",
+				"Blathers",
+				"Isabelle"
+			],
+			"difficulty": 2,
+			"author": "FancyAlly"
+		},
+		{
+			"type": "mc",
+			"question": "Knuckles, a character in the Sonic the Hedgehog Franchise, is what kind of animal?",
+			"answer": "Echidna",
+			"explaination": "Knuckles is an Echidna, and in the series he has the ability to glide and climb up walls, as well as being a powerful fighter with spiked hands.",
+			"choices": [
+				"Hedgehog",
+				"Porcupine",
+				"Platypus"
+			],
+			"difficulty": 2,
+			"author": "FancyAlly"
+		},
+		{
+			"type": "mc",
+			"question": "Tails, a character in the Sonic the Hedgehog Franchise, is what kind of animal?",
+			"answer": "None of the Above",
+			"explaination": "Tails is a two-tailed fox.",
+			"choices": [
+				"Hedgehog",
+				"Porcupine",
+				"Wolf",
+				"Jackal"
+			],
+			"difficulty": 3,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "What is the south-wester part of the map called in Fallout 4?",
+			"answer": "The Glowing Sea",
+			"explaination": "The glowing sea is the initial drop point for the bombs in the New England area. Explaining the hordes of feral ghouls, radscorpions, and deathclaws from the destroyed military buildings in that area.",
+			"choices": [
+				"Radiation Sea",
+				"The Divide",
+				"Crater of Atom"
+			],
+			"difficulty": 3,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "Who is the legendary videogame designer who created the Mario franchise?",
+			"answer": "Shigeru Miyamoto",
+			"explaination": "Shigeru Miyamoto is not only credited with creating the Mario franchise but also \"The Legend of Zelda\", \"Star Fox\" and others. Born in 1952, he now serves as a representative director for Nintendo.",
+			"choices": [
+				"Hideo Kojima",
+				"Todd Howard",
+				"Shuntaro Furukawa"
+			],
+			"difficulty": 3,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following has not been the historic setting for an Assassin’s Creed game?",
+			"answer": "A and B",
+			"explaination": "",
+			"choices": [
+				"Feudal Japan",
+				"Pombaline-era Portugal",
+				"Renaissance Italy",
+				"Victorian London"
+			],
+			"difficulty": 2,
+			"randomize": false,
+			"author": "dandyhighwayman84"
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following has not been featured in an elder scrolls title including elder scrolls online?",
+			"answer": "Black Marsh",
+			"explaination": "In the Elder Scrolls series: Black Marsh, the argonian homeland, has not been featured due to lore reasons since a plague in Black Marsh will kill any race not argonian, which has lead to superstition that the argonians made it as a bioweapon of sorts.",
+			"choices": [
+				"Morrowind",
+				"Cyrodiil",
+				"High Rock"
+			],
+			"difficulty": 2,
+			"author": "Renegade"
+		},
+		{
+			"type": "mc",
+			"question": "What is the name of the alien alliance who are the main antagonist in the first trilogy of *Halo* games?",
+			"answer": "Covenant",
+			"explaination": "The Covenant deem it the will of their gods that they destroy the human race.",
+			"choices": [
+			],
+			"difficulty": 2,
+			"choice_type": "factions",
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following is __NOT__ a villain from the Metal Gear Solid franchise?",
+			"answer": "Bullet Witch",
+			"explaination": "Bullet Witch is an Action Adventure game from 2006. It's name could EASILY be a character from Metal Gear Solid though. Also... the character names in Metal Gear are messed up.",
+			"choices": [
+				"Laughing Octopus",
+				"Night Fright",
+				"The Fear"
+			],
+			"difficulty": 2,
+			"author": "JollyStranger"
+		},
+		{
+			"type": "mc",
+			"question": "What was the first video game played in space?",
+			"answer": "Tetris",
+			"explaination": "Tetris was taken into space in 1993 by cosmonaut Aleksandr Serebrov to the MIR space station",
+			"choices": [
+			],
+			"difficulty": 2,
+			"choice_type": "games",
+			"author": "Deathsfew"
+		},
+		{
+			"type": "mc",
+			"question": "What is the main characters name in the Zelda series?",
+			"answer": "Link",
+			"explaination": "Link is the main character. Not Zelda.",
+			"choices": [
+				"Zelda"
+			],
+			"difficulty": 1,
+			"choice_type": "characters",
+			"author": "Deathsfew"
+		},
+		{
+			"type": "mc",
+			"question": "What game had a Pandemic named Corrupted Blood that has had an article in a medical journal written about it?",
+			"answer": "World of Warcraft",
+			"explaination": "In March 2007, Ran D. Balicer, an epidemiologist physician at the Ben-Gurion University of the Negev in Beersheba, Israel, published an article in the journal Epidemiology that described the similarities between this outbreak and the recent SARS and avian influenza outbreaks",
+			"choices": [
+			],
+			"difficulty": 2,
+			"choice_type": "games",
+			"author": "Deathsfew"
+		},
+		{
+			"type": "mc",
+			"question": "In which game did Bowser Junior first appear?",
+			"answer": "Super Mario Sunshine",
+			"choices": [
+				"Mario 64",
+				"Mario Galaxy",
+				"Super Mario World"
+			],
+			"difficulty": 2,
+			"author": "missymousey"
+		},
+		{
+			"type": "mc",
+			"question": "What famous organization headquartered in Beverly Hills hosts gaming tournaments, tracks gaming high scores, and is an official records supplier to the Guinness Book of World Records?",
+			"answer": "Twin Galaxies",
+			"explaination": "",
+			"choices": [
+				"Supernova",
+				"Double Helix",
+				"Double Dragon"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "dandyhighwayman84"
+		},
+		{
+			"type": "mc",
+			"question": "How long did it take Markus Persson to create the first version of *Minecraft*?",
+			"answer": "One Week",
+			"explaination": "Notch released the *alpha version* of *Minecraft* in just 6 Days, with a fully-marketable version coming out two years later.",
+			"choices": [
+				"One Day",
+				"One Month",
+				"One Year",
+				"One Decade"
+			],
+			"difficulty": 3,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "tf",
+			"question": "It took over a year to release the first version of Minecraft.",
+			"answer": "False",
+			"explaination": "Notch released the *alpha version* of *Minecraft* in just 6 Days, with a fully-marketable version coming out two years later.",
+			"choices": [
+			],
+			"difficulty": 1,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "Which game widely popularized the Konami Code?",
+			"answer": "Contra",
+			"explaination": "The Konami Code was widely popularized due to its inclusion in the NES home version of Contra (1988), where it allowed the player to obtain 30 free lives. Since then the code has become part of popular culture in general, even appearing in many non-Konami games and diverse media, such as clothing, advertisements and non-gaming related software.",
+			"choices": [
+			],
+			"choice_type": "retro_games",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "The PlayStation prototype was designed by Sony in collaboration with which company?",
+			"answer": "Nintendo",
+			"explaination": "The PlayStation was originally a CD-ROM add-on for the Super Nintendo. Nintendo pulling out of the deal in 1991 prompted Sony to eventually produce it on their own.",
+			"choices": [
+			],
+			"choice_type": "console_companies",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "Which country had banned the sale of the original *Grand Theft Auto*?",
+			"answer": "Brazil",
+			"explaination": "In 1998 the government of Brazil banned *Grand Theft Auto* (including a $8,500 fine to anyone caught selling it) due to their belief that the game incites violence.",
+			"choices": [
+				"France",
+				"Germany",
+				"Britain"
+			],
+			"difficulty": 3,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "In what year did Nintendo release its first game console in North America?",
+			"answer": "1985",
+			"explaination": "",
+			"choices": [
+			],
+			"choice_type": "years",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "IAmDummyQuestion",
+			"answer": "DummyAnswer",
+			"explaination": "This is dummy explaination.",
+			"choices": [
+				"ThisIs",
+				"TheLast",
+				"Question"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle"
 		}
 	]
 }

@@ -83,8 +83,8 @@ function parseDetails(message, commands, serverData) {
 
 	return {
 		botName: "@" + (message.guild.me.nickname || message.guild.me.user.username),
-		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.officerRoleId),
-		isMemberAdmin: message.member.permissions.has("ADMINISTRATOR"),
+		isMemberAdmin: message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.moderatorRoleId),
+		//isMemberAdmin: message.member.permissions.has("ADMINISTRATOR"),
 		params: split.slice(cmdPos+1, split.length),
 		command: commands[commandName]
 	};
