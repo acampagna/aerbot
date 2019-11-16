@@ -150,6 +150,7 @@ async function tickDownAndEdit(question, client, serverData){
 			var triviaMsgId = await Aerbot.get("currentTriviaId");
 			currentTriviaMessageId = triviaMsgId.value;
 		}
+		
 		var triviaMessage = client.channels.get(serverData.triviaChannelId).messages.get(currentTriviaMessageId);
 
 		triviaMessage.edit(TriviaUtil.getQuestionEmbed(question, currentQuestion, totalQuestions, timeLeftToAnswer));

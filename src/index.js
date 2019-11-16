@@ -22,7 +22,11 @@ require('./models/war.js')();
 require('./models/warTeam.js')();
 require('./models/Activity.js')();
 require('./models/trivia.js')();
-const TriviaService = require("../services/TriviaService");
+require('./models/achievement.js')();
+require('./models/pinned.js')();
+const PinnedService = require("./services/PinnedService");
+const TriviaService = require("./services/TriviaService");
+const AchievementService = require("./services/AchievementService");
 const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
@@ -37,6 +41,8 @@ const MonthlyActivity = mongoose.model('MonthlyActivity');
 const War = mongoose.model('War');
 const WarTeam = mongoose.model('WarTeam');
 const Trivia = mongoose.model('Trivia');
+const Achievement = mongoose.model('Achievement');
+const Pinned = mongoose.model('Pinned');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
@@ -45,6 +51,10 @@ const cmdPrefix = InternalConfig.commandPrefix;
 var mainGuild;
 var qotdChanId;
 const TS = new TriviaService();
+const PS = new PinnedService();
+const AS = new AchievementService();
+//var msgRateLimiter = new Map();
+var reactionRateLimiter = new Map();
 
 client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
@@ -54,8 +64,7 @@ client.on("beforeLogin", () => {
 	doActivityConversion();
 });
 client.on("message", message => {
-	//TODO: Should only do then on non-bot commands
-	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && 
+	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && message.content.length > 1 &&
 	message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888") {
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
@@ -98,23 +107,36 @@ client.on("message", message => {
 });
 
 client.on("messageReactionAdd", (messageReaction, user) => {
+
+	/*var ts = Math.round((new Date()).getTime());
+
+	var rateLimited = false;
+
+	if(msgRateLimiter.has(message.member.id)) {
+		console.log("msgRateLimiter", msgRateLimiter.get(message.member.id));
+		if(ts - msgRateLimiter.get(message.member.id) >= 100) {
+			msgRateLimiter.delete(message.member.id);
+		}
+	} else {
+		userActivity.set(uid, new Map([[type,xp]]));
+	}*/
 	
 	if (messageReaction && user && !user.bot) {
 		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
-			var msgReactions = messageReaction.message.reactions;
+			//var msgReactions = messageReaction.message.reactions;
+			messageReaction.remove(user.id);
+			//console.log(messageReaction._emoji + " " + TS.getAnswerEmoji());
+			//messageReaction.message.channel.send(messageReaction._emoji + " " + TS.getAnswerEmoji());
 
-			msgReactions.forEach(react => {
-				if(react.users.has(user.id)) { //user reacted to this reaction
-					if(messageReaction._emoji != react._emoji) { //this reaction ISN'T the answer
-						if(TS.userAnsweredCorrectly(user.id)) { //this user already had the right answer
-							TS.removeUserFromAnsweredCorrectly(user.id);
-						}
-					} else { //this reaction IS the right answer
-						TS.addUserFromAnsweredCorrectly(user.id);
-					}
+			if(messageReaction._emoji == TS.getAnswerEmoji()) {
+				console.log("RIGHT ANSWER");
+				TS.addUserFromAnsweredCorrectly(user.id);
+			} else {
+				console.log("WRONG ANSWER");
+				if(TS.userAnsweredCorrectly(user.id)) { //this user already had the right answer
+					TS.removeUserFromAnsweredCorrectly(user.id);
 				}
-			});
-			react.remove(user.id);
+			}
 		} else {
 			UserModel.findById(user.id).exec()
 			.then(userData => {
@@ -160,11 +182,15 @@ client.on('raw', async event => {
 	if (!events.hasOwnProperty(event.t)) return;
 
 	const { d: data } = event;
+
+	//console.log(data);
 	
 	if(data.user_id === "524905193372909579") return;
 
     const user = client.users.get(data.user_id);
-    const channel = client.channels.get(data.channel_id);
+	const channel = client.channels.get(data.channel_id);
+	
+	//console.log(channel);
 
 	const message = await channel.fetchMessage(data.message_id);
 	
@@ -174,6 +200,10 @@ client.on('raw', async event => {
 	} else {
 		var tmpMember = mainGuild.members.get(user.id);
 		var tmpGuild = mainGuild;
+	}
+
+	if (event.t === "MESSAGE_REACTION_ADD" || event.t === "MESSAGE_REACTION_REMOVE") {
+		PS.analyzeRawEvent(client, data, channel, message);
 	}
 
 	const member = tmpMember;
@@ -281,6 +311,8 @@ client.on("ready", () => {
 		ServerModel.upsert({_id: server.id}).then(doc => {
 			if(server.id === "524900292836458497") {
 				qotdChanId = doc.qotdChannelId;
+				AS.setAchievementChannel(client.channels.get(doc.botChannelId));
+				AS.setHandleActivity(HandleActivity);
 				console.log(qotdChanId);
 			}
 		});
@@ -307,6 +339,8 @@ client.on("guildMemberAdd", (member) => {
 		//+ "\n\n > If you decide to leave: __Please__ message " + aerMem + " before you do and let us know you're unhappy here. Your feedback would be greatly appreciated and will help future members of Dauntless!"
 		//+ "\n > If you're here to spam your own Discord server, stream, website, etc please just message " + aerMem + " and we can discuss a potential partnership or advertisement swap!");
 		
+		var newUserData = newUser(member.id, member.displayName);
+
 		client.serverModel.findById(member.guild.id).exec().then(server => {
 			var welcomeChannel = client.channels.get(server.welcomeChannelId);
 			//var introChannel = client.channels.get(server.introChannelId);
@@ -346,7 +380,7 @@ async function doServerIteration() {
 								console.log(member.displayName + " joined over 14 days ago!");
 								if(member.roles.find(role => role.id === serverData.welcomeRole)) {
 									console.log(member.displayName + " is also in the welcome role! Removing Welcome Role & Adding Member Role.");
-									//member.removeRole(serverData.welcomeRole);
+									member.removeRole(serverData.welcomeRole);
 									//member.addRole(serverData.memberRoleId);
 								}
 							}

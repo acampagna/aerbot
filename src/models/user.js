@@ -15,7 +15,7 @@ module.exports = function() {
 		username: String,
 		level: { type: Number, default: 1, min: 1, max: 99 },
 		exp: { type: Number, default: 0, min: 0},
-		expAdjustment: { type: Number, default: 0, min: 0},
+		expAdjustment: { type: Number, default: 0 },
 		currency: { type: Number, default: 0, min: 0},
 		rank: { type: String, default: "Padawan" },
 		class: { type: String, default: "Padawan" },
@@ -25,10 +25,8 @@ module.exports = function() {
 		triviaCorrect: { type: Number, default: 0, min: 0 },
 		triviaWon: { type: Number, default: 0, min: 0 },
 		reactions: { type: Number, default: 0, min: 0 },
-		praise: { type: Number, default: 0, min: 0 },
+		pinned: { type: Number, default: 0, min: 0 },
 		activityPoints: { type: Number, default: 0, min: 0 },
-		lastMessage: Date,
-		lastReaction: Date,
 		lastOnline: {type: Date, default: new Date()},
 		lastActive: {type: Date, default: new Date()},
 		joined: {type: Date, default: new Date()},
@@ -36,7 +34,7 @@ module.exports = function() {
 		referrer: String,
 		gachaWins: {type: Number, default: 0},
 		brWins: {type: Number, default: 0},
-		characters: { type: Array, of: String },
+		achievements: { type: Array, of: String },
 		levelRole: String
 	});
 
@@ -44,21 +42,25 @@ module.exports = function() {
 		return this.accounts || new Map();
 	};
 
+	userSchema.methods.getAchievements = function () {
+		return this.achievements || new Array();
+	};
+
 	userSchema.methods.updateReferrer = function (referrerId) {
 		this.model('User').updateOne({_id: this.id},{referrer: referrerId}).exec();
 	};
 
-	userSchema.methods.addCharacter = function (name) {
+	userSchema.methods.addAchievement = function (id) {
 		return this.model('User').findOneAndUpdate(
 			{_id: this.id},
-			{$addToSet: {characters: name}},
+			{$addToSet: {achievements: id}},
 			{new: true}).exec();
 	}
 
-	userSchema.methods.removeCharacter = function (name) {
+	userSchema.methods.removeAchievement = function (id) {
 		return this.model('User').findOneAndUpdate(
 			{_id: this.id},
-			{$pull: {characters: new RegExp(`^${name}$`, 'i')}},
+			{$pull: {achievements: id}},
 			{new: true}).exec();
 	}
 

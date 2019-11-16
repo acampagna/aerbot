@@ -3,6 +3,10 @@ const MemberUtil = require("./utils/MemberUtil.js");
 const mongoose = require('mongoose');
 const DailyActivity = mongoose.model('DailyActivity');
 const Activity = mongoose.model('Activity');
+const AchievementService = require("./services/AchievementService");
+const Achievement = mongoose.model('Achievement');
+
+const AS = new AchievementService();
 
 /**
  * Main function to handle user activity. Mostly just deals with adding exp based on user actions.
@@ -14,6 +18,12 @@ const Activity = mongoose.model('Activity');
 async function handleActivityNew(client, server, activity, userData) {
 	if(userData && userData.id) {
 		let date = new Date();
+		var saveDoc = true;
+		var achievementExp = 0;
+
+		/*if(activity.achievement && !isNaN(activity.achievement)) {
+			achievementExp = activity.achievement;
+		}*/
 
 		userData.lastOnline = date;
 		if(activity.message || activity.reaction || activity.event || activity.voice){
@@ -31,7 +41,6 @@ async function handleActivityNew(client, server, activity, userData) {
 
 		//Handle Message
 		if(activity.message) {
-			userData.lastMessage = date;
 			userData.messages++;
 
 			var newExp = MemberUtil.calculateActionExp("message");
@@ -48,7 +57,6 @@ async function handleActivityNew(client, server, activity, userData) {
 
 		//Handle Reaction
 		if(activity.reaction) {
-			userData.lastReaction = date;
 			userData.reactions++;
 
 			var newExp = MemberUtil.calculateActionExp("reaction");
@@ -62,11 +70,40 @@ async function handleActivityNew(client, server, activity, userData) {
 		if(activity.event) {
 			userData.events++;
 
+			var achievement = await Achievement.findByName("eventer");
+
+			if(!userData.achievements.includes(achievement.id)) {
+				await AS.addAchievementFromActivity(userData, achievement, client, server);
+				activity.achievement = achievement.expBonus;
+			}
+
+			console.log(activity);
+
 			var newExp = MemberUtil.calculateActionExp("event");
 			exp += newExp; 
 
 			DailyActivity.add(userData.id, "event", newExp);
 			Activity.add(userData.id, "event", newExp);
+		}
+
+		//Handle Pinned
+		if(activity.pinned) {
+			userData.pinned++;
+
+			var achievement = await Achievement.findByName("pinned");
+
+			if(!userData.achievements.includes(achievement.id)) {
+				await AS.addAchievementFromActivity(userData, achievement, client, server);
+				activity.achievement = achievement.expBonus;
+			}
+
+			console.log(activity);
+
+			var newExp = MemberUtil.calculateActionExp("pinned");
+			exp += newExp; 
+
+			DailyActivity.add(userData.id, "pinned", newExp);
+			Activity.add(userData.id, "pinned", newExp);
 		}
 
 		//Handle Trivia Question
@@ -98,6 +135,26 @@ async function handleActivityNew(client, server, activity, userData) {
 			Activity.add(userData.id, "voice", newExp);
 		}
 
+		//Handle Achievement
+		console.log("Checking activity.achievement");
+		if(activity.hasOwnProperty('achievement')) {
+			console.log("activity.achievement = " + activity.achievement);
+			//userData.achievements++;
+			
+			if(!isNaN(activity.achievement)) {
+				var newExp = (MemberUtil.calculateActionExp("achievement") + activity.achievement);
+			} else {
+				var newExp = MemberUtil.calculateActionExp("achievement");
+			}
+
+			console.log("USER GETS " + newExp + " ACHIEVEMENT EXP!");
+
+			exp += newExp
+			
+			DailyActivity.add(userData.id, "achievement", newExp);
+			Activity.add(userData.id, "achievement", newExp);
+		}
+
 		console.log(userData.id);
 		var member = server.members.get(userData.id);
 		//console.log(member);
@@ -116,7 +173,11 @@ async function handleActivityNew(client, server, activity, userData) {
 				}
 			});
 		}
-		userData.save();
+
+		if(saveDoc){
+			userData.save();
+		}
+		
 		/*} else {
 			var errStr = "*exp: " + exp + " | originalExp: " + originalExp + " | expectedExp: " + expectedExp + "*";
 			//CoreUtil.aerLog(client,userData.username + "'s experience points are corrupted! Attempting to fix...");
@@ -130,7 +191,7 @@ async function handleActivityNew(client, server, activity, userData) {
 			}
 		}*/
 
-		console.log(userData.username + "(" + userData.level + ")[" + startLvl + "] exp: " + exp + " | originalExp: " + originalExp + " | expectedExp: " + expectedExp);
+		console.log(userData.username + "(" + userData.level + ")[" + startLvl + "] exp: " + exp + " | originalExp: " + originalExp);
 	}
 }
 

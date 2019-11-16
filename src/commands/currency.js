@@ -6,9 +6,9 @@ const Discord = require("discord.js");
 const HandleActivity = require("../HandleActivity");
 
 module.exports = new Command({
-	name: "exp",
-	description: "Adds or subtracts exp from a member",
-	syntax: "exp",
+	name: "currency",
+	description: "Adds or subtracts currency from a member",
+	syntax: "currency",
 	admin: true,
 	invoke
 });
@@ -22,13 +22,12 @@ module.exports = new Command({
 function invoke({ message, params, serverData, client }) {
 	if (message.mentions.users.first() && !isNaN(params[0])) {
 		User.byId(message.mentions.users.first().id).then(user => {
-			user.expAdjustment += parseInt(params[0]);
-			user.exp += parseInt(params[0]);
+			user.currency += parseInt(params[0]);
 			user.save();
 			//console.log(user);
 		});
-		return Promise.resolve("Adjusted " + message.mentions.users.first() + "'s exp by " + params[0]);
+		return Promise.resolve("Adjusted " + message.mentions.users.first() + "'s currency by " + params[0]);
 	} else {
-		return Promise.resolve("You must supply an exp amount and @mention a user to give bonus exp or remove exp");
+		return Promise.resolve("You must supply a currency amount and @mention a user to give/take bonus currency");
 	}
 }

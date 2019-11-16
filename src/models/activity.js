@@ -18,7 +18,7 @@ module.exports = function() {
 
 	activitySchema.statics.add = function(userId, type, exp) {
 		//console.log("Adding Daily Activity");
-		this.create({userId: userId, type: type, exp: exp});
+		this.create({userId: userId, type: type, exp: exp, date: new Date()});
 	};
 
 	activitySchema.statics.findByUserId = function(id) {

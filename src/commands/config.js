@@ -33,6 +33,22 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing channel");
 			}
 			break;
+		case 'set_starboard_channel':
+			if (message.mentions.channels.size > 0) {
+				serverData.updateStarboardChannelId(message.mentions.channels.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing channel");
+			}
+			break;
+		case 'set_starboard_emoji':
+			if (params[1].length > 0) {
+				var splitEmoji = params[1].split(":");
+				var emojiId = splitEmoji[2].substr(0,splitEmoji[2].length-1);
+				serverData.updateStarboardEmojiId(emojiId);
+			} else {
+				resolve("You must add a valid emoji");
+			}
+			break;
 		case 'set_qotd': {
 			var paramStr = params.join(" ");
 			paramStr = paramStr.substr(paramStr.indexOf(" ") + 1);

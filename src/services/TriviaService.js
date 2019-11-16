@@ -14,7 +14,7 @@ const UserModel = mongoose.model('User');
  */
 
 var testMode = false;
-const timeToAnswer = 30000;
+var timeToAnswer = 30000;
 var timeLeftToAnswer = 0;
 const bufferTime = 4000;
 var currentTriviaId = undefined;
@@ -22,6 +22,7 @@ var currentTriviaMessageId = undefined;
 var totalQuestions = 0;
 var currentQuestion = 0;
 var currentStage = 0;
+var answerEmoji = undefined;
 var answeredCorrectly = new Array();
 //var client = undefined;
 //var serverData = undefined;
@@ -41,15 +42,27 @@ class TriviaService {
     }
 
     removeUserFromAnsweredCorrectly(uid) {
+        console.log("Removing " + uid);
         answeredCorrectly = CoreUtil.removeArrayItemByValue(answeredCorrectly, uid);
     }
 
     addUserFromAnsweredCorrectly(uid) {
-        answeredCorrectly.push(uid);
+        if(!this.userAnsweredCorrectly(uid)) {
+            console.log("Added " + uid);
+            answeredCorrectly.push(uid);
+        }
     }
 
     getCurrentTriviaMessageId() {
         return currentTriviaMessageId;
+    }
+
+    setCurrentTriviaMessageId(mid) {
+        currentTriviaMessageId = mid;
+    }
+
+    getAnswerEmoji() {
+        return answerEmoji;
     }
 
     initClientServer(c, sd) {
@@ -76,6 +89,10 @@ class TriviaService {
         totalQuestions = tq;
         testMode = tm;
 
+        if(testMode) {
+            timeToAnswer = 10000;
+        }
+
         console.log("GAME STARTED");
 
         this.sendQuestion(client, serverData);
@@ -95,6 +112,7 @@ class TriviaService {
 	    totalQuestions = 0;
 	    currentStage = 0;
         testMode = false;
+        answerEmoji = undefined;
         //client = undefined;
         //serverData = undefined;
     }
@@ -106,7 +124,9 @@ class TriviaService {
         answeredCorrectly = new Array();
         timeLeftToAnswer = timeToAnswer;
 
-        var question = TriviaUtil.sendTriviaQuestion(client, serverData, currentQuestion, totalQuestions, timeLeftToAnswer);
+        var question = TriviaUtil.sendTriviaQuestion(client, serverData, currentQuestion, totalQuestions, timeLeftToAnswer, this);
+
+        answerEmoji = question.answer_emoji;
     
         await setTimeout(async function() {_this.tickDownAndEdit(question, client, serverData);}, 2000);
     }
@@ -146,27 +166,29 @@ class TriviaService {
     
         console.log(question.answer_emoji);
     
-        var answer = triviaMessage.reactions.get(question.answer_emoji);
+        console.log("[[Answered Correctly]]");
+        console.log(answeredCorrectly);
+
         var winnerStr = "";
-    
-        answer.users.forEach(user => {
-            if(!user.bot && user.id) {
-                if(!testMode) {
-                    UserModel.findById(user.id).exec()
-                    .then(userData => {
+
+        answeredCorrectly.forEach(uid => {
+            if(uid) {
+                UserModel.findById(uid).exec().then(userData => {
+                    if(!testMode) {
                         HandleActivity(
                             client,
                             triviaMessage.guild,
                             {trivia: "question"},
                             userData
                         );
-                    });
-                }
-                winnerStr += user.username + ", ";
-                Trivia.saveOrUpdate(currentTriviaId, user.id, question.points);
+                    }
+                });
+                let member = client.guilds.get(serverData._id).members.get(uid);
+                Trivia.saveOrUpdate(currentTriviaId, uid, question.points);
+                winnerStr += member.displayName + ", ";
             }
         });
-    
+
         const embed = new Discord.RichEmbed();
         embed.setTitle("TRIVIA");
         embed.setColor("GOLD");
@@ -201,7 +223,7 @@ class TriviaService {
                     .then(userData => {
                         HandleActivity(
                             client,
-                            messageReaction.message.guild,
+                            messageReaction.message.guild, //ISSUE!!!
                             {trivia: "game"},
                             userData
                         );

@@ -1,4 +1,16 @@
 {
+	"config": {
+		"tags":[
+			"pokemon",
+			"nintendo",
+			"sony",
+			"microsoft",
+			"retro",
+			"blizzard",
+			"halo",
+			"mmorpg"
+		]
+	},
 	"multipleChoiceAnswers": {
 		"characters": [
 			"Mario",
@@ -228,7 +240,10 @@
 			"Gameboy Advance",
 			"Gameboy Color",
 			"Nintendo DS",
-			"3DS"
+			"3DS",
+			"Dreamcast",
+			"Sega Saturn",
+			"32x"
 		],
 		"console_companies": [
 			"Nintendo",
@@ -236,6 +251,18 @@
 			"Sony",
 			"Microsoft",
 			"Atari"
+		],
+		"gaming_companies": [
+			"Blizzard Entertainment",
+			"Square Enix",
+			"Bethesda",
+			"Obsidian",
+			"Microsoft",
+			"Sony",
+			"Epic Games",
+			"Valve",
+			"Obsidian Entertainment",
+			"Double Fine Productions"
 		]
 	},
 	"questions": [
@@ -248,7 +275,10 @@
 			],
 			"difficulty": 3,
 			"choice_type": "years",
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "tf",
@@ -258,7 +288,10 @@
 			"choices": [
 			],
 			"difficulty": 2,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -269,7 +302,11 @@
 			],
 			"difficulty": 3,
 			"choice_type": "years",
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -292,7 +329,10 @@
 				"Faceman"
 			],
 			"difficulty": 2,
-			"author": "missymousey"
+			"author": "missymousey",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -333,7 +373,10 @@
 				"Warcraft"
 			],
 			"difficulty": 2,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -360,7 +403,11 @@
 				"Yellow Yoshi"
 			],
 			"difficulty": 3,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "tf",
@@ -370,7 +417,11 @@
 			"choices": [
 			],
 			"difficulty": 1,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "tf",
@@ -380,7 +431,11 @@
 			"choices": [
 			],
 			"difficulty": 1,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -395,7 +450,11 @@
 			],
 			"difficulty": 3,
 			"randomize": false,
-			"author": "missymousey"
+			"author": "missymousey",
+			"tags": [
+				"pokemon",
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -495,7 +554,10 @@
 			],
 			"difficulty": 2,
 			"choice_type": "retro_games",
-			"author": "Shindesu"
+			"author": "Shindesu",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -508,7 +570,10 @@
 				"Isabelle"
 			],
 			"difficulty": 2,
-			"author": "FancyAlly"
+			"author": "FancyAlly",
+			"tags": [
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -561,7 +626,11 @@
 				"Shuntaro Furukawa"
 			],
 			"difficulty": 3,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -600,7 +669,11 @@
 			],
 			"difficulty": 2,
 			"choice_type": "factions",
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"halo",
+				"xbox"
+			]
 		},
 		{
 			"type": "mc",
@@ -624,7 +697,11 @@
 			],
 			"difficulty": 2,
 			"choice_type": "games",
-			"author": "Deathsfew"
+			"author": "Deathsfew",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -636,7 +713,11 @@
 			],
 			"difficulty": 1,
 			"choice_type": "characters",
-			"author": "Deathsfew"
+			"author": "Deathsfew",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -647,7 +728,11 @@
 			],
 			"difficulty": 2,
 			"choice_type": "games",
-			"author": "Deathsfew"
+			"author": "Deathsfew",
+			"tags": [
+				"mmorpg",
+				"blizzard"
+			]
 		},
 		{
 			"type": "mc",
@@ -659,7 +744,10 @@
 				"Super Mario World"
 			],
 			"difficulty": 2,
-			"author": "missymousey"
+			"author": "missymousey",
+			"tags": [
+				"nintendo"
+			]
 		},
 		{
 			"type": "mc",
@@ -673,7 +761,10 @@
 			],
 			"choice_type": "",
 			"difficulty": 2,
-			"author": "dandyhighwayman84"
+			"author": "dandyhighwayman84",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -708,7 +799,10 @@
 			],
 			"choice_type": "retro_games",
 			"difficulty": 2,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -719,7 +813,11 @@
 			],
 			"choice_type": "console_companies",
 			"difficulty": 2,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"sony"
+			]
 		},
 		{
 			"type": "mc",
@@ -732,7 +830,11 @@
 				"Britain"
 			],
 			"difficulty": 3,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"sony"
+			]
 		},
 		{
 			"type": "mc",
@@ -743,13 +845,154 @@
 			],
 			"choice_type": "years",
 			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "The *Kingdom Hearts* videogame series is a collaboration between Disney and what famous gaming company?",
+			"answer": "Square Enix",
+			"explaination": "*Kingdom Hearts* is a collaboration between Disney and Square Enix. Thus it features characters from the classic Final Fantasy series teaming up with the likes of Scrooge McDuck, Buzz Lightyear and Jack Sparrow.",
+			"choices": [
+			],
+			"choice_type": "gaming_companies",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "What is the name of the last videogame console Sega released in the United States?",
+			"answer": "Dreamcast",
+			"explaination": "Though released almost 20 years ago in 1999, the Dreamcast was the last home console Sega brought to foreign markets.",
+			"choices": [
+			],
+			"choice_type": "consoles",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"dreamcast"
+			]
+		},
+		{
+			"type": "tf",
+			"question": "Dreamcast was the last videogame console Sega released in the United States.",
+			"answer": "True",
+			"explaination": "Though released almost 20 years ago in 1999, the Dreamcast was the last home console Sega brought to foreign markets.",
+			"choices": [
+			],
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"dreamcast"
+			]
+		},
+		{
+			"type": "tf",
+			"question": "Dreamcast was the last videogame console Nintendo released in the United States.",
+			"answer": "False",
+			"explaination": "The Dreamcast was the last home console Sega brought to foreign markets. Nintendo is still making consoles!",
+			"choices": [
+			],
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"dreamcast"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What game studio, recently acquired by Microsoft, shattered Kickstarter records in 2012 with their campaign to produce a new point-and-click adventure game, arguably legitimizing crowdfunding as a viable funding vehicle for video games?",
+			"answer": "Double Fine Productions",
+			"explaination": "",
+			"choices": [
+			],
+			"choice_type": "gaming_companies",
+			"difficulty": 3,
+			"author": "dandyhighwayman84",
+			"tags": [
+				"microsoft"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "In late 2018, what famous Hollywood actor and singer launched Jablinski Games, a YouTube channel mostly dedicated to video games, pinball, and gaming culture?",
+			"answer": "Jack Black",
+			"explaination": "",
+			"choices": [
+				"Jim Carrey",
+				"Jared Leto",
+				"Bruce Willis"
+			],
+			"difficulty": 2,
+			"author": "dandyhighwayman84"
+		},
+		{
+			"type": "mc",
+			"question": "IAmDummyQuestion",
+			"answer": "DummyAnswer",
+			"explaination": "",
+			"choices": [
+				"ThisIs",
+				"TheLast",
+				"Question"
+			],
+			"choice_type": "",
+			"difficulty": 2,
 			"author": "Aerfalle"
 		},
 		{
 			"type": "mc",
 			"question": "IAmDummyQuestion",
 			"answer": "DummyAnswer",
-			"explaination": "This is dummy explaination.",
+			"explaination": "",
+			"choices": [
+				"ThisIs",
+				"TheLast",
+				"Question"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "IAmDummyQuestion",
+			"answer": "DummyAnswer",
+			"explaination": "",
+			"choices": [
+				"ThisIs",
+				"TheLast",
+				"Question"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "IAmDummyQuestion",
+			"answer": "DummyAnswer",
+			"explaination": "",
+			"choices": [
+				"ThisIs",
+				"TheLast",
+				"Question"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle"
+		},
+		{
+			"type": "mc",
+			"question": "IAmDummyQuestion",
+			"answer": "DummyAnswer",
+			"explaination": "",
 			"choices": [
 				"ThisIs",
 				"TheLast",

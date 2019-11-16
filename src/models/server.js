@@ -21,6 +21,8 @@ module.exports = function() {
 		adminRoleId: String,
 		moderatorRoleId: String,
 		botChannelId: String,
+		starboardChannelId: String,
+		starboardEmojiId: String,
 		publicChannelId: String,
 		triviaChannelId: String,
 		qotdChannelId: String,
@@ -47,6 +49,14 @@ module.exports = function() {
 
 	serverSchema.methods.updateQotdChannelId = function (id) {
 		this.model('Server').updateOne({_id: this.id},{qotdChannelId: id}).exec();
+	};
+
+	serverSchema.methods.updateStarboardChannelId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{starboardChannelId: id}).exec();
+	};
+
+	serverSchema.methods.updateStarboardEmojiId = function (id) {
+		this.model('Server').updateOne({_id: this.id},{starboardEmojiId: id}).exec();
 	};
 
 	serverSchema.methods.updateQotdMessageId = function (id) {

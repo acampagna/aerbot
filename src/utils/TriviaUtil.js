@@ -8,6 +8,7 @@ const CoreUtil = require("./Util.js");
 const Discord = require("discord.js");
 const TriviaConfig = require("../trivia.json");
 const Aerbot = mongoose.model('Aerbot');
+const TriviaService = require("../services/TriviaService");
 
 const questionOptions = new Array("🇦", "🇧", "🇨", "🇩", "🇪");
 const questionOptionsLetters = new Array("A", "B", "C", "D", "E");
@@ -146,7 +147,7 @@ function getRandomTriviaQuestion() {
 	return question;
 }
 
-function sendTriviaQuestion(client, serverData, qn, tq, tl) {
+function sendTriviaQuestion(client, serverData, qn, tq, tl, TS) {
 	var triviaChannel = client.channels.get(serverData.triviaChannelId);
 	var question = getRandomTriviaQuestion();
 
@@ -176,14 +177,16 @@ function sendTriviaQuestion(client, serverData, qn, tq, tl) {
 	//triviaChannel.send(embed);
 
 	const embed = getQuestionEmbed(question, qn, tq, tl);
+	//const TS = new TriviaService();
 
 	triviaChannel.send(embed).then(function (message) {
 		Aerbot.set("currentTriviaId", message.id);
+		console.log("1");
+		TS.setCurrentTriviaMessageId(message.id);
+		console.log("2");
 		CoreUtil.asyncForEach(questionOptionsUsed, async (data) => {
 			await message.react(data);
 		});
-	}).catch(function() {
-		//Something
 	});
 
 	return question;

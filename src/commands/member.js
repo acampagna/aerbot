@@ -1,95 +1,130 @@
 const CoreUtil = require("../utils/Util.js");
+const MemberUtil = require("../utils/MemberUtil.js");
 const Command = require("../Command.js");
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Discord = require("discord.js");
 const DateDiff = require("date-diff");
+const Achievement = mongoose.model('Achievement');
 
 module.exports = new Command({
 	name: "member",
 	description: "Do operations on members",
 	syntax: "member",
-	admin: true,
+	admin: false,
 	invoke
 });
 
-function invoke({ message, params, guildData, client }) {
+async function invoke({ message, params, serverData, client }) {
 	CoreUtil.dateLog(params);
-	switch(params[0]) {
-		case 'stats':
-			if(!params[1]) {
-				return Promise.resolve(params[1] + " is an invalid or missing parameter.");
-			} else {
-				return new Promise(function(resolve, reject) {
-					const now = new Date();
-					if(message.mentions.users.first()) {
-						var memberId = message.mentions.users.first().id;
+
+	return new Promise(function(resolve, reject) {
+
+		var getAdminStats = (CoreUtil.isMemberAdmin(message, serverData));
+
+		if(message.mentions.users.first()) {
+			var memberId = message.mentions.users.first().id;
+		} else if(params[0]){
+			var memberId = params[0];
+		} else {
+			var memberId = message.member.id;
+			getAdminStats = false;
+		}
+
+		User.findById(memberId).exec().then(async user => {
+			var embed = await createEmbed(user, client, serverData, getAdminStats);
+			resolve ({embed});
+		});
+
+		/*if(!CoreUtil.isMemberAdmin(message, serverData)) {
+			console.log("NO ADMIN OR NO PARAMS 0!");
+			User.findById(message.member.id).exec().then(user => {
+				var embed = createEmbed(user, client, serverData, false);
+				resolve ({embed});
+			});
+		} else {
+			switch(params[0]) {
+				case 'stats':
+					if(!params[1]) {
+						resolve(params[1] + " is an invalid or missing parameter.");
 					} else {
-						var memberId = params[1];
+						
+						if(message.mentions.users.first()) {
+							var memberId = message.mentions.users.first().id;
+						} else {
+							var memberId = params[1];
+						}
+						
+						User.findById(memberId).exec().then(user => {
+							var embed = createEmbed(user, client, serverData, true);
+							resolve ({embed});
+						});
 					}
-					
-					User.findById(memberId).exec().then(user => {
-						CoreUtil.dateLog("Member Found: " + user.username);
-						const embed = new Discord.RichEmbed().setTitle(`__${user.username} Stats__`);
-						embed.addField("Level", `${user.level}`);
-						embed.addField("Exp", `${user.exp}`);
-						embed.addField("Currency (unused)", `${user.currency}`);
-						//embed.addField("Rank (unused)", `${user.rank}`);
-						//embed.addField("Class (unused)", `${user.class}`);
-						embed.addField("# messages", `${user.messages}`, true);
-						embed.addField("# reactions", `${user.reactions}`, true);
-						embed.addField("# events", `${user.events}`, true);
-						embed.addField("# voice activity", `${user.voiceActivity}`, true);
-						embed.addField("Activity Points", `${user.activityPoints}`, true);
-						embed.addField("Battle Royale Wins", `${user.brWins}`, true);
-						embed.addField("Last Online", `${user.lastOnline}\n*${new DateDiff(now, user.lastOnline).days()} days ago*`);
-						embed.addField("Last Message", `${user.lastMessage}\n*${new DateDiff(now, user.lastMessage).days()} days ago*`);
-						embed.addField("Last Reaction", `${user.lastReaction}\n*${new DateDiff(now, user.lastReaction).days()} days ago*`);
-						embed.addField("Last Active", `${user.lastActive}\n*${new DateDiff(now, user.lastActive).days()} days ago*`);
-						embed.addField("Joined", `${user.joined}\n*${new DateDiff(now, user.joined).days()} days ago*`);
+					break;
+				default:
+					console.log("NO PARAMS 1!");
+					User.findById(message.member.id).exec().then(user => {
+						var embed = createEmbed(user, client, serverData, false);
 						resolve ({embed});
-					});
-				});
-			}
-			break;
-		case 'rank':
-			/*return new Promise(function(resolve, reject) {
-				var memberId = message.mentions.users.first().id;
-				
-				User.findById(message.member.id).exec().then(user => {
-					if(!params[2]) {
-						resolve (`${user.username}'s ${params[0]} is ${user.rank}`);
-					} else {
-						user.rank = params[1];
-						user.save();
-						resolve (`Set ${user.username}'s ${params[0]} to ${params[1]}`);
-					}
-				});
-			});*/
-			break;
-		case 'leaderboard':
-			/*return new Promise(function(resolve, reject) {
-				let leaderLimit = 10;
-				if(CoreUtil.isNumber(params[1])) {
-					leaderLimit = parseInt(params[1]);
-				}
+					});*/
+	});
+}
 
-				CoreUtil.dateLog("Leader Limit: " + leaderLimit);
-				
-				let ret = `__User Leaderboard__\n`;
-				ret += "Top " + leaderLimit + " members of all time\n\n";
+async function createEmbed(user, client, serverData, admin) {
+	CoreUtil.dateLog("Member Found: " + user.username);
+	const now = new Date();
+	var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
 
-				UserData.find({}, {sort: '-exp', limit: leaderLimit}).then(users => {
-					
-					users.forEach(user => {
-						ret += `**${user.username}** - Level ${user.level} *(${user.exp})*\n`;
-					});
-					
-					resolve(ret);
-				});
-			});*/
-			break;
-		default:
-			return Promise.resolve(params[0] + " is an invalid member operation");
+	let member = client.guilds.get(serverData._id).members.get(user.id);
+
+	var desc = "**Achievements**\n";
+
+	var achievements = await Achievement.findInIds(user.achievements);
+
+	achievements.forEach(a => {
+		if(a.emoji.length > 5) {
+			var emoji = client.emojis.get(a.emoji);
+		} else {
+			var emoji = a.emoji;
+		}
+
+		desc += emoji + " " + a.name + " - " + a.description + "\n";
+	});
+
+	const embed = new Discord.RichEmbed().setTitle(`__${user.username} Stats__`);
+	embed.setDescription(desc);
+	if(admin) {
+		embed.addField("ID", user.id);
 	}
+	embed.addField("Level", `${user.level}`);
+	embed.addField("Exp", `${user.exp}`);
+	embed.addField("Exp to Level " + (user.level+1), MemberUtil.calculateNextLevelExp(user.level, user.exp));
+
+	if(admin)
+		embed.addField("Exp Adjustments", `${user.expAdjustment}`);
+	
+	embed.addField("Currency (coming soon!)", `${user.currency}`);
+
+	if(admin) {
+		//embed.addField("Rank (unused)", `${user.rank}`);
+		//embed.addField("Class (unused)", `${user.class}`);
+		embed.addField("Messages", `${user.messages}`, true);
+		embed.addField("Reactions", `${user.reactions}`, true);
+		embed.addField("Events", `${user.events}`, true);
+		embed.addField("Voice Activity", `${user.voiceActivity}`, true);
+		embed.addField("Trivia Answers", `${user.triviaCorrect}`, true);
+		embed.addField("Trivia Wins", `${user.triviaWon}`, true);
+		embed.addField("Battle Royale Wins", `${user.brWins}`, true);
+		embed.addField("Last Online", `${user.lastOnline}\n*${new DateDiff(now, user.lastOnline).days()} days ago*`);
+		embed.addField("Last Active", `${user.lastActive}\n*${new DateDiff(now, user.lastActive).days()} days ago*`);
+		//embed.addField("Last Online", `${user.lastOnline.toLocaleDateString("en-US", options)}\n*${new DateDiff(now, user.lastOnline).days()} days ago*`);
+		//embed.addField("Last Active", `${new Date(user.lastActive).toLocaleDateString("en-US", options)}\n*${new DateDiff(now, user.lastActive).days()} days ago*`);
+	}
+
+	embed.addField("Activity Points", `${user.activityPoints}`, true);
+
+	embed.setFooter(`Joined ${user.joined} (${new DateDiff(now, user.joined).days()} days ago)`);
+	embed.setThumbnail(member.user.avatarURL);
+
+	return embed;
 }

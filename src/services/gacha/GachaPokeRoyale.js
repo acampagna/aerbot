@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 const UserModel = mongoose.model('User');
 
 const god = "Aerbot";
-const gameName = "Battle Royale";
-const msgSpeed = 4500;
+const gameName = "Poke Royale";
+const msgSpeed = 5000;
 
 var message = undefined;
 var day = 0;
@@ -62,104 +62,96 @@ var players = [
 ]
 
 var annihilations = [
-    "zRed creates a stew out of {$n} of our tastiest combatants!",
-    "An avalanche of {$w}s crushes {$n} players in the arena. Oh the horror!",
-    "Thanos just snapped {$n} mortals out of existence",
+    "Kabu creates a stew out of {$n} of our tastiest combatants!",
+    "An avalanche of {$w}s crushes {$n} players in the Gym. Oh the horror!",
+    "Mewtwo just snapped {$n} trainers out of existence",
     "A wild Electrode has appeared, It used Self-Destruct. {$n} contestants fainted...",
-    "Natural selection kills {$n} smart, intelligent, and unique snowflakes",
-    "A stampede of 1000 {$a} tramples {$n} brave pioneers",
-    "{$n} fighters attended the Red Wedding"
+    "Team Yell kills {$n} Cute, cuddly, and unique snowflakes",
+    "A stampede of 1000 {$a} tramples {$n} brave trainers",
+    "{$n} trainers attended the Ryme City Parade and got turned into Pokemon"
 ];
 
 var oneOnOneKills = [
-    "{$1} eviscerates {$2} with their {$w}",
-    "{$1} + {$w} = one dead {$2}!",
-    "{$1} kills {$2} with a {$w}",
+    "{$1} eviscerates {$2} with their {$w}'s ungodly Pokemon smile",
+    "{$1} + {$w} = one very traumatized then dead {$2}!",
+    "{$1} traps {$2} under a tarp and has their {$w} fart poisonous R under it, decommissioning {$2}",
     "{$1} one-shots {$2} with a {$w}",
-    "{$1} sticks {$2} with the pointy end of their {$w}",
-    "{$1} covers {$2} in tuna and throws them into a pit of hungry kittens",
+    "{$1} lobs their {$w} at {$2} who suffocates them to death",
+    "{$1} covers {$2} in tuna and throws them into a pit of hungry Carvanhas",
     "{$1} shoves a mayonnaise covered {$w} up {$2}'s ass and pulls the trigger",
     "{$1} sacrificed {$2} to a herd of wild {$a}"
 ];
 
-/*var mistakes = [
-    //"{$1} one-shot themselves",
-    "{$1} killed themself with their own {$w}",
-    //"{$1} drowns in soymilk...",
-    "{$1}'s {$w} betrayed them...",
-    "{$1} cut the wrong wire",
-    "{$1} cut off their own {$b} with a {$w}",
-    //"{$1} trips on their untied shoelace right into a pit of fire",
-    "{$1} didn't actually want to win and turns their {$w} on themselves. Oh the humanity!",
-    "{$1} decides to do the tide challenge and dies of regret, stupidity, and poison",
-    //"{$1} steps onto a landmine and blows up into million pieces",
-    //"{$1} yeeted themselves out of existence",
-    "{$1} gets crushed by a {$a}",
-    "{$1} gets their {$b} bitten off by a wild {$a}"
-    //"{$1} dies waiting for savage islands to reopen"
-];*/
-
 var nearKills = [
-    "{$1} attacks {$2} with their {$w} but {$2} narrowly escapes with {$hp} health",
-    "{$1} takes aim at {$2} with their {$w} but an angelic Festival Elephantulus saves their life with {$hp} health remaining",
-    "{$2} narrowly escapes an encounter with a wild {$a} with {$hp} health remaining"
+    "{$1}'s {$w} kidnaps {$2}, dresses them in a baby outfit and leaves them tied up in a field with {$hp} remaining",
+    "{$1}'s {$w} makes pufferfish sushi for {$2}, causing a never ending bathroom visit, leaving {$2} with {#hp}",
+    "A {$a} falls from the sky and bonks {$2} on the head,leaving them unconcious and with {$hp} left"
 ];
 
 var threeWayKill = [
-    "{$1} and {$3} work together to cut off {$2}'s head",
-    "{$1} and {$3} toss {$2} into a pack of wild {$a}"
+    "{$1} and {$3} work together to kidnap and sacrifice {$2} to the Valcanoes of Alola",
+    "{$1} and {$3} toss {$2} into a crazed pack of {$a} under the influence of Chemical R",
+    "{$1} and {$3} lock {$2} wthin the catacombs of the Pokemon Tower at Lavender Town"
 ];
 
 var weapons = [
-    "Frying Pan",
-    "Meatball",
-    "GPD (Giant Purple Dildo)",
-    "Backscratcher",
-    "Dirty Socks",
-    "Pickle",
-    "$100 Bill",
-    "Buster Sword",
-    "Humerun Bat",
-    "BFG 9000",
-    "Gravity Gun",
-    "Fire Flower",
-    "Fatman and Little Boy",
-    "Banana Peel",
-    "Star Rod",
-    "Master Sword"
+    "Snorlax",
+    "Bidoof",
+    "Probopass",
+    "Wobbuffet",
+    "Klefki",
+    "Purugly",
+    "Magikarp",
+    "Psyduck",
+    "Caterpie",
+    "Meowth",
+    "Barbanacle",
+    "Pidgey",
+    "Wingull",
+    "Vannilish",
+    "Jigglytuff",
+    "Happiny",
+    "Lugia",
+    "Jynx",
+    "Grimer",
+    "Garbodor", 
+    "Swablu",
+    "Scorbunny",
+    "Grookey",
+    "Sobble"
 ];
 
 var showdownHits = [
-    "{$1} lands a hit to the {$b} with their {$w}",
-    "{$1} does a roundhouse kick to {$2}'s {$b}",
-    "{$1} dodges an attack then bites {$2}'s {$b}",
-    "{$1} grazes {$2} in the {$b} with their {$w}",
-    "{$1} throws boiling oil at {$2}",
-    "{$1} spanks {$2} on the {$b}",
-    "{$1} picks up a rock, hurling it at {$2} hitting them in the {$b}",
-    "{$1} goes invisible, flanks {$2}, and attacks from behind with their {$w}",
-    "{$1} throws a pack of {$a} at {$2}",
-    "A wild {$a} comes out of nowhere, charges at {$2}, and hits them right in the {$b}"
+    "{$1} sicks their {$w} on {$2}'s {$b}",
+    "{$1} throws their {$w} at {$2}",
+    "{$1}'s {$w} does a roundhose kick to {$2}'s {$b}",
+    "{$1}'s {$w} somersaults towards {$2} and bites their {$b}",
+    "{$1}'s {$w} force feeds nutella down {$2}'s throat",
+    "{$1}'s {$w} spits seseme seeds at {$2}'s {$b}",
+    "{$1}'s {$w} mistakens {$2}'s painful screams as a mating call",
+    "{$1}'s {$w} licks {$2} raw",
+    "{$1}'s {$w} throws their poop pellets inside {$2}'s mouth",
+    "A horde of wild {$a} comes charging at {$2}, and flattend them"
 ];
 
 var showdownArenas = [
-    "at the Kiki factory",
-    "in Aerfalle's closet",
-    "in Deathsfew's sex dungeon",
-    "on top of Mt. Doom",
-    "in Realm's Meme Haven",
-    "in Summoner's Rift",
-    "in King's Canyon",
-    "at the Raccoon City Police Department",
-    "in Hyrule Castle",
-    "at the Silent Hill Elementary School",
-    "somewhere in Azeroth",
-    "in Green Hill Zone",
-    "in Dust2",
-    "at the Apollo Square in Rapture",
-    "in BriarRose's Magical Library",
-    "in Skye's Chamber of Horrors",
-    "in Fibonacci's Spiral Outlet"
+    "at Pewter Gym",
+    "at Viridian Gym",
+    "in Cerulean Cave",
+    "on the Jagged Pass",
+    "at Goldenrod City",
+    "at Moomoo Farm",
+    "on the Seafoam Islands",
+    "at the top of the Pokémon Tower",
+    "in the haunted Lavender Town",
+    "on the island of Alola",
+    "in the Team Rocket HQ",
+    "at the Safari Zone",
+    "in Viridian Forest",
+    "on Victory Road",
+    "on the S.S. Anne",
+    "deep inside Mt. Moon",
+    "inside the Indigo Plateau"
 ];
 
 var bodyParts = [
@@ -169,27 +161,37 @@ var bodyParts = [
     "finger",
     "chest",
     "leg",
-    "ass",
+    "butt",
     "big toe",
-    "nipple",
-    "boob",
-    "taint",
     "heiny",
     "tail"
 ];
 
 var animals = [
-    "Mammoth",
-    "Sabertooth Tiger",
-    "Pikachu",
-    "Pikman",
-    "Pachimari",
-    "Epona",
+    "Snorlax",
+    "Bidoof",
+    "Probopass",
+    "Wobbuffet",
+    "Klefki",
+    "Purugly",
     "Magikarp",
-    "Chocobo",
+    "Psyduck",
     "Caterpie",
-    "Yoshi",
-    "Claptrap"
+    "Meowth",
+    "Barbanacle",
+    "Pidgey",
+    "Wingull",
+    "Vannilish",
+    "Jigglytuff",
+    "Happiny",
+    "Lugia",
+    "Jynx",
+    "Grimer",
+    "Garbodor", 
+    "Swablu",
+    "Scorbunny",
+    "Grookey",
+    "Sobble"
 ]
 
 var showdownMisses = [
@@ -219,7 +221,7 @@ function sendMsgs(msgs, delay, cb) {
     });
 }
 
-class GachaBattleRoyale {
+class GachaPokeRoyale {
     constructor(){
         this.init();
     }
@@ -228,7 +230,7 @@ class GachaBattleRoyale {
         message = undefined;
         day = 0;
         messages = [];
-        CoreUtil.dateLog("Initialized Battle Royale Game! " + this.generateEntry());
+        CoreUtil.dateLog("Initialized Poke Royale Game! " + this.generateEntry());
     }
 
     generateEntry(message, params) {
@@ -690,7 +692,7 @@ class GachaBattleRoyale {
     }
 
     doVengeance() {
-        todaysEventName = "Vengeance";
+        todaysEventName = "Curse";
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Daily Event - " + todaysEventName + "__");
@@ -700,17 +702,17 @@ class GachaBattleRoyale {
     }
 
     doVampirism() {
-        todaysEventName = "Vampirism";
+        todaysEventName = "Bulbasaur Budding Day";
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Daily Event - " + todaysEventName + "__");
-        embed.setDescription("All combatants are granted Lifesteal for the day allowing them to gain health from everyone they kill.");
+        embed.setDescription("All combatants are granted Leech Seed for the day allowing them to gain health from everyone they kill.");
         embed.setColor(msgColors.dailyEvent);
         messages.push({ embed: embed });
     }
 
     doBloodbath() {
-        todaysEventName = "Bloodbath";
+        todaysEventName = "R Breakout";
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Daily Event - " + todaysEventName + "__");
@@ -730,7 +732,7 @@ class GachaBattleRoyale {
     }
 
     doMassProtection(entries) {
-        todaysEventName = "Mass Protection";
+        todaysEventName = "Mr.Mime Wall";
         var numAffected = 0;
         var retStr = "";
 
@@ -869,7 +871,7 @@ class GachaBattleRoyale {
         target.entry.hp -= 15;
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__" + title + " - Resurrection__");
+        embed.setTitle("__" + title + " - Mewtwo Rises__");
         embed.setDescription("The favor of the gods shine upon **" + target.member.displayName + "** as they are **resurrected** and welcomed back into the fight!");
         embed.setFooter("*Resurrected players are brought back to life with reduced health and damage*");
         //embed.setThumbnail("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZU_7EfPY7-cmtUAZaTK1N0qWC6ZGJpjKP-Hk_nHt5rASBeNbk");
@@ -882,8 +884,8 @@ class GachaBattleRoyale {
         this.killPlayer(target, target);
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Event - Blue Shell__");
-        embed.setDescription("A flying blue shell comes zipping across the battlefield right towards **" + target.member.displayName + "**, a kill leader");
+        embed.setTitle("__Event - Self Destruct__");
+        embed.setDescription("**" + target.member.displayName + "**, a kill leader, Self Destructs.");
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
 
@@ -992,7 +994,7 @@ class GachaBattleRoyale {
             }
         });
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Battle Royale **Day " + day + "** - The Showdown__");
+        embed.setTitle("__Poke Royale **Day " + day + "** - The Showdown__");
         embed.setDescription("Welcome to the Showdown! Our final 2 combatants will fight to the death **" + this.randomPhrase(showdownArenas) + "**");
         embed.setFooter(playersAlive);
         embed.setColor(msgColors.showdownDay);
@@ -1075,7 +1077,7 @@ class GachaBattleRoyale {
             this.killPlayer(target, target);
 
             const embed = new Discord.RichEmbed();
-            //embed.setTitle("__Battle Royale | **Annihilation!**__");
+            //embed.setTitle("__Poke Royale | **Annihilation!**__");
             embed.setDescription(
                 this.formatMessage(
                     this.randomPhrase(mistakes), 
@@ -1194,10 +1196,10 @@ class GachaBattleRoyale {
             embed.setColor(msgColors.playerKill);
 
             if(todaysEventName === "Vampirism") {
-                embed.setFooter(killer.member.displayName + " & " + assistant.member.displayName + " gained 20 hp from Vampirism");
+                embed.setFooter(killer.member.displayName + " & " + assistant.member.displayName + " gained 20 hp from Bulbasaur Budding Day");
             }
             if(todaysEventName === "Vengeance") {
-                embed.setFooter(killer.member.displayName + " & " + assistant.member.displayName + " lost 20 hp from Vengeance");
+                embed.setFooter(killer.member.displayName + " & " + assistant.member.displayName + " lost 20 hp from Curse");
             }
     
             messages.push({ embed: embed });
@@ -1226,7 +1228,7 @@ class GachaBattleRoyale {
             //target.entry.strength -= 3;
     
             const embed = new Discord.RichEmbed();
-            //embed.setTitle("__Battle Royale | **Annihilation!**__");
+            //embed.setTitle("__Poke Royale | **Annihilation!**__");
             embed.setDescription(
                 this.formatMessage(
                     this.randomPhrase(nearKills), 
@@ -1288,7 +1290,7 @@ class GachaBattleRoyale {
             newDayMsg = "Welcome to the first day of battle. LET THE BATTLE BEGIN!";
         }
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Battle Royale **Day " + day + "**__");
+        embed.setTitle("__Poke Royale **Day " + day + "**__");
         embed.setDescription(newDayMsg);
         embed = this.addRosterEmbed(entries, embed);
         embed.setColor(msgColors.newDay);
@@ -1350,16 +1352,16 @@ class GachaBattleRoyale {
 
     startGameMessage() {
         const embed = new Discord.RichEmbed();
-		embed.setTitle(`__Gacha! - Battle Royale__`);
-        embed.setDescription("Gacha Game Started! Join the battle and see if you have what it takes to win the Battle Royale!\n\n" +
-            " To enter type !gacha <weapon>");
-        embed.setFooter("Entry Example: !gacha battle axe");
+		embed.setTitle(`__Gacha! - Poke Royale__`);
+        embed.setDescription("Gacha Game Started! Join the battle and see if you have what it takes to win the Poke Royale!\n\n" +
+            " To enter type !gacha POKEMON");
+        embed.setFooter("Entry Example: !gacha Pikachu");
         return embed;
     }
 
     endGameMessage(winnerName, winnerValue) {
         const embed = new Discord.RichEmbed();
-		embed.setTitle(`__Gacha! - Battle Royale__`);
+		embed.setTitle(`__Gacha! - Poke Royale__`);
         embed.setDescription("**" + winnerName + "** and their **" + winnerValue.entry.weapon + "** won the battle against all odds!");
         if(winnerValue.entry && winnerValue.entry.numKills && winnerValue.entry.kills) {
             embed.addField(winnerValue.entry.numKills + " kills", winnerValue.entry.kills.join(", "));
@@ -1380,4 +1382,4 @@ class GachaBattleRoyale {
     }
 }
 
-module.exports = GachaBattleRoyale
+module.exports = GachaPokeRoyale

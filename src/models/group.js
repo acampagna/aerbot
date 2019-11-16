@@ -49,7 +49,7 @@ module.exports = function() {
 	};
 
 	groupSchema.statics.findGroupByEmoji = function(emoji) {
-		console.log("Finding group by emoji");
+		//console.log("Finding group by emoji");
 		return this.findOne({emoji: new RegExp(emoji, 'i')}).exec();
 	};
 

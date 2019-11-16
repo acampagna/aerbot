@@ -1,6 +1,7 @@
 const GachaDice = require("./gacha/GachaDice.js");
 const GachaRPS = require("./gacha/GachaRPS.js");
 const GachaBattleRoyale = require("./gacha/GachaBattleRoyale.js");
+const GachaPokeRoyale = require("./gacha/GachaPokeRoyale.js");
 const Discord = require("discord.js");
 
 /**
@@ -11,6 +12,7 @@ const Discord = require("discord.js");
 //var game = new GachaBattleRoyale();
 //var game = new GachaRPS();
 var game = new GachaDice();
+//var game = new GachaPokeRoyale();
 var gameInProgress = false;
 var entries = new Map();
 var message = undefined;
@@ -52,7 +54,7 @@ class GachaGameService {
         let entry = game.generateEntry(message, params);
         entries.set(message.member.displayName, {member: message.member, entry: entry});
         if(message.member.displayName === "Aerfalle") {
-            entries.set("Bot1", {member: {displayName: "Bot1"}, entry: game.generateEntry(message)});
+            /*entries.set("Bot1", {member: {displayName: "Bot1"}, entry: game.generateEntry(message)});
             entries.set("Bot2", {member: {displayName: "Bot2"}, entry: game.generateEntry(message)});
             entries.set("Bot3", {member: {displayName: "Bot3"}, entry: game.generateEntry(message)});
             entries.set("Bot4", {member: {displayName: "Bot4"}, entry: game.generateEntry(message)});
@@ -61,7 +63,7 @@ class GachaGameService {
             entries.set("Bot7", {member: {displayName: "Bot7"}, entry: game.generateEntry(message)});
             entries.set("Bot8", {member: {displayName: "Bot8"}, entry: game.generateEntry(message)});
             entries.set("Bot9", {member: {displayName: "Bot9"}, entry: game.generateEntry(message)});
-            entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message)});
+            entries.set("Bot10", {member: {displayName: "Bot10"}, entry: game.generateEntry(message)});*/
         }
         
         //console.log(member.user);

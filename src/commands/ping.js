@@ -22,7 +22,7 @@ function invoke({ message, params, serverData, client }) {
 	var nparams2 = params.join(" ").split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 	var nparams =  params.join(" ").split(/,(["'])(?:(?=(\\?))\2.)*?\1/);
 
-	//console.log(message);
+	console.log(message);
 	console.log(nparams);
 	console.log(nparams2);
 	console.log(nparams3);

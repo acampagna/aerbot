@@ -13,19 +13,16 @@ function calculateNewExp(action, currentExp) {
 function calculateActionExp(action) {
 	switch(action) {
 		case 'lottery':
-			return 100;
+			return 50;
 			break;
 		case 'reaction':
-			return 4;
-			break;
-		case 'praise':
-			return 10;
+			return 2;
 			break;
 		case 'event':
 			return 50;
 			break;
 		case 'br_win':
-			return 100;
+			return 50;
 			break;
 		case 'message':
 			return 1;
@@ -37,7 +34,13 @@ function calculateActionExp(action) {
 			return 10;
 			break;
 		case 'trivia_game':
-			return 100;
+			return 50;
+			break;
+		case 'pinned':
+			return 10;
+			break;
+		case 'achievement':
+			return 50;
 			break;
 		default:
 			return 1;
@@ -51,7 +54,13 @@ function calculateLevel(exp) {
 	CoreUtil.dateLog(`0.25 (current) New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
 	CoreUtil.dateLog(`0.3 New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
 	CoreUtil.dateLog(`0.5 New Level: ${Math.round(0.5 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);*/
-	return Math.max(1,Math.round(0.3 * Math.sqrt(exp)));
+	return Math.max(1,Math.floor(0.3 * Math.sqrt(exp)));
+}
+
+function calculateNextLevelExp(lvl, exp) {
+	//CoreUtil.dateLog(`EXP to next level: ${((Math.ceil(Math.pow((lvl+1) / 0.3, 2))) - exp)} | Lvl: ${(lvl+1)} | Pow(${((lvl+1) / 0.3)}): ${Math.pow(((lvl+1) / 0.3), 2)}`);
+
+	return ((Math.ceil(Math.pow((lvl+1) / 0.3, 2))) - exp);
 }
 
 function handleLevelRoles(user, member, server, serverData) {
@@ -93,9 +102,27 @@ function handleLevelRoles(user, member, server, serverData) {
 	}
 }
 
+function validURL(str) {
+	var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+	  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+	  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+	  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+	  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+	  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+	return !!pattern.test(str);
+}
+
+function domainNameMatches(hostname, domainName) {
+	console.log(hostname.split(".").filter(h => h === domainName));
+	return (hostname.split(".").filter(h => h === domainName).length > 0)
+}
+
 module.exports = {
 	calculateNewExp,
 	calculateActionExp,
 	calculateLevel,
-	handleLevelRoles
+	handleLevelRoles,
+	calculateNextLevelExp,
+	validURL,
+	domainNameMatches
 };
