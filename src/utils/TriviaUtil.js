@@ -58,11 +58,11 @@ function difficultyText(d) {
 function difficultyPoints(d) {
 	switch(Math.round(d)){
 		case 1:
-			return 0.5;
-		case 2:
 			return 1;
 		case 2:
-			return 1.5;
+			return 2;
+		case 2:
+			return 3;
 		default:
 			return 1;
 	}
@@ -71,7 +71,7 @@ function difficultyPoints(d) {
 function calculateQuestionPoints(d) {
 	var rnd = Math.round((Math.random() * 0.25)*100)/100;
 
-	return (difficultyPoints(d) + rnd);
+	return difficultyPoints(d);
 }
 
 function setOptions(question) {

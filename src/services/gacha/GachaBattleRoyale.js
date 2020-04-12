@@ -1,6 +1,7 @@
 const CoreUtil = require("../../utils/Util.js");
 const Discord = require("discord.js");
 const mongoose = require('mongoose');
+const Activity = mongoose.model('Activity');
 const UserModel = mongoose.model('User');
 
 const god = "Aerbot";
@@ -13,6 +14,11 @@ var todaysEvent = 0;
 var todaysEventName = "";
 var kidnapper = undefined;
 var kidnappee = undefined;
+
+var userActivity = new Map();
+var sortedUserActivity = new Map();
+var topUserActivity = new Array();
+var avgExp = 0;
 
 var messages = [];
 
@@ -62,24 +68,44 @@ var players = [
 ]
 
 var annihilations = [
-    "zRed creates a stew out of {$n} of our tastiest combatants!",
-    "An avalanche of {$w}s crushes {$n} players in the arena. Oh the horror!",
+    "Aerbot creates a stew out of {$n} of our tastiest combatants!",
+    "An avalanche of {$w}s and {$a}s crushes {$n} players in the arena. Oh the horror!",
     "Thanos just snapped {$n} mortals out of existence",
-    "A wild Electrode has appeared, It used Self-Destruct. {$n} contestants fainted...",
-    "Natural selection kills {$n} smart, intelligent, and unique snowflakes",
+    "A wild Electrode has appeared, It used Self-Destruct. {$n} contestants fainted (died)...",
     "A stampede of 1000 {$a} tramples {$n} brave pioneers",
-    "{$n} fighters attended the Red Wedding"
+    "{$n} fighters attended the Red Wedding",
+    "Social isolation has taken the lives of {$n} brave souls!",
+    "Aerbot sneaks into {$n} combatant's houses, steals their toilet paper, and leaves them to die in their own filth",
+    "While Aerfalle was rigging the competition against deaths, he accidentally killed($n) competitors",
+    "Aerbot caught {$n} people trying to hack the competiton and gave them a taste of the ban hammer!",
+    "Aerbot caught {$n} people trying to sneak out during quarantine"
 ];
 
 var oneOnOneKills = [
+    "{$1} decapitates {$2} with their {$w}",
+    "{$1} disembowels {$2} with their {$w}",
     "{$1} eviscerates {$2} with their {$w}",
-    "{$1} + {$w} = one dead {$2}!",
-    "{$1} kills {$2} with a {$w}",
+    "{$1} kills {$2} with their {$w}",
     "{$1} one-shots {$2} with a {$w}",
+    "{$1} + {$w} = one dead {$2}!",
     "{$1} sticks {$2} with the pointy end of their {$w}",
     "{$1} covers {$2} in tuna and throws them into a pit of hungry kittens",
     "{$1} shoves a mayonnaise covered {$w} up {$2}'s ass and pulls the trigger",
-    "{$1} sacrificed {$2} to a herd of wild {$a}"
+    "{$1} shoves a non-mayonnaise covered {$w} up {$2}'s {$b} and pulls the trigger",
+    "{$1} sacrificed {$2} to a herd of wild {$a}",
+    "{$1} uncloaks and throws their {$w} at {$2}'s {$b}",
+    "{$1} drowns {$2} in a pool of {$w}",
+    "{$2} fell into a pit filled with {$1}’s {$w}",
+    "{$1} failed to maintain social distancing as {$2}'s {$w} plunges through their {$b}",
+    "{$1} attacks {$2} with {$w}. It was super effective!",
+    "{$1} cancels {$2}’s Netflix subscription",
+    "{$1}’s {$w}'s pure awesomeness is exposed killing {$2}.",
+    "{$2} tried to attack {$1} but {$1} parrys and ripostes with their trusty {$w}.",
+    "{$1} and their {$w} focuses their chakras and hadoukens the *shit* out of {$2}.",
+    "{$1} used their {$w} to eviscerate {$2} into 1000 pieces. **FATALITY!**",
+    "{$1}'s {$w} turns into a {$a} and bites off {$2}'s {$b}. **ANIMALITY!**",
+    "{$1} uses their {$w} to cast a spell turning {$2} into a baby. **BABALITY!**",
+    "{$1} charms {$2} with their {$w}. They become besties. **FRIENDSHIP!**"
 ];
 
 /*var mistakes = [
@@ -107,26 +133,36 @@ var nearKills = [
 
 var threeWayKill = [
     "{$1} and {$3} work together to cut off {$2}'s head",
-    "{$1} and {$3} toss {$2} into a pack of wild {$a}"
+    "{$1} and {$3} toss {$2} into a pack of wild {$a}",
+    "{$1} and {$3} do a double roundhouse kick to {$2}'s {$b}",
+    "{$1} and {$3} drowns {$2} in a pool of {$a}",
+    "{$1} and {$3} eat {$2}'s {$b} killing them instantly",
+    "{$1}'s {$w} attack ricochets off {$3}'s {$b} killing {$2}",
+    "{$1} has pushed {$2} into a pit of {$a} while {$3} pours gas into the pit and lights it on fire"
 ];
 
 var weapons = [
-    "Frying Pan",
-    "Meatball",
     "GPD (Giant Purple Dildo)",
-    "Backscratcher",
     "Dirty Socks",
-    "Pickle",
     "$100 Bill",
     "Buster Sword",
     "Humerun Bat",
     "BFG 9000",
-    "Gravity Gun",
     "Fire Flower",
-    "Fatman and Little Boy",
     "Banana Peel",
     "Star Rod",
-    "Master Sword"
+    "Master Sword",
+    "211-V Plasma Cutter",
+    "Golden Gun",
+    "Gravity Gun",
+    "Hidden Blade",
+    "Energy Sword",
+    "Blades Of Chaos",
+    "Fat Man",
+    "Scorpion's Kunai",
+    "Red Shell",
+    "Drugs & Alcohol",
+    "COVID-19"
 ];
 
 var showdownHits = [
@@ -134,16 +170,17 @@ var showdownHits = [
     "{$1} does a roundhouse kick to {$2}'s {$b}",
     "{$1} dodges an attack then bites {$2}'s {$b}",
     "{$1} grazes {$2} in the {$b} with their {$w}",
-    "{$1} throws boiling oil at {$2}",
-    "{$1} spanks {$2} on the {$b}",
-    "{$1} picks up a rock, hurling it at {$2} hitting them in the {$b}",
+    "{$1} spanks {$2} on the {$b} with their {$w}",
     "{$1} goes invisible, flanks {$2}, and attacks from behind with their {$w}",
     "{$1} throws a pack of {$a} at {$2}",
-    "A wild {$a} comes out of nowhere, charges at {$2}, and hits them right in the {$b}"
+    "A wild {$a} comes out of nowhere, charges at {$2}, and hits them right in the {$b}",
+    "{$1} cancels {$2}’s Netflix subscription",
+    "{$2} tried to attack {$1} but {$1} parrys and ripostes with their trusty {$w}.",
+    "{$1} attacks {$2} with {$w}. It was super effective!",
+    "{$1} focuses their chakra and hadoukens the *shit* out of {$2}."
 ];
 
 var showdownArenas = [
-    "at the Kiki factory",
     "in Aerfalle's closet",
     "in Deathsfew's sex dungeon",
     "on top of Mt. Doom",
@@ -157,8 +194,7 @@ var showdownArenas = [
     "in Green Hill Zone",
     "in Dust2",
     "at the Apollo Square in Rapture",
-    "in BriarRose's Magical Library",
-    "in Skye's Chamber of Horrors",
+    "in FancyAlly's Magical Library",
     "in Fibonacci's Spiral Outlet"
 ];
 
@@ -189,11 +225,14 @@ var animals = [
     "Chocobo",
     "Caterpie",
     "Yoshi",
-    "Claptrap"
+    "Claptrap",
+    "Goron"
 ]
 
 var showdownMisses = [
     "{$1} parrys {$2}'s {$w} attack",
+    "{$1} dodges {$2}'s {$w} attack",
+    "{$1} sense {$2}'s {$w} attack and moves out of the way with cat-like reflexes"
 ];
 
 var msgColors = {
@@ -228,6 +267,11 @@ class GachaBattleRoyale {
         message = undefined;
         day = 0;
         messages = [];
+
+        userActivity = new Map();
+        topUserActivity = new Array();
+        sortedUserActivity = new Map();
+
         CoreUtil.dateLog("Initialized Battle Royale Game! " + this.generateEntry());
     }
 
@@ -238,6 +282,26 @@ class GachaBattleRoyale {
             if(paramsStr && paramsStr.length > 1) {
                 weapon = paramsStr;
             }
+        }
+
+        var topExp = false;
+        var recentExp = 0;
+        var isStaff = false;
+
+        if(message && message.member) {
+            if(topUserActivity.includes(message.member.id)) {
+                topExp = true;
+            }
+            
+            if(userActivity.has(message.member.id)) {
+                recentExp = userActivity.get(message.member.id);
+            }
+
+            if(message.member.roles.get("629375250131320846")) {
+                isStaff = true;
+            }
+
+            console.log(message.member.displayName + " | Top 10?: " + topExp + " | Recent Exp: " + recentExp + " | " + "Is Staff?: " + isStaff);
         }
         
         return {
@@ -253,10 +317,12 @@ class GachaBattleRoyale {
             kidnapping: false,
             lusted: false,
             hp: 100,
-            attack: 25,
-            strength: 15,
+            strength: 20,
             favor: 0,
-            weapon: weapon
+            weapon: weapon,
+            isTopExp: topExp,
+            recentExp: recentExp,
+            isStaff: isStaff
         };
     }
 
@@ -277,7 +343,10 @@ class GachaBattleRoyale {
     }
 
     isPlayerImmune(entry) {
-        return (entry.entry.immune || entry.entry.dailyImmune);
+        if(entry)
+            return (entry.entry.immune || entry.entry.dailyImmune);
+        else
+            return false;
     }
 
     isValidTarget(target) {
@@ -286,7 +355,7 @@ class GachaBattleRoyale {
 
     randomAlivePlayer(entries, dupe) {
         var found = false;
-        //console.log("Getting Random Alive Players");
+        console.log("Getting Random Alive Players");
         while(!found) {
             var entry = this.randomEntry(entries);
             //console.log(entry.member.displayName + " Valid Target? " + this.isValidTarget(entry) + " Dead? " + entry.entry.dead + " Kidnapped? " + entry.entry.kidnapping);
@@ -397,13 +466,71 @@ class GachaBattleRoyale {
         return killLeader;
     }
 
-    startGame(msg) {
-        message = msg;
-        return this.startGameMessage();
+    getExpLoser(entries) {
+        const _this = this;
+        var loser = undefined;
+        var loserExp = 999999;
+        entries.forEach(function(value, key) {
+            if(_this.isValidTarget(value) && value.entry.recentExp < loserExp) {
+                loser = value;
+                loserExp = value.entry.recentExp;
+            }
+        });
+
+        //console.log(loser);
+
+        return loser;
     }
 
-    entryToString(entry) {
-        return entry.numKills;
+    async startGame(msg, mode) {
+        message = msg;
+
+        var totalExp = 0;
+        var activities = await Activity.findActivitySince(7);
+
+        activities.forEach(activity =>{
+            if(activity.type != "achievement") {
+                if(userActivity.has(activity.userId)) {
+                    userActivity.set(activity.userId, userActivity.get(activity.userId)+activity.exp);
+                } else {
+                    userActivity.set(activity.userId, activity.exp);
+                }
+                totalExp += activity.exp;
+            }
+        });
+
+        avgExp = Math.floor(totalExp/userActivity.size);
+        console.log("Total Exp: " + totalExp + " | Total Users: " + userActivity.size + " | Avg Exp: " + avgExp);
+
+        sortedUserActivity = new Map([...userActivity.entries()].sort((a, b) => b[1] - a[1]));
+
+        if(sortedUserActivity) {
+            var total = 0;
+            sortedUserActivity.forEach(function(value, key) {
+                total++;
+                if(total <= 20) {
+                    let member = message.guild.members.get(key);
+                    if(member){
+                        if(member.roles.get("629375250131320846")) {
+                            console.log("Ignoring Staff!");
+                            total--;
+                            //topUserActivity.push(key);
+                        } else {
+                            topUserActivity.push(key);
+                        }
+                    } else {
+                        total--;
+                    }
+                }
+            });
+        }
+
+        if(topUserActivity) {
+            console.log("topUserActivity");
+            console.log(topUserActivity);
+        }
+
+        return this.startGameMessage(mode);
     }
 
     processMessages(entries) {
@@ -429,17 +556,6 @@ class GachaBattleRoyale {
         entries.forEach(function(value, key) {
             console.log(key);
         });
-        
-        day++;
-        this.sendNewDayMessage(entries);
-
-        this.doDayOne(entries);
-        if(this.numAlive(entries) == 1) {
-            this.processMessages(entries);
-        }
-
-        /*day++;
-        this.sendNewDayMessage(entries);*/
     
         while(this.numAlive(entries) > 2) {
             day++;
@@ -484,18 +600,15 @@ class GachaBattleRoyale {
 
     doDayOne(entries) {
         console.log("---[DAY 1]---");
-        //this.doNormalDay();
-        this.doMassProtection(entries);
+        this.doNormalDay();
 
-        if(this.numAlive(entries) > 10) {
+        //this.doSupplyDrop();
+
+        if(this.numAlive(entries) > 15) {
             this.doAnnihilation(entries);
-
+        } else {
             this.doThreeWayKill(entries);
-
-            this.doNearKill(entries);
-
         }
-        //this.doMistake(entries);
 
         this.doPlayerKill(entries);
 
@@ -505,7 +618,7 @@ class GachaBattleRoyale {
     }
 
     doDayN(entries) {
-        var actions = Math.floor(Math.random() * (3+day/2)) + 1;
+        var actions = Math.floor(Math.random() * (4+day/2)) + 2;
 
         console.log("---[DAY " + day + "]---");
 
@@ -514,38 +627,67 @@ class GachaBattleRoyale {
 
         console.log("Alive " + alive + " | Targets " + this.numTargets(entries) + " | Actions " + actions);
 
+        if(day === 1 && this.numAlive(entries) > 15) {
+            this.doAnnihilation(entries);
+        }
+
+        if(day === 3 && this.numTargets(entries) > 1) {
+            this.doBlackShell(entries);
+        }
+
+        if(day >= 5) {
+            if(alive > 2)
+                this.doPlayerKill(entries);
+            this.doResurrect(this.randomDeadPlayer(entries));
+        }
+
+        if(todaysEventName === "Supply Drop" || todaysEventName === "Bloodbath") {
+            actions++;
+        }
+
         while(actions > 0 && alive > 2) {
             if(todaysEventName === "Bloodbath") {
                 var action = 99;
+            } else if(todaysEventName === "Supply Drop") {
+                this.doFindPotion(entries);
             } else {
-                var action = Math.floor(Math.random() * 14) + 1;
+                var action = Math.floor(Math.random() * 20) + 1;
             }
 
             console.log("Action: " + action);
 
             switch (action) {
                 case 1:
+                case 2:
                     this.doAnnihilation(entries);
                     break;
-                case 2:
-                case 3:
-                    this.doNearKill(entries);
-                    break;
+                /*case 3:
                 case 4:
-                    this.doThreeWayKill(entries);
-                    break;
+                case 5:
+                    this.doNearKill(entries);
+                    break;*/
+                case 3:
+                case 4:
                 case 5:
                 case 6:
-                    this.doEvent(entries);
+                    this.doThreeWayKill(entries);
                     break;
                 case 7:
                 case 8:
                 case 9:
                 case 10:
                 case 11:
+                    this.doEvent(entries);
+                    break;
                 case 12:
                 case 13:
                 case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
                     this.doPlayerKill(entries);
                     break;
                 case 99:
@@ -563,32 +705,52 @@ class GachaBattleRoyale {
     }
 
     doEvent(entries) {
-        var action = Math.floor(Math.random() * 3) + 1;
+        var action = Math.floor(Math.random() * 5) + 1;
         console.log("Event pick: " + action);
         var deadTarget = this.randomDeadPlayer(entries);
         console.log("Dead Target: " + deadTarget.member.displayName);
 
         switch (action) {
             case 1:
-                this.doResurrect(deadTarget);
-                break;
             case 2:
-                if(this.numTargets(entries) > 0) {
+                if(deadTarget) {
+                    this.doResurrect(deadTarget);
+                } else {
+                    this.doFindPotion(entries);
+                }
+                break;
+            case 3:
+                if(this.numTargets(entries) > 1) {
                     this.doBlueShell(entries);
                 } else {
                     this.doResurrect(deadTarget);
                 }
                 break;
-            case 3:
+            case 4:
+                if(this.numTargets(entries) > 1) {
+                    this.doBlackShell(entries);
+                } else {
+                    this.doResurrect(deadTarget);
+                }
+                break;
+            case 5:
                 this.doFindPotion(entries);
                 break;
             default: 
-                this.doResurrect(deadTarget);
+                if(deadTarget) {
+                    this.doResurrect(deadTarget);
+                } else {
+                    this.doFindPotion(entries);
+                }
         }
     }
 
     doDailyEvent(entries) {
-        var action = Math.floor(Math.random() * 6) + 1;
+        var action = Math.floor(Math.random() * 7) + 1;
+
+        if(day === 2) {
+            action = 7;
+        }
 
         if(action === 6 && this.numAlive < 5) {
             action = 3;
@@ -618,6 +780,9 @@ class GachaBattleRoyale {
                 this.doKidnapping(entries);
                 break;
             case 7:
+                this.doSupplyDrop();
+                break;
+            case 8:
                 this.doBloodlust();
                 break;
             default: 
@@ -648,6 +813,9 @@ class GachaBattleRoyale {
                 this.resolveKidnapping(entries);
                 break;
             case 7:
+                //this.resolveSupplyDrop(entries);
+                break;
+            case 8:
                 this.resolveBloodlust();
                 break;
             default: 
@@ -715,6 +883,16 @@ class GachaBattleRoyale {
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Daily Event - " + todaysEventName + "__");
         embed.setDescription("All hell breaks loose! Murder and Death is all that we'll see on this day!");
+        embed.setColor(msgColors.dailyEvent);
+        messages.push({ embed: embed });
+    }
+
+    doSupplyDrop() {
+        todaysEventName = "Supply Drop";
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Daily Event - " + todaysEventName + "__");
+        embed.setDescription("Care packages rain from the skies. LET THERE BE LOOT!");
         embed.setColor(msgColors.dailyEvent);
         messages.push({ embed: embed });
     }
@@ -877,13 +1055,26 @@ class GachaBattleRoyale {
         messages.push({ embed: embed });
     }
 
+    doBlackShell(entries) {
+        var target = this.getExpLoser(entries);
+        this.killPlayer(target, target);
+
+        var embed = new Discord.RichEmbed();
+        embed.setTitle("__Event - Black Shell__");
+        embed.setDescription("A flying black shell comes zipping across the battlefield killing **" + target.member.displayName + "**, a member who interacted with the community the least this week and is just here for the giveaway.");
+        embed.setColor(msgColors.event);
+        messages.push({ embed: embed });
+
+        this.handleImmunity(target);
+    }
+
     doBlueShell(entries) {
         var target = this.getKillLeader(entries);
         this.killPlayer(target, target);
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Event - Blue Shell__");
-        embed.setDescription("A flying blue shell comes zipping across the battlefield right towards **" + target.member.displayName + "**, a kill leader");
+        embed.setDescription("A flying blue shell comes zipping across the battlefield right towards **" + target.member.displayName + "**, a kill leader.");
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
 
@@ -893,56 +1084,105 @@ class GachaBattleRoyale {
     doFindPotion(entries) {
         var target = this.randomAlivePlayer(entries);
 
-        var action = Math.floor(Math.random() * 6) + 1;
+        var action = Math.floor(Math.random() * 10) + 1;
 
-        var potionName = "";
+        var itemName = "";
         var statBoosted = "";
-        var statBoost = Math.floor(Math.random() * 4) + 1;
-        var eventType = 0; //0 = Buff 1 = Item
+        var itemEffect = "Nothing Happens.";
+        var statBoost = Math.floor(Math.random() * 3) + 2;
+        var itemType = 0; //0 = Potion, 1 = Food, 2 = Legendary Food, 3 = Stat Equipment, 4 = Special Equipment, 5 = Legendary Equipment, 6 = Mimic
 
-        console.log("Item pick: " + action);
+        console.log("Item pick: " + action + " statBoost: " + statBoost);
 
         switch (action) {
             case 1:
             case 2:
-                potionName = "Vitality Potion";
+                itemName = "Potion of Vitality";
                 statBoosted = "hitpoints";
                 statBoost = statBoost * 5;
                 target.entry.hp += statBoost;
                 break;
             case 3:
             case 4:
-                potionName = "Strength Potion";
+                itemName = "Potion of Might";
                 statBoosted = "strength";
                 statBoost = statBoost * 2;
                 target.entry.strength += statBoost;
                 break;
             case 5:
-                potionName = "Elixer of the Gods";
-                statBoosted = "strength & health";
-                statBoost = statBoost * 4;
-                target.entry.strength += statBoost;
+                itemName = "Elixir of Vitality";
+                statBoosted = "hitpoints";
+                statBoost = statBoost * 7;
                 target.entry.hp += statBoost;
                 break;
             case 6:
-                eventType = 1;
-                potionName = "Immunity Talisman";
+                itemName = "Elixir of Might";
+                statBoosted = "strength";
+                statBoost = statBoost * 3;
+                target.entry.strength += statBoost;
+                break;
+            case 7:
+                itemType = 5;
+                itemName = "Talisman of the Gods";
+                statBoost = statBoost * 4;
+                target.entry.strength += (Math.ceil(statBoost/2));
+                target.entry.hp += statBoost;
+                break;
+            case 8:
+                itemType = 4;
+                itemName = "Fairy in a Bottle";
+                itemEffect = "instant resurrection after their next death! (Does not work during showdown)";
                 target.immune = true;
                 break;
-            default: 
+            case 9:
+                itemType = 2;
+                itemName = "Magikarp";
+                statBoost = 1;
+                target.entry.strength += (Math.ceil(statBoost/2));
+                target.entry.hp += statBoost;
+                break;
+            case 10:
+                itemType = 6;
+                itemName = "Mimic";
+                statBoost = statBoost * 5;
+                target.entry.hp -= statBoost;
+                break;
         }
 
         //console.log(target);
 
         var embed = new Discord.RichEmbed();
-        embed.setTitle("__Event - Find Item__");
-        if(eventType === 0) {
-            embed.setDescription("**" + target.member.displayName + 
-            "** finds a **" + potionName + "**. They drink the potion and gain **" + 
-            statBoost + " " + statBoosted + "**");
-        } else {
-            embed.setDescription("**" + target.member.displayName + 
-            "** finds an **" + potionName + "**. They'll be immune from a single death.");
+        embed.setTitle("__Event - Find Care Package__");
+        switch(itemType) {
+            case 0:
+                embed.setDescription("**" + target.member.displayName + 
+                "** finds **" + itemName + "**. They drink the potion and gain **" + 
+                statBoost + " " + statBoosted + "**");
+                break;
+            case 1:
+                embed.setDescription("**" + target.member.displayName + 
+                "** finds **" + itemName + "**. They eat it and gain **" + 
+                statBoost + " " + statBoosted + "**");
+                break;
+            case 2:
+                embed.setDescription("**" + target.member.displayName + 
+                "** finds legendary food, **" + itemName + "**. They eat it and gain **" + statBoost + " health and " + (Math.ceil(statBoost/2)) + " strength**")
+                break;
+            case 3:
+            case 4:
+                embed.setDescription("**" + target.member.displayName + 
+                "** finds **" + itemName + "**. They equip it granting " + itemEffect);
+                break;
+            case 5:
+                embed.setDescription("**" + target.member.displayName + 
+                "** finds a piece of legendary equipment, **" + itemName + "**. They equip it granting **" + statBoost + " health and " + (Math.ceil(statBoost/2)) + " strength**");
+                break;
+            case 6:
+                embed.setDescription("**" + target.member.displayName + 
+                "** attempts to open a care package and gets attacked by a **" + itemName + "** dealing **" + statBoost + " damage** to them!");
+                break;
+            default:
+                embed.setDescription("**" + target.member.displayName + "** found a lump of coal. It does nothing.");
         }
         
         embed.setColor(msgColors.event);
@@ -991,12 +1231,47 @@ class GachaBattleRoyale {
                 }
             }
         });
+
+        console.log(player1.entry);
+        console.log(player2.entry);
+
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Battle Royale **Day " + day + "** - The Showdown__");
         embed.setDescription("Welcome to the Showdown! Our final 2 combatants will fight to the death **" + this.randomPhrase(showdownArenas) + "**");
+        //embed.addField(player1.member.displayName + " Health", player1.entry.hp, true);
+        //embed.addField(player2.member.displayName + " Health", player2.entry.hp, true);
+        embed.addField(player1.member.displayName + " Stats", "HP: " + player1.entry.hp + " Strength: " + player1.entry.strength);
+        embed.addField(player2.member.displayName + " Stats", "HP: " + player2.entry.hp + " Strength: " + player2.entry.strength);
         embed.setFooter(playersAlive);
         embed.setColor(msgColors.showdownDay);
         messages.push({ embed: embed });
+
+        //var player1Buff = Math.floor(Math.min((player1.entry.recentExp/100),50))
+
+        /*if(player1.entry.recentExp !== player2.entry.recentExp && (!player1.entry.isStaff || !player2.entry.isStaff)) {
+            console.log(player1.member.displayName + " Health", player1.entry.hp + " | " + player2.member.displayName + " Health", player2.entry.hp);
+            var buffStr = "";
+            if(player1.entry.recentExp > player2.entry.recentExp) {
+                var hpBoost = Math.floor(player1.entry.hp * 0.20);
+                player1.entry.hp += hpBoost;
+                buffStr += "**" + player1.member.displayName + "** (" + player1.entry.recentExp + " exp) has gained more exp than **" + player2.member.displayName + "** (" + player2.entry.recentExp + 
+                " exp) this week. **" + player1.member.displayName + "** gains **" + hpBoost + "** Health before the Showdown!"
+            } else {
+                var hpBoost = Math.floor(player2.entry.hp * 0.20);
+                player2.entry.hp += hpBoost;
+                buffStr += "**" + player2.member.displayName + "** (" + player2.entry.recentExp + " exp) has gained more exp than **" + player1.member.displayName + "** (" + player1.entry.recentExp + 
+                " exp) this week. **" + player2.member.displayName + "** gains **" + hpBoost + "** Health before the Showdown!"
+            }
+
+            var embedTwo = new Discord.RichEmbed();
+            embedTwo.setTitle("[NEW] - DGC Activity Buff!");
+            embedTwo.setDescription(buffStr);
+            embedTwo.addField(player1.member.displayName + " Health", player1.entry.hp, true);
+            embedTwo.addField(player2.member.displayName + " Health", player2.entry.hp, true);
+            embedTwo.setFooter("Exp can be gained by text chatting, voice chatting, participating in events, earning achievements, and more!");
+            embedTwo.setColor("GOLD");
+            messages.push({ embed: embedTwo });
+        }*/
 
         while(player1.entry.hp > 0 && player2.entry.hp > 0) {
             console.log(player1.member.displayName + " Health", player1.entry.hp + " | " + player2.member.displayName + " Health", player2.entry.hp);
@@ -1012,7 +1287,7 @@ class GachaBattleRoyale {
                 target = player1;
             }
 
-            var attackValue = Math.floor(Math.random() * killer.entry.attack) + killer.entry.strength;
+            var attackValue = Math.floor(Math.random() * killer.entry.strength) + killer.entry.strength;
 
             this.damagePlayer(target, attackValue);
 
@@ -1105,7 +1380,7 @@ class GachaBattleRoyale {
         var alive = this.numAlive(entries);
         
         entries.forEach(function(value, key) {
-            var dies = Math.random() >= 0.8;
+            var dies = Math.random() >= 0.79;
             if(dies && _this.isValidTarget(value) && alive > 2 && !_this.isPlayerImmune(value)) {
                 _this.killPlayer(value, god);
                 annihilatedStr += ", " + key;
@@ -1132,7 +1407,7 @@ class GachaBattleRoyale {
     doPlayerKill(entries) {
         if(this.numTargets(entries) > 1) {
             var target = this.randomAlivePlayer(entries);
-            var killer = this.randomAlivePlayer(entries);
+            var killer = this.randomAlivePlayer(entries, target);
             this.killPlayer(target, killer);
     
             const embed = new Discord.RichEmbed();
@@ -1269,10 +1544,10 @@ class GachaBattleRoyale {
                     assistant.entry.numKills++;
                     assistant.entry.kills.push(target.member.displayName);
                     if(todaysEventName === "Vampirism") {
-                        assistant.entry.hp += 20;
+                        assistant.entry.hp += 10;
                     }
                     if(todaysEventName === "Vengeance") {
-                        assistant.entry.hp -= 20;
+                        assistant.entry.hp -= 10;
                     }
                 }
             }
@@ -1348,11 +1623,14 @@ class GachaBattleRoyale {
         return embed;
     }
 
-    startGameMessage() {
+    startGameMessage(mode) {
         const embed = new Discord.RichEmbed();
 		embed.setTitle(`__Gacha! - Battle Royale__`);
         embed.setDescription("Gacha Game Started! Join the battle and see if you have what it takes to win the Battle Royale!\n\n" +
             " To enter type !gacha <weapon>");
+        if(mode == "premium") {
+            embed.addField("Premium Entries Only!", "Only Nitro Boosters, members who have donated, and members that have gained over " + avgExp + " exp this week may participate!");
+        }
         embed.setFooter("Entry Example: !gacha battle axe");
         return embed;
     }
@@ -1377,6 +1655,10 @@ class GachaBattleRoyale {
     entryMessage() {
         const message = "Entered the Arena!";
         return message;
+    }
+    
+    entryToString(entry) {
+        return entry.numKills;
     }
 }
 

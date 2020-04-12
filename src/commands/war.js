@@ -2,7 +2,6 @@ const CoreUtil = require("../utils/Util.js");
 const mongoose = require('mongoose');
 const Command = require("../Command.js");
 const WarTeam = mongoose.model('WarTeam');
-const MonthlyActivity = mongoose.model('MonthlyActivity');
 const User = mongoose.model('User');
 
 module.exports = new Command({
@@ -51,12 +50,12 @@ async function generateTeams(server) {
 		console.log(team.id + " : " + team.name);
 	});
 
-	const stats = await MonthlyActivity.getStatistics();
-	let avgExp = stats.avgExp;
+	//const stats = await MonthlyActivity.getStatistics();
+	//let avgExp = stats.avgExp;
 
-	console.log(avgExp);
-	console.log(today);
-	console.log(activeThreshold);
+	//console.log(avgExp);
+	//console.log(today);
+	//console.log(activeThreshold);
 
 	const activeMembers = await User.findActiveSince(activeThreshold);
 

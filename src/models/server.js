@@ -15,11 +15,15 @@ module.exports = function() {
 		memberRoleId: String,
 		groupCategory: String,
 		welcomeRole: String,
+		pccRoleId: String,
+		subscriberRoleId: String,
 		welcomeChannelId: String,
 		introChannelId: String,
 		spotlightChannel: String,
 		adminRoleId: String,
 		moderatorRoleId: String,
+		eventCoordinatorRoleId: String,
+		ppcRoleId: String,
 		botChannelId: String,
 		starboardChannelId: String,
 		starboardEmojiId: String,
@@ -63,6 +67,14 @@ module.exports = function() {
 		this.model('Server').updateOne({_id: this.id},{qotdMessageId: id}).exec();
 	};
 
+	serverSchema.methods.updateEventCoordinatorRoleId = function (roleId) {
+		this.model('Server').updateOne({_id: this.id},{eventCoordinatorRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updatePPCRoleId = function (roleId) {
+		this.model('Server').updateOne({_id: this.id},{ppcRoleId: roleId}).exec();
+	};
+
 	serverSchema.methods.updateMemberRoleId = function (roleId) {
 		this.model('Server').updateOne({_id: this.id},{memberRoleId: roleId}).exec();
 	};
@@ -85,6 +97,14 @@ module.exports = function() {
 
 	serverSchema.methods.updateOfficerRoleId = function (roleId) {
 		this.model('Server').updateOne({_id: this.id},{OfficerRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updatePCCRoleId = function (roleId) {
+		this.model('Server').updateOne({_id: this.id},{pccRoleId: roleId}).exec();
+	};
+
+	serverSchema.methods.updateSubscriberRoleId = function (roleId) {
+		this.model('Server').updateOne({_id: this.id},{subscriberRoleId: roleId}).exec();
 	};
 
 	serverSchema.methods.updateAdminRoleId = function (roleId) {

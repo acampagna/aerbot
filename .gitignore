@@ -3,6 +3,7 @@ aerbot-data
 aerbot-data/*
 token.json*
 dist/
+res/tmp/*
 
 # Created by https://www.gitignore.io/api/node,visualstudiocode
 

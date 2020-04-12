@@ -24,7 +24,7 @@ function invoke({ message, params, serverData, client }) {
 
 	if(ggs.getGameInProgress()) {
 		if(CoreUtil.isMemberAdmin(message, serverData) && params[0] === "end") {
-			return Promise.resolve({here: true, message: ggs.endGame() })
+			return Promise.resolve(ggs.endGame());
 		}
 		//Game is in progress. Play the game
 		let username = message.member.displayName;
@@ -36,10 +36,10 @@ function invoke({ message, params, serverData, client }) {
 	} else {
 		//Game is not in progress. Need to start a game or yell if the user isn't an admin.
 		if(CoreUtil.isMemberAdmin(message, serverData)) {
-			if(params[0] === "all") {
-				return Promise.resolve({here: true, message: ggs.startGame(message) });
+			if(params[0] === "retry") {
+				return Promise.resolve(ggs.endGame());
 			} else {
-				return Promise.resolve({here: true, message: ggs.startGame(message) });
+				return Promise.resolve(ggs.startGame(message, params[0]));
 			}
 		} else {
 			return Promise.resolve("Gacha Game is not currently active");

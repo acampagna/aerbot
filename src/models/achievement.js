@@ -22,7 +22,9 @@ module.exports = function() {
 		currencyBonus: { type: Number, default: 0, min: 0 },
 		//ranks: { type: Map,of: String }
 		ranks: { type: Array, of: Number },
-		rankValueType: String
+		rankValueType: String,
+		rankExpFactor: { type: Number, default: 0, min: 0 },
+		rankCurrencyFactor: { type: Number, default: 0, min: 0 }
 	});
 
 	achievementSchema.statics.findAll = function() {

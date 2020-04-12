@@ -1,0 +1,18 @@
+{
+	"dyks": [
+		"You can set your gaming accounts with the `!accounts` command.",
+		"Joining a group will make you a member of DGC.",
+		"The `!member` command shows your achievements, exp, and currency.",
+		"You can set your platforms and game groups in the 💲welcome readme channel.",
+		"Participating in Events can earn you exp, Ð, and achievements!",
+		"Earning achievements is one of the best ways to earn Ð.",
+		"Participating in Trivia Night can earn you a large amount of Ð & EXP.",
+		"The `!achievements` command lists all achievements you can earn.",
+		"You can earn exp by participating in voice chat.",
+		"Answering the Question of the Day can earn you exp, Ð, and achievements!"
+	],
+	"unused": [
+		"You can set your platform and game groups in {$welcomeChannel}.",
+		"Participating in {$eventsChannel} can earn you exp, currency, and achievements!"
+	]
+}

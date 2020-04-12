@@ -7,6 +7,8 @@ const Discord = require("discord.js");
 const HandleActivity = require("../HandleActivity");
 const UserModel = mongoose.model('User');
 
+//IDEA! SEND REACTIONS AFTER 20 SECONDS!
+
 /**
  * Service to manage Trivia. Threw this together for an event. Need to clean it up.
  * @author acampagna
@@ -128,12 +130,12 @@ class TriviaService {
 
         answerEmoji = question.answer_emoji;
     
-        await setTimeout(async function() {_this.tickDownAndEdit(question, client, serverData);}, 2000);
+        await setTimeout(async function() {_this.tickDownAndEdit(question, client, serverData);}, 5000);
     }
     
     async tickDownAndEdit(question, client, serverData) {
         var _this = this;
-        timeLeftToAnswer = timeLeftToAnswer - 2000;
+        timeLeftToAnswer = timeLeftToAnswer - 5000;
     
         if(timeLeftToAnswer <= 0) {
             var triviaMessage = client.channels.get(serverData.triviaChannelId).messages.get(currentTriviaMessageId);
@@ -142,7 +144,7 @@ class TriviaService {
             currentTriviaMessageId = undefined;
             this.concludeQuestion(question, client, serverData);
         } else {
-            await setTimeout(async function() {_this.tickDownAndEdit(question, client, serverData);}, 2000);
+            await setTimeout(async function() {_this.tickDownAndEdit(question, client, serverData);}, 5000);
             
             if(!currentTriviaMessageId) {
                 var triviaMsgId = await Aerbot.get("currentTriviaId");
@@ -203,6 +205,8 @@ class TriviaService {
                 await setTimeout(async function() {_this.sendQuestion(client, serverData);}, bufferTime);
             }
         }
+
+        question.choices = new Array();
     }
     
     async sendWinner(client, serverData) {
@@ -223,7 +227,7 @@ class TriviaService {
                     .then(userData => {
                         HandleActivity(
                             client,
-                            messageReaction.message.guild, //ISSUE!!!
+                            triviaChannel.guild, //ISSUE!!! WHAT IS THE ISSUE?!
                             {trivia: "game"},
                             userData
                         );

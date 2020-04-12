@@ -16,15 +16,20 @@ const Levenshtein = require('js-levenshtein');
 const cmdPrefix = InternalConfig.commandPrefix;
 
 function handleServerMessage(client, message, commands) {
-	if (isCommand(message))
-		client.serverModel.findById(message.guild.id).exec()
-			.then(serverData =>
+	if (isCommand(message)) {
+		client.serverModel.findById(message.guild.id).exec().then(serverData => {
+			if((message.channel.id === "601981031511359518" || message.channel.id === "524900537691537408") || 
+			message.content === "!accounts" || 
+			CoreUtil.isMemberAdmin(message, serverData) || CoreUtil.isMemberStaff(message, serverData)) {
 				handleServerCommand(
 					client,
 					message,
 					Object.assign({}, commands),
 					serverData
-				));
+				)
+			}
+		});
+	}
 }
 
 function handleServerCommand(client, message, commands, serverData) {

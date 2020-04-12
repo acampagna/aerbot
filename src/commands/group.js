@@ -23,6 +23,13 @@ function invoke({ message, params, serverData, client }) {
 
 	if(groupName.length === 0) {
 		return new Promise(function(resolve, reject) {
+
+			const pcGroupId = "5c44c370d521a71ed4118857";
+			const ps4GroupId = "5c44c38ed521a71ed411885b";
+			const xboxGroupId = "5c44c38bd521a71ed411885a";
+			const switchGroupId = "5c44c387d521a71ed4118859";
+			const mobileGroupId = "5c44c376d521a71ed4118858";
+
 			
 			var emojis = new Array();
 			const embed = new Discord.RichEmbed();
@@ -57,23 +64,32 @@ function invoke({ message, params, serverData, client }) {
 				groups.forEach(group => {
 					//embed.addField(group.name, group.numMembers + " members", true);
 					var groupName = group.name;
+					//var role = message.guild.roles.get(group.roleId);
+					//console.log(group.roleId);
+					//console.log(role.name);
+
+					//var roleNum = role.members.array().length;
+					var groupNum = group.numMembers;
 					if(group.emoji) {
 						var emoji = client.emojis.get(group.emoji);
 						if(emoji) {
 							if(group.platforms.includes("5c44c370d521a71ed4118857")) {
-								pcDesc = pcDesc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
+								pcDesc = pcDesc + emoji + " " + group.name + " - " + groupNum + " gamers\n";
 								emojisPC.push(group.emoji);
 							}
 							if(group.platforms.includes("5c44c376d521a71ed4118858")) {
-								mobileDesc = mobileDesc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
+								mobileDesc = mobileDesc + emoji + " " + group.name + " - " + groupNum + " gamers\n";
 								emojisMobile.push(group.emoji);
 							}
 							if(group.platforms.includes("5c44c387d521a71ed4118859") || group.platforms.includes("5c44c38bd521a71ed411885a") || group.platforms.includes("5c44c38ed521a71ed411885b")) {
-								consoleDesc = mobileDesc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
+								//console.log(groupName + " | " + group.emoji);
+								//console.log("switch?: " + group.platforms.includes("5c44c387d521a71ed4118859") + " | xbox: " + group.platforms.includes("5c44c38bd521a71ed411885a") + " | ps4: " + group.platforms.includes("5c44c38ed521a71ed411885b"));
+								
+								consoleDesc = consoleDesc + emoji + " " + group.name + " - " + groupNum + " gamers\n";
 								emojisConsole.push(group.emoji);
 							}
-							if(!group.platforms.includes("5c44c370d521a71ed4118857") && !group.platforms.includes("5c44c376d521a71ed4118858")) {
-								desc = desc + emoji + " " + group.name + " - " + group.numMembers + " gamers\n";
+							if(group.platforms.length === 0) {
+								desc = desc + emoji + " " + group.name + " - " + groupNum + " gamers\n";
 								emojis.push(group.emoji);
 							}
 						}
@@ -84,6 +100,9 @@ function invoke({ message, params, serverData, client }) {
 				embedPC.setDescription(pcDesc);
 				embedMobile.setDescription(mobileDesc);
 				embedConsole.setDescription(consoleDesc);
+
+				//console.log(embedConsole);
+				//console.log(emojisConsole);
 
 				message.channel.send(embed).then(function (message) {
 					emojis.forEach(data => {

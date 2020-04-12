@@ -10,23 +10,30 @@ const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
 const mongoose = require('mongoose');
 const DateDiff = require("date-diff");
-require('./models/monthlyActivity.js')();
-require('./models/weeklyActivity.js')();
-require('./models/dailyActivity.js')();
 require('./models/server.js')();
 require('./models/group.js')();
 require('./models/user.js')();
 require('./models/guild.js')();
 require('./models/aerbot.js')();
 require('./models/war.js')();
+require('./models/Prize.js')();
 require('./models/warTeam.js')();
 require('./models/Activity.js')();
 require('./models/trivia.js')();
 require('./models/achievement.js')();
 require('./models/pinned.js')();
+require('./models/storeItem.js')();
+require('./models/storePurchase.js')();
+require('./models/messageQueueItem.js')();
+const AccountService = require("./services/AccountService");
+const StoreService = require("./services/StoreService");
 const PinnedService = require("./services/PinnedService");
 const TriviaService = require("./services/TriviaService");
 const AchievementService = require("./services/AchievementService");
+const MessageQueueService = require("./services/MessageQueueService");
+const MemberFetchingService = require("./services/MemberFetchingService");
+const NewMemberService = require("./services/NewMemberService");
+const HolidayHunterService = require("./services/HolidayHunterService");
 const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
@@ -35,14 +42,14 @@ const InternalConfig = require("./internal-config.json");
 const Group = mongoose.model('Group');
 const Aerbot = mongoose.model('Aerbot');
 const Activity = mongoose.model('Activity');
-const DailyActivity = mongoose.model('DailyActivity');
-const WeeklyActivity = mongoose.model('WeeklyActivity');
-const MonthlyActivity = mongoose.model('MonthlyActivity');
 const War = mongoose.model('War');
+const Prize = mongoose.model('Prize');
 const WarTeam = mongoose.model('WarTeam');
 const Trivia = mongoose.model('Trivia');
 const Achievement = mongoose.model('Achievement');
 const Pinned = mongoose.model('Pinned');
+const StoreItem = mongoose.model('StoreItem');
+const MessageQueueItem = mongoose.model('MessageQueueItem');
 
 // @ts-ignore
 const client = new Client(require("../token.json"), __dirname + "/commands", ServerModel);
@@ -53,19 +60,37 @@ var qotdChanId;
 const TS = new TriviaService();
 const PS = new PinnedService();
 const AS = new AchievementService();
+const SS = new StoreService();
+const ACTS = new AccountService();
+const MQS = new MessageQueueService();
+const MFS = new MemberFetchingService();
+const NMS = new NewMemberService();
+const HHS = new HolidayHunterService();
 //var msgRateLimiter = new Map();
 var reactionRateLimiter = new Map();
+var pendingRequests = new Map();
+
+var invites;
+const wait = require('util').promisify(setTimeout);
 
 client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
 	setInterval(doVoiceChannelScan, Config.voiceIterationInterval);
-	setInterval(doActivityConversion, Config.activityIterationInterval);
+	//setInterval(doSendMessages, Config.sendMessageInterval);
 
-	doActivityConversion();
+	//doActivityConversion();
 });
 client.on("message", message => {
 	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && message.content.length > 1 &&
-	message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888") {
+	message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888" && message.channel.id != "667697726766710794") {
+		//Holiday Hunter
+		HHS.messageSent(client);
+		
+		if(SS.userHasPendingRequest(message.member.id)) {
+			console.log("INDEX USER HAS PENDING REQUEST!");
+			SS.handleRequestResponse(message);
+		}
+
 		UserModel.findById(message.member.id).exec()
         	.then(userData => HandleActivity(
 				client,
@@ -85,8 +110,9 @@ client.on("message", message => {
 					limit = 1;
 				}
 				message.channel.fetchMessages({ limit: limit }).then(msgs => {
-					//console.log(msgs.array().length);
+					console.log(msgs.array().length);
 					msgs.array().forEach(msg =>{
+						console.log("[" + msg.deleted + "] " + msg.content);
 						if(msg.author.id === message.author.id && !msg.deleted && !first) {
 							message.delete();
 							msgDeleted = true;
@@ -99,6 +125,15 @@ client.on("message", message => {
 							message.delete();
 							CoreUtil.sendQotd(serverData.qotd, client, serverData);
 						}).catch(console.error);
+						console.log(message.member.displayName + " has answered the QOTD!");
+						UserModel.findById(message.member.id).exec()
+							.then(userData => HandleActivity(
+								client,
+								message.guild,
+								{qotd: true},
+								userData || newUser(message.member.id, message.member.displayName)
+							)
+						);
 					}
 				}).catch(console.error);
 			}).catch(console.error);
@@ -121,7 +156,9 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 		userActivity.set(uid, new Map([[type,xp]]));
 	}*/
 	
-	if (messageReaction && user && !user.bot) {
+	if (messageReaction && user && !user.bot && messageReaction.message.channel.type != "dm") {
+		console.log("Reaction Added!");
+		//console.log(messageReaction);
 		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
 			//var msgReactions = messageReaction.message.reactions;
 			messageReaction.remove(user.id);
@@ -138,24 +175,26 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 				}
 			}
 		} else {
-			UserModel.findById(user.id).exec()
-			.then(userData => {
-				if(userData.reactions > 50 && userData.reactions < userData.messages) {
-					CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
-					HandleActivity(
-						client,
-						messageReaction.message.guild,
-						{reaction: messageReaction},
-						userData || newUser(user.id, user.username)
-					);
-				}
-			});
+			if(new DateDiff(new Date(), messageReaction.message.createdAt).days() < 1 || messageReaction._emoji.id === "538050181573378048") {
+				UserModel.findById(user.id).exec()
+				.then(userData => {
+					if(userData.reactions < userData.messages) {
+						CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
+						HandleActivity(
+							client,
+							messageReaction.message.guild,
+							{reaction: messageReaction},
+							userData || newUser(user.id, user.username)
+						);
+					}
+				});
+			}
 		}
 	}
 });
 
 client.on("messageReactionRemove", (messageReaction, user) => {
-	if (messageReaction && user && !user.bot) {
+	if (messageReaction && user && !user.bot && messageReaction.message.channel.type != "dm") {
 		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
 			// Nothing right now
 		} else {
@@ -192,6 +231,29 @@ client.on('raw', async event => {
 	
 	//console.log(channel);
 
+	if(!data.guild_id) {
+		//console.log("NOT CHANNEL!");
+		if(data.emoji.name == "❌") {
+			//console.log("USED X!");
+			UserModel.byId(data.user_id).then(usr => {
+				if(event.t === "MESSAGE_REACTION_ADD") {
+					usr.unsubscribe();
+					user.send("You've successfully unsubscribed from future private messages from __Dauntless Gaming Community__!");
+					CoreUtil.aerLog(client,usr.username + " unsubscribed from automated DMs");
+				}
+				if(event.t === "MESSAGE_REACTION_REMOVE") {
+					usr.subscribe();
+					user.send("You've successfully resubscribed to private messages from __Dauntless Gaming Community__!");
+					CoreUtil.aerLog(client,usr.username + " resubscribed to automated DMs");
+				}
+			});
+		}
+	}
+
+	if(!channel) {
+		return;
+	}
+
 	const message = await channel.fetchMessage(data.message_id);
 	
 	if(message.guild) {
@@ -204,6 +266,13 @@ client.on('raw', async event => {
 
 	if (event.t === "MESSAGE_REACTION_ADD" || event.t === "MESSAGE_REACTION_REMOVE") {
 		PS.analyzeRawEvent(client, data, channel, message);
+	}
+
+	if (event.t === "MESSAGE_REACTION_ADD") {
+		//console.log(message.reactions);
+		if(data.emoji.id === HHS.getPrizeEmojiId()) {
+			HHS.prizeFound(message, user.id, client);
+		}
 	}
 
 	const member = tmpMember;
@@ -219,12 +288,15 @@ client.on('raw', async event => {
 					var alreadyGroupMember = (member.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim()));
 					var memberRole = eventGuild.roles.get("524900839651803157");
 					var alreadyMember = member.roles.get("524900839651803157");
-
 					var msgText = "";
 
 					if (event.t === "MESSAGE_REACTION_ADD") {
 						if(!alreadyMember) {
+							var welcomeChannel = client.channels.get("667569600401244172");
 							member.addRole(memberRole);
+							/*client.channels.get("579383236334059521").send("Welcome " + member + " and thank you for adding yourself to a group and becoming a Member! " +
+							"Please make sure you've read all of the " + welcomeChannel + " channel to get the most out of our community.");*/
+							NMS.userBecomesMember(member, group, client);
 						}
 						if(!alreadyGroupMember) {
 							member.addRole(role);
@@ -232,6 +304,7 @@ client.on('raw', async event => {
 							group.addMember(group.name,member.id);
 							msgText = "Hey " + member.displayName + "! I just added you to the **" + group.name + "** group.";
 							//channel.send("Added @" + member.displayName + " to group " + group.name);
+							NMS.userJoinsGroup(member, group, client);
 							CoreUtil.aerLog(client,member.displayName + " joined " + group.name);
 						} else {
 							msgText = "Hey " + member.displayName + "! You tried to join **" + group.name + "** but are already a member.";
@@ -243,6 +316,7 @@ client.on('raw', async event => {
 						group.removeMember(group.name,member.id);
 						CoreUtil.aerLog(client,member.displayName + " left " + group.name);
 						//channel.send("Removed @" + member.displayName + " from group " + group.name);
+						NMS.userLeavesGroup(member, group, client);
 						msgText = "Hey " + member.displayName + "! I just removed you from the **" + group.name + "** group.";
 					}
 
@@ -313,7 +387,20 @@ client.on("ready", () => {
 				qotdChanId = doc.qotdChannelId;
 				AS.setAchievementChannel(client.channels.get(doc.botChannelId));
 				AS.setHandleActivity(HandleActivity);
-				console.log(qotdChanId);
+				SS.setStoreChannel(client.channels.get("601981031511359518"));
+				SS.setHandleActivity(HandleActivity);
+				SS.setServer(server);
+				SS.setClient(client);
+				ACTS.setConsoleCodeChannel(client.channels.get("648636215368613908"));
+				ACTS.setPCCodeChannel(client.channels.get("649351980338249739"));
+				ACTS.setBotsChannel(client.channels.get("601981031511359518"));
+				HHS.initialize();
+				HHS.setBotsChannel(client.channels.get("601981031511359518"));
+				MQS.setServer(server);
+				MFS.setServer(server);
+				NMS.setNonMemberChannel("633329366662643732");
+				NMS.setPublicChannel("579383236334059521");
+				NMS.setWelcomeReadmeChannel(doc.welcomeChannelId);
 			}
 		});
 
@@ -321,6 +408,13 @@ client.on("ready", () => {
 			mainGuild = server;
 		}
 	});
+
+	wait(500);
+
+	// Load all invites for all guilds and save them to the cache.
+	mainGuild.fetchInvites().then(guildInvites => {invites = guildInvites;});
+
+	//doServerIteration();
 
 	//doVoiceChannelScan();
 });
@@ -343,17 +437,74 @@ client.on("guildMemberAdd", (member) => {
 
 		client.serverModel.findById(member.guild.id).exec().then(server => {
 			var welcomeChannel = client.channels.get(server.welcomeChannelId);
+			var rulesChannel = client.channels.get("632667753936977921");
 			//var introChannel = client.channels.get(server.introChannelId);
-			client.channels.get(server.publicChannelId).send("Welcome " + member + " to the Dauntless Gaming Community! Please read the " + welcomeChannel + " channel. It will explain everything you need to get started in Dauntless!");
+
+			/*client.channels.get("633329366662643732").send("Welcome " + member + " to the Dauntless Gaming Community! In order to gain access to the rest of our community you must "
+			+ "read the " + welcomeChannel + " channel and add yourself to some game and platforms groups.");*/
+			NMS.userJoinsServer(member, client);
+
 			member.addRole(server.welcomeRole);
-			CoreUtil.aerLog(client,member.user.username + " joined the server and was assigned the welcome role.");
+			//CoreUtil.aerLog(client,member.user.username + " joined the server and was assigned the welcome role.");
+		});
+
+		member.guild.fetchInvites().then(guildInvites => {
+			// This is the *existing* invites for the guild.
+			const ei = invites;
+			// Update the cached invites for the guild.
+			invites = guildInvites;
+			// Look through the invites, find the one for which the uses went up.
+			const invite = guildInvites.find(i => {
+				if(ei.has(i.code)) {
+					return ei.get(i.code).uses < i.uses;
+				} else {
+					//console.log(i);
+					return i.uses > 0;
+				}
+			});
+			// This is just to simplify the message being sent below (inviter doesn't have a tag property)
+			//console.log(guildInvites);
+			if(invite) {
+				console.log(invite.code + invite.inviter ? " " + invite.inviter.tag : "" + " " + invite.channel.name + invite.uses ? " " + invite.uses : "");
+				const inviter = client.users.get(invite.inviter.id);
+				// Get the log channel (change to your liking)
+				//const logChannel = member.guild.channels.find(channel => channel.name === "invite-log");
+				// A real basic message with the information we need. 
+				
+				if(inviter && (invite.channel.parentID === "628668360887894057" || invite.channel.parentID === "630030213924782080")) {
+					//console.log("------[INVITER]-------");
+					//onsole.log(inviter);
+					CoreUtil.aerLog(client,`${member} joined! Invited by **${inviter.member ? inviter.member.displayName : inviter.tag}** from ${invite.channel} (Total: ${invite.uses}).`);
+				} else if(inviter){
+					CoreUtil.aerLog(client,`${member} joined! Invited by **${inviter.member ? inviter.member.displayName : inviter.tag}.**`);
+				} else {
+					CoreUtil.aerLog(client,`${member} joined!`);
+				}
+
+				console.log("------[INVITER]-------");
+				console.log(inviter.id);
+				if(inviter.id) {
+					UserModel.findById(member.id).exec().then(userData => {
+						userData.referrer = inviter.id;
+						console.log(userData);
+						userData.save();
+					});
+				}
+			} else {
+				CoreUtil.aerLog(client,`${member} joined!`);
+			}
 		});
 	}
 });
 
 client.on("guildMemberRemove", (member) => {
 	if(!member.user.bot) {
-		CoreUtil.aerLog(client,member.user.username + " left the server. :(");
+		CoreUtil.aerLog(client,member + " left the server. :(");
+		NMS.userLeavesServer(member, client);
+		UserModel.findById(member.user.id).exec().then(userData => {
+			userData.left = new Date();
+			userData.save();
+		});
 	}
 });
 
@@ -371,15 +522,63 @@ async function doServerIteration() {
 		client.serverModel.findById(server.id).exec().then(serverData => {
 			CoreUtil.asyncForEach(server.members.array(), async (member) => {
 				if(member.presence.status != "offline" && !member.user.bot) {
-					CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
+					//CoreUtil.dateLog(`Updating ${member.displayName} - ${member.presence.status}`);
 					UserModel.findById(member.id).exec().then(userData => { 
 						if(userData) {
-							console.log(new DateDiff(new Date(), new Date(userData.joined)).days());
-	
+							//console.log(new DateDiff(new Date(), new Date(userData.joined)).days());
+
+							if(member.presence.game && member.presence.game.name && member.presence.game.applicationID) {
+								userData.addLatestGame(member.presence.game.name);
+
+								/*var council = member.roles.get("524900839651803157");
+								var nitro = member.roles.get("524900839651803157");
+								var contentCreator = member.roles.get("524900839651803157");*/
+
+								//if(member.id === "151473524974813184") {
+									Group.findGroupByAppId(member.presence.game.applicationID).then(async group => {
+										if(group) {
+											//console.log(group);
+											var role = server.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim());
+											var alreadyGroupMember = (member.roles.find(role => role.name.toLowerCase().trim() === group.name.toLowerCase().trim()));
+											var memberRole = server.roles.get("524900839651803157");
+											var alreadyMember = member.roles.get("524900839651803157");
+						
+											var channel = server.channels.get(group.channelId);
+						
+											/*if(!alreadyMember) {
+												member.addRole(memberRole);
+											}*/
+						
+											if(!alreadyGroupMember && alreadyMember) {
+												console.log("---");
+												console.log(group.name);
+												console.log(member.presence.game);
+												console.log("---");
+												member.addRole(role);
+												group.incrementNumMembers();
+												group.addMember(group.name,member.id);
+												
+												if(group.public) {
+													console.log(member.displayName + " is not yet in " + group.name + " group! Adding them.");
+													CoreUtil.aerLog(client,member.displayName + " automatically added to " + group.name);
+													member.send("Hey " + member.displayName + "! We noticed you playing " + group.name + " and automatically added you to that group. You now have access to the " + channel + " channel in __Dauntless Gaming Community__! You should head over to " + channel + " and see if anyone wants to play!");
+												} else {
+													console.log(member.displayName + " is not yet in " + group.name + " group! Secretly adding them.");
+													CoreUtil.aerLog(client,member.displayName + " secretly added to " + group.name);
+													//member.send("Hey " + member.displayName + "! We noticed you playing " + group.name + " and automatically added you to that group. You now have access to the " + channel + " channel in __Dauntless Gaming Community__!");
+												}
+											} else {
+												console.log(member.displayName + " is already in " + group.name + " group or not a member!");
+											}
+										}
+									});
+								//}
+							}
+							
 							if(new DateDiff(new Date(), new Date(userData.joined)).days() >= 14) {
-								console.log(member.displayName + " joined over 14 days ago!");
+								//console.log(member.displayName + " joined over 14 days ago!");
 								if(member.roles.find(role => role.id === serverData.welcomeRole)) {
-									console.log(member.displayName + " is also in the welcome role! Removing Welcome Role & Adding Member Role.");
+									console.log(member.displayName + " is still in the welcome role! Removing Welcome Role & Adding Member Role.");
 									member.removeRole(serverData.welcomeRole);
 									//member.addRole(serverData.memberRoleId);
 								}
@@ -413,86 +612,10 @@ async function doVoiceChannelScan() {
 	}
 }
 
-async function doActivityConversion() {
-	CoreUtil.dateLog(`[Activity Interval]`);
-	var userActivity = new Map();
-	var expectedDocs = 0;
-	var lastDailyToWeekly;
-	var lastWeeklyToMonthly;
-//THIS MIGHT BE WRONG! MIGHT NEED TO RESET userActivity after Daily to Weekly!!!
-	Aerbot.get("lastDailyToWeeklyActivityConversion").then(meta => {
-		lastDailyToWeekly = new Date(meta.value);
-		
-		//console.log(meta);
-		//console.log(lastDailyToWeekly);
-		
-		console.log("Daily to Weekly Hours: " + new DateDiff(new Date(), lastDailyToWeekly).hours());
-		//console.log("Daily to Weekly Days: " + new DateDiff(new Date(), lastDailyToWeekly).days());
+async function doSendMessages() {
+	CoreUtil.dateLog(`[Send Message Interval]`);
 
-		if(new DateDiff(new Date(), new Date(lastDailyToWeekly)).hours() >= 24) {
-			Aerbot.set("lastDailyToWeeklyActivityConversion", new Date());
-			DailyActivity.findAllActivity().then(activities => {
-				activities.forEach(activity =>{
-					var uid = activity.userId;
-					var type = activity.type;
-					var xp = activity.exp;
-
-					if(userActivity.has(uid)) {
-						var ua = userActivity.get(uid);
-						ua.has(type) ? ua.set(type, ua.get(type)+xp) : ua.set(type, xp);
-					} else {
-						userActivity.set(uid, new Map([[type,xp]]));
-					}
-				});
-
-				userActivity.forEach(function(activityMap, userId) {
-					expectedDocs += activityMap.size;
-					WeeklyActivity.addMap(userId, activityMap);
-				});
-
-				console.log(userActivity);
-				DailyActivity.deleteMany({}).exec();
-			});
-		}
-
-		userActivity = new Map();
-
-		Aerbot.get("lastWeeklyToMonthlyActivityConversion").then(meta => {
-			lastWeeklyToMonthly = new Date(meta.value);
-	
-			//console.log(meta);
-			//console.log(lastWeeklyToMonthly);
-	
-			console.log("Weekly to Monthly Hours: " + new DateDiff(new Date(), lastWeeklyToMonthly).hours());
-			//console.log("Weekly to Monthly Days: " + new DateDiff(new Date(), lastWeeklyToMonthly).days());
-	
-			if(new DateDiff(new Date(), new Date(lastWeeklyToMonthly)).hours() >= 168) {
-				Aerbot.set("lastWeeklyToMonthlyActivityConversion", new Date());
-				WeeklyActivity.findAllActivity().then(activities => {
-					activities.forEach(activity =>{
-						var uid = activity.userId;
-						var type = activity.type;
-						var xp = activity.exp;
-	
-						if(userActivity.has(uid)) {
-							var ua = userActivity.get(uid);
-							ua.has(type) ? ua.set(type, ua.get(type)+xp) : ua.set(type, xp);
-						} else {
-							userActivity.set(uid, new Map([[type,xp]]));
-						}
-					});
-	
-					userActivity.forEach(function(activityMap, userId) {
-						expectedDocs += activityMap.size;
-						MonthlyActivity.addMap(userId, activityMap);
-					});
-	
-					console.log(userActivity);
-					WeeklyActivity.deleteMany({}).exec();
-				});
-			}
-		});
-	});
+	MQS.sendNextMessage();
 }
 
 function checkOnlineStatus(server) {

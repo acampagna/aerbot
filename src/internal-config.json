@@ -2,7 +2,7 @@
 	"dbCompactionSchedule": "0 0 0,3,6,9 * * *",
 	"website": "",
 	"discordInvite": "",
-	"game": "I <3 Aerfalle",
+	"game": "I <3 DGC",
 	"botName": "Aerbot 2.0",
 	"commandPrefix": "!",
 	"debugIgnores": [

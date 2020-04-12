@@ -13,7 +13,7 @@ module.exports = function() {
 		_id: String,
 		guildId: String,
 		username: String,
-		level: { type: Number, default: 1, min: 1, max: 99 },
+		level: { type: Number, default: 1, min: 1, max: 999 },
 		exp: { type: Number, default: 0, min: 0},
 		expAdjustment: { type: Number, default: 0 },
 		currency: { type: Number, default: 0, min: 0},
@@ -35,11 +35,57 @@ module.exports = function() {
 		gachaWins: {type: Number, default: 0},
 		brWins: {type: Number, default: 0},
 		achievements: { type: Array, of: String },
-		levelRole: String
+		badges: { type: Map, of: Number },
+		levelRole: String,
+		embedColor: {type: String, default: "DEFAULT"},
+		counts: {type: Map, of: Number},
+		active: { type: Boolean, default: true },
+		left: Date,
+		unsubscribed: { type: Boolean, default: false },
+		latestGames: { type: Array, of: String },
+		latestEvents: { type: Array, of: String },
+		referrerCredited: {type: Boolean, default: false}
 	});
 
 	userSchema.methods.getAccounts = function () {
 		return this.accounts || new Map();
+	};
+
+	userSchema.methods.getCounts = function () {
+		if(!this.counts) {
+			this.counts = new Map();
+		}
+
+		return this.counts;
+	};
+
+	userSchema.methods.getCount = function (k) {
+		var counts = this.getCounts();
+		if(counts.has(k)) {
+			return counts.get(k);
+		} else {
+			return 0;
+		}
+	};
+
+	userSchema.methods.incCount = function (k) {
+		console.log("INC COUNT");
+		if(this.getCounts().has(k)) {
+			console.log("+1");
+			this.counts.set(k,this.counts.get(k)+1);
+		} else {
+			console.log("1");
+			this.counts.set(k,1);
+		}
+		console.log(this.getCounts());
+	};
+
+	userSchema.methods.setCount = function (k, v) {
+		this.getCounts().set(k,v);
+	};
+
+	userSchema.methods.getBadges = function () {
+		return this.badges || new Map();
 	};
 
 	userSchema.methods.getAchievements = function () {
@@ -48,6 +94,44 @@ module.exports = function() {
 
 	userSchema.methods.updateReferrer = function (referrerId) {
 		this.model('User').updateOne({_id: this.id},{referrer: referrerId}).exec();
+	};
+
+	userSchema.methods.unsubscribe = function () {
+		console.log("Unsubscribing!");
+		this.model('User').updateOne({_id: this.id},{unsubscribed: true}).exec();
+	};
+
+	userSchema.methods.subscribe = function () {
+		console.log("Subscribing!");
+		this.model('User').updateOne({_id: this.id},{unsubscribed: false}).exec();
+	};
+
+	userSchema.methods.addLatestGame = function (gameName) {
+		var latestGames = this.latestGames || new Array();
+		//console.log(latestGames);
+		if(!latestGames.includes(gameName)){
+			//console.log("List doesn't include " + gameName);
+			latestGames.unshift(gameName);
+			if(latestGames.length > 3) {
+				//console.log("Popped last game");
+				latestGames.pop();
+			}
+			this.model('User').updateOne({_id: this.id},{latestGames: latestGames}).exec();
+		}
+	};
+
+	userSchema.methods.addLatestEvent = function (gameName) {
+		var latestEvents = this.latestEvents || new Array();
+		//console.log(latestEvents);
+		if(!latestEvents.includes(gameName)){
+			//console.log("List doesn't include " + gameName);
+			latestEvents.unshift(gameName);
+			if(latestEvents.length > 10) {
+				//console.log("Popped last game");
+				latestEvents.pop();
+			}
+			this.model('User').updateOne({_id: this.id},{latestEvents: latestEvents}).exec();
+		}
 	};
 
 	userSchema.methods.addAchievement = function (id) {
@@ -68,6 +152,18 @@ module.exports = function() {
 		return this.find().exec();
 	};
 
+	userSchema.statics.findAllUsersWithAccounts = function() {
+		console.log("Find all users with accounts");
+		return this.find({ accounts: { $exists: true } }).exec();
+	};
+
+	userSchema.statics.findAllActiveUsersWithAccounts = function() {
+		var date = new Date();
+        date.setDate( date.getDate() - 15 );
+		console.log("Find all users with accounts");
+		return this.find({"$and": [{ accounts: { $exists: true }}, {lastActive : {"$gte": date}}]}).exec();
+	};
+
 	userSchema.statics.countReferals = function(id) {
 		return this.countDocuments({referrer: id}).exec();
 	};
@@ -83,8 +179,13 @@ module.exports = function() {
 	}
 
 	userSchema.statics.findActiveSince = function(date) {
-		//console.log("{\"lastActive\" : {\"$gte\": " + date + "}}");
-		return this.find({lastActive : {"$gte": date}}).exec();
+		console.log("{\"lastActive\" : {\"$gte\": " + date + "}}");
+		return this.find({"$and": [{ left: { $exists: false }}, {lastActive : {"$gte": date}}]}).exec();
+	}
+
+	userSchema.statics.findInactiveSince = function(date) {
+		console.log("{\"lastActive\" : {\"$lte\": " + date + "}}");
+		return this.find({"$and": [{ left: { $exists: false }}, {lastActive : {"$lte": date}}]}).exec();
 	}
 
 	userSchema.statics.byUsername = function(username) {
@@ -94,6 +195,19 @@ module.exports = function() {
 	userSchema.statics.byCharacter = function(name) {
 		return this.findOne({ characters: new RegExp(`^${name}$`, 'i') }).exec();
 	}
+
+	userSchema.statics.findAllUsersAboveLevel = function(level) {
+		return this.find({"$and": [{ accounts: { $exists: true }}, { level: { "gt": level }}]}).exec();
+	};
+
+	userSchema.statics.findAllUsersBelowLevel = function(level) {
+		return this.find({"$and": [{ accounts: { $exists: true }}, { level: { "lt": level }}]}).exec();
+	};
+
+	userSchema.statics.findUsersReferrals = function(uid) {
+		console.log("Finding referrals for " + uid);
+		return this.find({referrer: uid, level: {"$gte": 5}}).exec();
+	};
 
 	let UserModel = mongoose.model('User', userSchema);
 

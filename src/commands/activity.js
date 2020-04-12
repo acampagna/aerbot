@@ -1,14 +1,12 @@
 const CoreUtil = require("../utils/Util.js");
 const Command = require("../Command.js");
 const mongoose = require('mongoose');
-const DailyActivity = mongoose.model('DailyActivity');
-const WeeklyActivity = mongoose.model('WeeklyActivity');
-const MonthlyActivity = mongoose.model('MonthlyActivity');
+const Activity = mongoose.model('Activity');
 const Discord = require("discord.js");
 
 module.exports = new Command({
 	name: "activity",
-	description: "Activity Commands",
+	description: "New Activity Commands",
 	syntax: "activity",
 	admin: true,
 	invoke
@@ -34,66 +32,98 @@ function invoke({ message, params, serverData, client }) {
     }, {a: ['']}).a
 	console.log(newParams);
 
-	var cmd = newParams[1];
-	var activityDuration = newParams[0];
+	var cmd = newParams[0];
+	var activityDuration = newParams[1] ? newParams[1] : 7;
+
+	console.log("Activity Duration: " + activityDuration);
 
 	return new Promise(function(resolve, reject) {
-		switch(newParams[0]) {
+		switch(cmd) {
 			case 'durations':
-				resolve("Supported activity durations: `daily`, `weekly`, and `monthly`");
+				resolve("Supported activity durations are measured in any number of days. i.e. 1, 7, 30, etc.");
 				break;
 			case 'types':
 				resolve("Supported activity types: `message`, `reaction`, `event`, `voice`");
 				break
 		}
 
-		var ActivityClass;
-
-		if(activityDuration.toLowerCase() === "daily") {
-			ActivityClass = DailyActivity;
-		} else if(activityDuration.toLowerCase() === "weekly") {
-			ActivityClass = WeeklyActivity;
-		} else if(activityDuration.toLowerCase() === "monthly") {
-			ActivityClass = MonthlyActivity;
-		} else {
-			resolve(activityDuration + " activity has not been implemented yet!");
-		}
+		var date = new Date();
+        date.setDate( date.getDate() - activityDuration );
 
 		switch(cmd) {
 			case 'member':
-				break;
-			case 'stats':
-				//if(activityDuration.toLowerCase() === "monthly") {
-					ActivityClass.getStatistics().then(response => {
-						//console.log(response);
+				if(message.mentions.users.first()) {
+					var memberId = message.mentions.users.first().id;
+				} else if(params[2]){
+					var memberId = params[2];
+				}
+
+				if (memberId) {
+					Activity.getStatistics(activityDuration, memberId).then(response => {
+						console.log(response);
+						console.log(response.typeActivity);
 						const embed = new Discord.RichEmbed();
-						embed.setTitle(activityDuration + " Statistics");
+						embed.setTitle("**Statistics** - Past " + activityDuration + " Days");
 						embed.setColor("RANDOM");
+	
+						if(response.typeActivity.get("message") > 0)
+							embed.addField("Message Exp", response.typeActivity.get("message"));
+						if(response.typeActivity.get("reaction") > 0)
+							embed.addField("Reaction Exp", response.typeActivity.get("reaction"));
+						if(response.typeActivity.get("event") > 0)
+							embed.addField("Event Exp", response.typeActivity.get("event"));
+						if(response.typeActivity.get("voice") > 0)
+							embed.addField("Voice Exp", response.typeActivity.get("voice"));
+						if(response.typeActivity.get("pinned") > 0)
+							embed.addField("Pinned", response.typeActivity.get("pinned"));
+						if(response.typeActivity.get("trivia") > 0)
+							embed.addField("Trivia Exp", response.typeActivity.get("trivia"));
+						if(response.typeActivity.get("qotd") > 0)
+							embed.addField("QOTD Exp", response.typeActivity.get("qotd"));
+						if(response.typeActivity.get("stream") > 0)
+							embed.addField("Stream Exp", response.typeActivity.get("stream"));
+						if(response.typeActivity.get("achievement") > 0)
+							embed.addField("Achievement Exp", response.typeActivity.get("achievement"));
 
-						console.log(typeActivity);
-
-						let message = response.typeActivity.get("message");
-						let reaction = response.typeActivity.get("reaction");
-						let event = response.typeActivity.get("event");
-						let voice = response.typeActivity.get("voice");
-						let total = response.typeActivity.get("total");
-
-						embed.addField("Message Exp", message);
-						embed.addField("Reaction Exp", reaction);
-						embed.addField("Event Exp", event);
-						embed.addField("Voice Exp", voice);
-						embed.addField("Trivia Question Exp", response.typeActivity.get("trivia_question"));
-						embed.addField("Trivia Game Exp", response.typeActivity.get("trivia_game"));
-						embed.addField("Total Exp", total);
-						embed.addField("Active Users", response.activeUsers);
-						embed.addField("Mean Exp", response.avgExp);
-
+						embed.addField("Total Exp", response.typeActivity.get("total"));
+						//embed.addField("Active Users", response.activeUsers);
+						//embed.addField("Mean Exp", response.avgExp);
+	
 						resolve({embed});
 					});
-				//}
+				} else {
+					resolve("You must @mention a user or provide their user id to get stats");
+				}
+				break;
+			case 'stats':
+				Activity.getStatistics(activityDuration).then(response => {
+					console.log(response);
+					console.log(response.typeActivity);
+					const embed = new Discord.RichEmbed();
+					embed.setTitle("**Statistics** - Past " + activityDuration + " Days");
+					embed.setColor("RANDOM");
+
+					embed.addField("Message Exp", response.typeActivity.get("message"));
+					embed.addField("Reaction Exp", response.typeActivity.get("reaction"));
+					embed.addField("Event Exp", response.typeActivity.get("event"));
+					embed.addField("Voice Exp", response.typeActivity.get("voice"));
+					embed.addField("Pinned", response.typeActivity.get("pinned"));
+					if(response.typeActivity.get("trivia") > 0)
+						embed.addField("Trivia Exp", response.typeActivity.get("trivia"));
+					if(response.typeActivity.get("qotd") > 0)
+						embed.addField("QOTD Exp", response.typeActivity.get("qotd"));
+					if(response.typeActivity.get("stream") > 0)
+						embed.addField("Stream Exp", response.typeActivity.get("stream"));
+					embed.addField("Achievement Exp", response.typeActivity.get("achievement"));
+					embed.addField("Total Exp (minus achievements)", response.typeActivity.get("total"));
+					embed.addField("Active Users", response.activeUsers);
+					embed.addField("Mean Exp", response.avgExp);
+
+					resolve({embed});
+				});
+				//resolve("Stats activity not yet implemented!");
 				break;
 			case 'total':
-				var actionType = "all";
 				switch(newParams[2]) {
 					case 'message':
 					case 'reaction':
@@ -101,13 +131,20 @@ function invoke({ message, params, serverData, client }) {
 					case 'voice':
 					case 'trivia_question':
 					case 'trivia_game':
-						ActivityClass.countDocuments({type: newParams[2]}, function (err, count) {
-							resolve("Total " + activityDuration + " " + newParams[2] + " activity: " + count);
+					case 'br_win':
+					case 'qotd':
+					case 'pinned':
+					case 'achievement':
+					case 'stream_engagement':
+					case 'stream_contribution':
+					case 'stream_mvp':
+						Activity.countDocuments({type: newParams[2], date : {"$gte": date}}, function (err, count) {
+							resolve("Total " + newParams[2] + " activity in past " + activityDuration + " days: " + count);
 						});
 						break;
 					default:
-						ActivityClass.countDocuments({}, function (err, count) {
-							resolve("Total " + activityDuration + " activity: " + count);
+						Activity.countDocuments({date : {"$gte": date}}, function (err, count) {
+							resolve("Total activity in past " + activityDuration + " days: " + count);
 						});
 						break;
 				}
@@ -117,9 +154,11 @@ function invoke({ message, params, serverData, client }) {
 				if(!isNaN(newParams[2])){
 					limit = newParams[2];
 				}
-				resolve("We're not currently tracking time & date for activity. Sorry!");
+				resolve("Recent Activity not yet implemented");
 				break;
 			case 'leaderboard':
+				//newParams2 = limit
+				//newParams3 = offset
 				var limit = 10;
 				if(!isNaN(newParams[2])){
 					limit = newParams[2];
@@ -132,28 +171,32 @@ function invoke({ message, params, serverData, client }) {
 
 				var userActivity = new Map();
 
-				ActivityClass.findAllActivity().then(activities => {
+				Activity.findActivitySince(activityDuration).then(activities => {
 					activities.forEach(activity =>{
-						if(userActivity.has(activity.userId)) {
-							userActivity.set(activity.userId, userActivity.get(activity.userId)+activity.exp);
-						} else {
-							userActivity.set(activity.userId, activity.exp);
+						if(activity.type != "achievement") {
+							if(userActivity.has(activity.userId)) {
+								userActivity.set(activity.userId, userActivity.get(activity.userId)+activity.exp);
+							} else {
+								userActivity.set(activity.userId, activity.exp);
+							}
 						}
 					});
 
 					const sortedUserActivity = new Map([...userActivity.entries()].sort((a, b) => b[1] - a[1]));
 
 					const embed = new Discord.RichEmbed();
-					embed.setTitle(activityDuration + " Activity Leaderboard");
+					embed.setTitle("**Activity Leaderboard** - Past " + activityDuration + " days");
 					embed.setColor("RANDOM");
-					//embed.setDescription("The rules are simple. Everyone ");
-					//embed.setFooter("Currently this is showing ALL users with " + activityDuration + " activity. Soon it will show top 10 (or top x) members with the most activity");
 
+					//DiscordUtil.constructTableFromMap(serviceAccounts);
 					var total = -skip;
 					console.log(skip);
 					console.log(total);
+
+					var retStr = "";
 					sortedUserActivity.forEach(function(value, key) {
 						total++;
+						console.log("T: " + total + " L: " + limit + " S: " + skip);
 						if(total <= limit && total > 0) {
 							let member = client.guilds.get(serverData._id).members.get(key);
 
@@ -163,15 +206,29 @@ function invoke({ message, params, serverData, client }) {
 							}
 
 							if(member){
-								embed.addField((total + skip) + ". " +  member.displayName, value + " exp");
+								retStr += (parseInt(total) + parseInt(skip)) + ". " +  member + " : " + value + " exp\n";
 							} else {
 								total--;
-							}	
+							}
 						}
 					});
+
+					embed.setDescription(retStr);
 					resolve({embed});
 				});
+				break;
+				case 'stats2': 
+					/*Activity.getStatistics(activityDuration, newParams[2]).then(response => {
+						const embed = new Discord.RichEmbed();
+						embed.setTitle("**Stats 2**");
+						embed.setColor("RANDOM");
 
+						embed.addField("Total Exp", response.typeActivity.get("total"));
+						embed.addField("Active Users", response.activeUsers);
+						embed.addField("Mean Exp", response.avgExp);
+
+						resolve({embed});
+					});*/
 				break;
 			default:
 				resolve(params[0] + " is an invalid configuration");

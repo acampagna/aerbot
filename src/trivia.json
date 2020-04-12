@@ -7,8 +7,8 @@
 			"microsoft",
 			"retro",
 			"blizzard",
-			"halo",
-			"mmorpg"
+			"mmorpg",
+			"overwatch"
 		]
 	},
 	"multipleChoiceAnswers": {
@@ -53,6 +53,15 @@
 			"Sarah Kerrigan",
 			"Tom Nook",
 			"Little Mac"
+		],
+		"villains": [
+			"Laughing Octopus",
+			"Night Fright",
+			"The Fear",
+			"Bowser",
+			"Wario",
+			"Ganon",
+			"Big Boss"
 		],
 		"pokemon": [
 			"Eevee",
@@ -114,7 +123,7 @@
 		"retro_games": [
 			"Mario Bros",
 			"Tetris",
-			"Asteroid",
+			"Asteroids",
 			"Zelda",
 			"Metroid",
 			"Ice Climbers",
@@ -136,21 +145,29 @@
 			"Final Fantasy",
 			"Golden Axe",
 			"Gauntlet",
-			"Secret of Mana"
+			"Secret of Mana",
+			"DOOM"
 		],
 		"games": [
+			"Archeage",
+			"Apex Legends",
 			"Call of Duty: Modern Warfare",
 			"Chrono Trigger",
+			"Counterstrike",
 			"Dota 2",
 			"Dwarven Fortress",
 			"Donkey Kong",
 			"Destiny 2",
+			"DOOM",
 			"Diablo",
+			"Dota Underlords",
 			"Dauntless",
 			"Excite Bike",
 			"Final Fantasy VII",
+			"Final Fantasy VII",
 			"Final Fantasy XV",
 			"Fortnite",
+			"Fallout 3",
 			"Gauntlet Legends",
 			"Goldeneye",
 			"Golf With Your Friends",
@@ -158,42 +175,29 @@
 			"Halo 3",
 			"Ikaruga",
 			"Legend of Mana",
-
-			"Tetris 99",
+			"League of Legends",
 			"Metroid Prime",
 			"Mario Kart 8",
 			"Mega Man X8",
-			"League of Legends",
-			"Tetris",
+			"Mortal Kombat 3",
 			"Minecraft",
-			"Archeage",
-			"Apex Legends",
-			"Dota Underlords",
-			
+			"Mario Kart",
 			"Overwatch",
-			
+			"Pokemon Blue",
 			"Risk of Rain",
 			"Runescape",
-			"Warframe",
-			"Tabletop Simulator",
-			
-			"Mortal Kombat 3",
-			
-			"Fallout 3",
-			"Counterstrike",
-			"The Last of Us",
-			"Zelda: Ocarina of Time",
-			"Final Fantasy 7",
-			"Mario Kart",
-
-			"Pokemon Blue",
 			"Super Mario Bros",
 			"Street Fighter",
 			"Starcraft",
+			"Tetris",
+			"TMNT: Turtles in Time",
+			"Tabletop Simulator",
+			"The Last of Us",
 			"Warcraft",
 			"World of Warcraft",
-			"Yoshi's Island"
-
+			"Warframe",
+			"Yoshi's Island",
+			"Zelda: Ocarina of Time"
 		],
 		"factions": [
 			"Flood",
@@ -217,15 +221,6 @@
 			"Terran",
 			"Zerg",
 			"Protoss"
-		],
-		"villains": [
-			"Laughing Octopus",
-			"Night Fright",
-			"The Fear",
-			"Bowser",
-			"Wario",
-			"Ganon",
-			"Big Boss"
 		],
 		"consoles": [
 			"NES",
@@ -262,7 +257,9 @@
 			"Epic Games",
 			"Valve",
 			"Obsidian Entertainment",
-			"Double Fine Productions"
+			"Double Fine Productions",
+			"Midway",
+			"Acclaim"
 		]
 	},
 	"questions": [
@@ -316,7 +313,10 @@
 			],
 			"difficulty": 2,
 			"choice_type": "retro_games",
-			"author": "dandyhighwayman84"
+			"author": "dandyhighwayman84",
+			"tags": [
+				"retro"
+			]
 		},
 		{
 			"type": "mc",
@@ -697,7 +697,7 @@
 			],
 			"difficulty": 2,
 			"choice_type": "games",
-			"author": "Deathsfew",
+			"author": "deathsfew",
 			"tags": [
 				"retro",
 				"nintendo"
@@ -713,7 +713,7 @@
 			],
 			"difficulty": 1,
 			"choice_type": "characters",
-			"author": "Deathsfew",
+			"author": "deathsfew",
 			"tags": [
 				"retro",
 				"nintendo"
@@ -728,7 +728,7 @@
 			],
 			"difficulty": 2,
 			"choice_type": "games",
-			"author": "Deathsfew",
+			"author": "deathsfew",
 			"tags": [
 				"mmorpg",
 				"blizzard"
@@ -930,7 +930,786 @@
 				"Bruce Willis"
 			],
 			"difficulty": 2,
-			"author": "dandyhighwayman84"
+			"author": "dandyhighwayman84",
+			"tags": [
+				"culture"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which iconic videogame character originated as a simple placeholder?",
+			"answer": "Kirby",
+			"explaination": "As can probably be ascertained by his simple appearance, Kirby is the one that was original intended to be a circular placeholder for another character.",
+			"choices": [
+			],
+			"choice_type": "characters",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which videogame holds the record for having the highest budget ever to produce?",
+			"answer": "Grand Theft Auto V",
+			"explaination": "With an estimated budget of $256 million, *Grand Theft Auto V* cost more to make than many major motion films.",
+			"choices": [
+			],
+			"choice_type": "games",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"culture"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Dr. Light is the creator of which classic videogame character?",
+			"answer": "Mega Man",
+			"explaination": "Mega Man was created by the fictional Dr. Light, who despite being a pacifist sees the need for force when necessary.",
+			"choices": [
+			],
+			"choice_type": "characters",
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What was Nintendo's Most Controversial M rated Video game?",
+			"answer": "Conkers Bad Fur Day",
+			"explaination": "",
+			"choices": [
+				"Mortal Kombat",
+				"Golden Eye",
+				"DOOM"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Tannyerz",
+			"tags": [
+				"nintendo",
+				"culture"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What was the First M Rated Video to be released?",
+			"answer": "Mortal Kombat",
+			"explaination": "Congressional hearings were held and the Entertainment Software Rating Board (ESRB) was established in 1994, two years after the release of Mortal Kombat. Unsurprisingly, the game was the first to receive the Mature rating.",
+			"choices": [
+				"Conkers Bad Fur Day",
+				"Golden Eye",
+				"DOOM"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Tannyerz",
+			"tags": [
+				"culture"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "In the 1980s, Nintendo named a classic video game character after their attorney. What was that attorney’s name?",
+			"answer": "John Kirby",
+			"explaination": "In the 1980s, Nintendo named a classic video game character after their attorney, who successfully defended the company against Universal City Studios over the copyrightability of the character of Donkey Kong.",
+			"choices": [
+				"Doug Bowser",
+				"Mario Lawrence",
+				"Frank Samus"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "dandyhighwayman84",
+			"tags": [
+				"nintendo",
+				"culture",
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What was Professor Layton's first name?",
+			"answer": "Hershel",
+			"explaination": "Professor Hershel Layton is the title character and Protagonist of the PROFESSOR LAYTON series of Puzzle detective games for Nintendo DS.",
+			"choices": [
+				"Nigel",
+				"Arthur",
+				"Sherlock"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "FancyAlly",
+			"tags": [
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What is Baron's full name from League of Legends?",
+			"answer": "Baron Nashor",
+			"explaination": "In League Of Legends, the strongest team buff can be obtained when your team goes to the jungle and defeats the strongest Neutral Monster, *Baron Nashor*",
+			"choices": [
+				"Baron Rohshan",
+				"Baron Voidor",
+				"Baron Urfer"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "FancyAlly",
+			"tags": [
+				"league of legends",
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which videogame company originally brought Pac-Man to home consoles?",
+			"answer": "Atari",
+			"explaination": "Pac-Man was first brought to home consoles via the Atari 2600 way back in 1982.",
+			"choices": [
+				"Lionhead",
+				"Acclaim",
+				"Midway"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "In the Pokémon Anime Theme Song, what is the first line in the second verse?",
+			"answer": "Every challenge along the way, with courage, I will face.",
+			"explaination": "",
+			"choices": [
+				"Everybody wants to be a master, everybody wants to show their skills.",
+				"There's no question, no mystery, I'm much better when you're with me.",
+				"I will battle every day, to claim my rightful place."
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "EddieGames",
+			"tags": [
+				"pokemon"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which theme park was inspired and is heavily influenced by *World of Warcraft* and *StarCraft*?",
+			"answer": "World Joyland",
+			"explaination": "",
+			"choices": [
+				"IMG Worlds of Adventure",
+				"Tokyo Disney Resort",
+				"Efteling"
+			],
+			"choice_type": "World Joyland, located in China, is based on *World of Warcraft* and *StarCraft* despite having no formal agreement with its developers, Blizzard Entertainment.",
+			"difficulty": 3,
+			"author": "Aerfalle",
+			"tags": [
+				"blizzard",
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What was the first videogame system released to be used in conjunction with a television?",
+			"answer": "Odyssey",
+			"explaination": "The Magnavox Odyssey was first released in 1972, and it is known for featuring a game similar to Pong.",
+			"choices": [
+				"Intellivision",
+				"ColecoVision",
+				"Vectrex"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What is the name of the hero from *Mike Tyson's Punch-Out*?",
+			"answer": "Little Mac",
+			"explaination": "Little Mac is but a wee fighter yet can defeat the one-punch wonder Mike Tyson if the gamer is fast enough.",
+			"choices": [
+				"Doc Louis",
+				"Big Mac",
+				"Mr. Dream"
+			],
+			"choice_type": "",
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of these was not a cheat code in Starcraft?",
+			"answer": "All your base are belong to us",
+			"explaination": "This was a cheat code for warcraft 3 which gave you an immediate victory for the current level. The corresponding cheat in Starcraft was *There is no cow level*",
+			"choices": [
+				"Black sheep wall ",
+				"Power overwhelming",
+				"Show me the money"
+			],
+			"choice_type": "",
+			"difficulty": 1,
+			"author": "Teri",
+			"tags": [
+				""
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which is the world-famous Konami Code?",
+			"answer": "U U D D L R L R B A Start",
+			"explaination": "",
+			"choices": [
+				"D D U U L R L R B A Start",
+				"U U D D L R L R A B Select Start",
+				"U U D D R L R L B A Select"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of these was not an enemy in Mother 2 / Earthbound?",
+			"answer": "Mighty Bitey Snake",
+			"explaination": "Mighty Bitey Snake was an enemy from Mother 3.",
+			"choices": [
+				"Unassuming Local Guy",
+				"Handsome Tom",
+				"Slimy Little Pie"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "vhasr",
+			"tags": [
+				"retro",
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What character from Overwatch is friends and partner in the field with Winston?",
+			"answer": "Tracer",
+			"explaination": "",
+			"choices": [
+				"D.VA",
+				"Mcree",
+				"Reaper"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Fibonacci",
+			"tags": [
+				"overwatch",
+				"blizzard",
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "The Overwatch Hero Reinhardt is a",
+			"answer": "Tank",
+			"explaination": "",
+			"choices": [
+				"Support",
+				"Defense",
+				"Offense"
+			],
+			"choice_type": "",
+			"difficulty": 1,
+			"author": "Fibonacci",
+			"tags": [
+				"overwatch",
+				"blizzard",
+				"contemporary"
+			]
+		},
+		{
+			"type": "tf",
+			"question": "The Overwatch hero Mercy is a Healer.",
+			"answer": "True",
+			"explaination": "",
+			"choices": [
+			],
+			"choice_type": "",
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"overwatch",
+				"blizzard",
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "The Overwatch hero Bastion loves",
+			"answer": "Birds",
+			"explaination": "",
+			"choices": [
+				"Flowers",
+				"Leaves",
+				"Trees"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Fibonacci",
+			"tags": [
+				"overwatch",
+				"blizzard",
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What Animal is Winston from Overwatch?",
+			"answer": "Monkey",
+			"explaination": "",
+			"choices": [
+				"Orangutan",
+				"Ape",
+				"Chimpanzee"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Fibonacci",
+			"tags": [
+				"overwatch",
+				"blizzard",
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following is __not__ a Magic Spell from the Kingdom Hearts franchise?",
+			"answer": "Aquara",
+			"explaination": "Cure heals HP, Blizzara is a Level 2 Ice Spell, and Thundaga is a Level 3 Lightning Spell.",
+			"choices": [
+				"Cure",
+				"Blizzara",
+				"Thundaga"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "vhasr",
+			"tags": [
+				""
+			]
+		},
+		{
+			"type": "mc",
+			"question": "In Phoenix Labs' Dauntless, what is the name of the Blacksmith in Ramsgate?",
+			"answer": "Wils Bormen",
+			"explaination": "",
+			"choices": [
+				"Gaius Copperwheel",
+				"Janek Zai",
+				"Markus Boehr"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "vhasr",
+			"tags": [
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What does the word daedra mean in the elder scrolls franchise?",
+			"answer": "Not of our ancestors",
+			"explaination": "",
+			"choices": [
+				"Demon",
+				"Enemy",
+				"Family"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Renegade",
+			"tags": [
+				""
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Characters in videogames who cannot be outrightly controlled by players are acronymed as what?",
+			"answer": "NPCs",
+			"explaination": "Non-playable characters (NPCs) are those that players cannot control, though their actions can be influenced.",
+			"choices": [
+				"WoWs",
+				"CPNs",
+				"RPGs"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				""
+			]
+		},
+		{
+			"type": "mc",
+			"question": "The game PT, released in 2014, was a collaboration between game designer Hideo Kojima and which movie director?",
+			"answer": "Guillermo del Toro",
+			"explaination": "",
+			"choices": [
+				"Peter Jackson",
+				"Joss Whedon",
+				"David Lynch"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Megaman703",
+			"tags": [
+				""
+			]
+		},
+		{
+			"type": "mc",
+			"question": "In Super Mario RPG: Legend of the Seven Stars, Geno firsts introduces himself to Mario by what name?",
+			"answer": "♡♪!?",
+			"explaination": "",
+			"choices": [
+				"qXWYpM",
+				":)#$&",
+				"Geno"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Megaman703",
+			"tags": [
+				"retro",
+				"nintendo",
+				"mario"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which famous fighting game had the working title *Dragon King* at the start of its development?",
+			"answer": "Super Smash Bros",
+			"explaination": "",
+			"choices": [
+				"Street Fighter",
+				"Soul Blade",
+				"Tekken"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Megaman703",
+			"tags": [
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Tetris was designed by which Russian programmer?",
+			"answer": "Alexey Pajitnov",
+			"explaination": "",
+			"choices": [
+				"Alexi Yashin",
+				"Grigori Perelman",
+				"Andrei Bely"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Megaman703",
+			"tags": [
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "The famous line from Elder Scrolls, \"I used to be an adventurer like you until I took an arrow in the knee\" is a euphemism for what?",
+			"answer": "Getting married",
+			"explaination": "",
+			"choices": [
+				"Getting arrested",
+				"Enlisting to an army",
+				"Being show by an arrow"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerendyl",
+			"tags": [
+				""
+			]
+		},
+		{
+			"type": "mc",
+			"question": "The word *Pokemon* is generally understood to be a translation of which phrase?",
+			"answer": "Pocket Monsters",
+			"explaination": "*Pokemon* is a stylized contraction of *Pocket Monsters*, which the series was originally called in Japan.",
+			"choices": [
+				"Catch Them All",
+				"Pocket Pokers",
+				"Poking Monsters"
+			],
+			"choice_type": "",
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"pokemon",
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What is the highest level a player can reach in *Pac-Man*?",
+			"answer": "256",
+			"explaination": "A glitch in the code of Pac-Man makes passing the 256th level impossible.",
+			"choices": [
+				"99",
+				"999",
+				"512"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Aerfalle",
+			"tags": [
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What is the highest-grossing arcade game of all-time?",
+			"answer": "Pac-Man",
+			"explaination": "",
+			"choices": [
+			],
+			"choice_type": "retro_games",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"retro",
+				"arcade"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What is the name of the circular object that is used to collect Pokémon?",
+			"answer": "Poke Ball",
+			"explaination": "Poke balls are used to used to catch and store Pokémon to be later traded or used in battle.",
+			"choices": [
+				"Poke Egg",
+				"Poke Trap",
+				"Poke Orb"
+			],
+			"choice_type": "",
+			"difficulty": 1,
+			"author": "Aerfalle",
+			"tags": [
+				"pokemon",
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which popular videogame creatures come from the Howling Abyss?",
+			"answer": "Poros",
+			"explaination": "The lovable and transformative Poros from *World of Warcraft* originate front the Howling Abyss in Freljord.",
+			"choices": [
+				"Koopas",
+				"Murlocs",
+				"Aberrations"
+			],
+			"choice_type": "",
+			"difficulty": 3,
+			"author": "Aerfalle",
+			"tags": [
+				"wow"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "*V-Bucks* are the in-game currency for which famous videogame franchise?",
+			"answer": "Fortnite",
+			"explaination": "As of December 2018, players of *Fortnite* collectively spend $200 million on V-Bucks monthly.",
+			"choices": [
+				"League of Legends",
+				"Apex Legends",
+				"GTA V"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What is the name of the primary world upon which the *World of Warcraft* takes place?",
+			"answer": "Azeroth",
+			"explaination": "Azeroth is the fictional home to humans, trolls, elves, dragons and other warring species.",
+			"choices": [
+				"Asguard",
+				"Hoth",
+				"Aiur"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"wow"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "What video game character is often called Zelda; especially by non-fans of the Zelda franchise?",
+			"answer": "Link",
+			"explaination": "Many people call Link Zelda because that's the name of the game and you play as Link. So they assume your character is Zelda.",
+			"choices": [
+				"Navi",
+				"Ganon",
+				"Gandalf"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Unknown",
+			"tags": [
+				"nintendo"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "*Big Apple! 3:00AM* is a meme and the first level for which video game franchise?",
+			"answer": "TMNT: Turtles in Time",
+			"explaination": "",
+			"choices": [
+			],
+			"choice_type": "games",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"meme",
+				"retro"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following is __not__ a type of weapon in the game Dauntless?",
+			"answer": "Charge Blade",
+			"explaination": "Charge Blade is from the Monster Hunter Franchise.",
+			"choices": [
+				"War Pike",
+				"Ostian Repeaters",
+				"Aether Strikers"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following is a type of weapon in the game Dauntless?",
+			"answer": "Ostian Repeaters",
+			"explaination": "Charge Blade, Gunlance, and Heavy Bowgun is from the Monster Hunter Franchise.",
+			"choices": [
+				"Charge Blade",
+				"Gunlance",
+				"Heavy Bowgun"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following is a type of weapon in the Monster Hunter Franchise?",
+			"answer": "Charge Blade",
+			"explaination": "Ostian Repeaters and Aether Scythe are from the Phoenix Labs game, Dauntless. Aether Scythe is from Final Fantasy XIV.",
+			"choices": [
+				"Aether Scythe",
+				"Ostian Repeaters",
+				"Aether Strikers"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which of the following is __not__ a type of weapon in the Monster Hunter Franchise?",
+			"answer": "Ostian Repeaters",
+			"explaination": "Ostian Repeaters is from the Phoenix Labs game, Dauntless.",
+			"choices": [
+				"Charge Blade",
+				"Gunlance",
+				"Heavy Bowgun"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"contemporary"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Who provides the voice of Pikachu in the 2019 *Pokémon: Detective Pikachu* movie?",
+			"answer": "Ryan Reynolds",
+			"explaination": "The live-action *Detective Pikachu* is voiced by none other than Ryan Reynolds, who also provided the character's facial movements.",
+			"choices": [
+				"Adam Sandler",
+				"Paul Rudd",
+				"Danny DeVito"
+			],
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"pokemon",
+				"movies",
+				"culture"
+			]
+		},
+		{
+			"type": "mc",
+			"question": "Which movie did Dwayne *the Rock* Johnson star in that was based on a videogame?",
+			"answer": "A and D",
+			"explaination": "Though not amongst his best works, the Rock starred in a movie based on the videogame *Doom* in 2005. He also starred in another film based on a videogame, *Rampage*, in 2018.",
+			"choices": [
+				"Rampage",
+				"Assassin's Creed",
+				"Central Intelligence",
+				"Doom"
+			],
+			"randomize": false,
+			"choice_type": "",
+			"difficulty": 2,
+			"author": "Aerfalle",
+			"tags": [
+				"movies",
+				"culture"
+			]
 		},
 		{
 			"type": "mc",
@@ -944,63 +1723,10 @@
 			],
 			"choice_type": "",
 			"difficulty": 2,
-			"author": "Aerfalle"
-		},
-		{
-			"type": "mc",
-			"question": "IAmDummyQuestion",
-			"answer": "DummyAnswer",
-			"explaination": "",
-			"choices": [
-				"ThisIs",
-				"TheLast",
-				"Question"
-			],
-			"choice_type": "",
-			"difficulty": 2,
-			"author": "Aerfalle"
-		},
-		{
-			"type": "mc",
-			"question": "IAmDummyQuestion",
-			"answer": "DummyAnswer",
-			"explaination": "",
-			"choices": [
-				"ThisIs",
-				"TheLast",
-				"Question"
-			],
-			"choice_type": "",
-			"difficulty": 2,
-			"author": "Aerfalle"
-		},
-		{
-			"type": "mc",
-			"question": "IAmDummyQuestion",
-			"answer": "DummyAnswer",
-			"explaination": "",
-			"choices": [
-				"ThisIs",
-				"TheLast",
-				"Question"
-			],
-			"choice_type": "",
-			"difficulty": 2,
-			"author": "Aerfalle"
-		},
-		{
-			"type": "mc",
-			"question": "IAmDummyQuestion",
-			"answer": "DummyAnswer",
-			"explaination": "",
-			"choices": [
-				"ThisIs",
-				"TheLast",
-				"Question"
-			],
-			"choice_type": "",
-			"difficulty": 2,
-			"author": "Aerfalle"
+			"author": "Aerfalle",
+			"tags": [
+				""
+			]
 		}
 	]
 }

@@ -22,7 +22,8 @@ module.exports = function() {
 		list: {type: Boolean, default: true},
 		numMembers: {type: Number, default: 0},
 		memberIds: { type: Array, of: String },
-		public: {type: Boolean, default: true}
+		public: {type: Boolean, default: true},
+		appId: String
 	});
 
 	groupSchema.methods.incrementNumMembers = function () {
@@ -41,6 +42,11 @@ module.exports = function() {
 	groupSchema.statics.findGroupById = function(id) {
 		console.log("Finding group by ID");
 		return this.findOne({_id: id}).exec();
+	};
+
+	groupSchema.statics.findGroupByAppId = function(id) {
+		console.log("Finding group by APP ID");
+		return this.findOne({"$or": [{ appId: id}, {altAppId : id}]}).exec();
 	};
 
 	groupSchema.statics.findGroupByName = function(name) {

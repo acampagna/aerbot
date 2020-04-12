@@ -6,6 +6,9 @@ const User = mongoose.model('User');
 const Discord = require("discord.js");
 const DateDiff = require("date-diff");
 const Achievement = mongoose.model('Achievement');
+const AchievementService = require("../services/AchievementService");
+
+const AS = new AchievementService();
 
 module.exports = new Command({
 	name: "member",
@@ -77,19 +80,36 @@ async function createEmbed(user, client, serverData, admin) {
 
 	let member = client.guilds.get(serverData._id).members.get(user.id);
 
+	var embedColor = "DEFAULT";
+
+	if(user.embedColor) {
+		embedColor = user.embedColor;
+	}
+
 	var desc = "**Achievements**\n";
 
-	var achievements = await Achievement.findInIds(user.achievements);
+	if(user.badges) {
+		var achievements = await Achievement.findInIds(Array.from( user.badges.keys() ));
+		console.log(user.badges);
+		achievements.forEach(a => {
+			if(a.emoji.length > 5) {
+				var emoji = client.emojis.get(a.emoji);
+			} else {
+				var emoji = a.emoji;
+			}
 
-	achievements.forEach(a => {
-		if(a.emoji.length > 5) {
-			var emoji = client.emojis.get(a.emoji);
-		} else {
-			var emoji = a.emoji;
-		}
-
-		desc += emoji + " " + a.name + " - " + a.description + "\n";
-	});
+			desc += AS.getAchievementNiceDescription(a, client, a.ranks[user.badges.get(a.id)], user.badges.get(a.id));
+	
+			/*if(a.ranks.length > 0) {
+				desc += emoji + " " + a.name + " - " + AS.getAchievementDescription(a,a.ranks[user.badges.get(a.id)]) + "\n";
+			} else {
+				desc += emoji + " " + a.name + " - " + AS.getAchievementDescription(a,a.ranks[user.badges.get(a.id)]) + "\n";
+			}*/
+		});
+	} else {
+		desc += "*None*";
+	}
+	
 
 	const embed = new Discord.RichEmbed().setTitle(`__${user.username} Stats__`);
 	embed.setDescription(desc);
@@ -103,7 +123,7 @@ async function createEmbed(user, client, serverData, admin) {
 	if(admin)
 		embed.addField("Exp Adjustments", `${user.expAdjustment}`);
 	
-	embed.addField("Currency (coming soon!)", `${user.currency}`);
+	embed.addField("Ð (Currency)", `${user.currency}`);
 
 	if(admin) {
 		//embed.addField("Rank (unused)", `${user.rank}`);
@@ -121,10 +141,15 @@ async function createEmbed(user, client, serverData, admin) {
 		//embed.addField("Last Active", `${new Date(user.lastActive).toLocaleDateString("en-US", options)}\n*${new DateDiff(now, user.lastActive).days()} days ago*`);
 	}
 
-	embed.addField("Activity Points", `${user.activityPoints}`, true);
+	//embed.addField("Activity Points", `${user.activityPoints}`, true);
 
 	embed.setFooter(`Joined ${user.joined} (${new DateDiff(now, user.joined).days()} days ago)`);
 	embed.setThumbnail(member.user.avatarURL);
+
+	if(embedColor != "DEFAULT") {
+		embed.setColor(embedColor);
+	}
+	
 
 	return embed;
 }

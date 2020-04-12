@@ -1,5 +1,6 @@
 {
-	"onlineIterationInterval": "7200000",
+	"onlineIterationInterval": "3600000",
 	"voiceIterationInterval": "600000",
-	"activityIterationInterval": "300000"
+	"activityIterationInterval": "300000",
+	"sendMessageInterval": "60000"
 }

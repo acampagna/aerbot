@@ -6,6 +6,7 @@ const Discord = require("discord.js");
 const User = mongoose.model('User');
 const HandleActivity = require("../HandleActivity");
 const AchievementService = require("../services/AchievementService");
+const DiscordUtil = require("../utils/DiscordUtil.js");
 
 const AS = new AchievementService();
 
@@ -13,7 +14,7 @@ module.exports = new Command({
 	name: "achievements",
 	description: "Manage, Award, and View Achievements",
 	syntax: "achievements",
-	admin: true,
+	admin: false,
 	invoke
 });
 
@@ -45,10 +46,17 @@ function invoke({ message, params, serverData, client }) {
 	var cmd = newParams[0].toLowerCase();
 	var value = newParams[2] ? newParams[2] : "";
 
-	if(cmd === "help") {
+	/*if(cmd === "help") {
 		return Promise.resolve("Only Aerfalle should use this command.");
-	}
-	if(cmd === "create") {
+	}*/
+	if(cmd === "create" && CoreUtil.isMemberAdmin(message, serverData)) {
+		if(name === "help") {
+			const embed = new Discord.RichEmbed();
+			embed.setColor("RED");
+			embed.setTitle(`__Create Achievement Help__`);
+			embed.setDescription("!achievements create \"achievement name\" \"achievement description\"");
+			return Promise.resolve(DiscordUtil.processEmbed(embed, client));
+		}
 		if (name.length > 0) {
 			Achievement.create({name: name, description: value, slug: CoreUtil.slugify(name)});
 			return Promise.resolve("Created Achievement " + name);
@@ -56,7 +64,7 @@ function invoke({ message, params, serverData, client }) {
 			return Promise.resolve("You must specify an achievement name");
 		}
 	}
-	if(cmd === "award") {
+	if(cmd === "award" && CoreUtil.isMemberAdmin(message, serverData)) {
 		return new Promise(function(resolve, reject) {
 			if (name.length > 0) {
 				if (message.mentions.members.size > 0) {
@@ -64,36 +72,22 @@ function invoke({ message, params, serverData, client }) {
 					var nameMentions = "";
 					message.mentions.members.forEach(mention => {
 						ids.push(mention.id);
-						nameMentions += mention + " ";
+						nameMentions += "**" + mention.displayName + "** ";
 					});
 					Achievement.findByName(name).then(achievement => {
+						console.log(achievement);
 						if(achievement.emoji.length > 5) {
 							var emoji = client.emojis.get(achievement.emoji);
 						} else {
 							var emoji = achievement.emoji;
 						}
 			
-						//console.log(achievementEmoji + " " + emoji);
-			
 						var niceName = emoji + " " + achievement.name;
 						var botChannel = client.channels.get(serverData.botChannelId);
-						//AS.setAchievementChannel(botChannel);
-						//AS.setHandleActivity(HandleActivity);
 						var server = client.guilds.get(message.guild.id);
 		
 						User.findInIds(ids).then(users => {
 							users.forEach(user => {
-								/*console.log(user.username + " Currency: " + achievement.currencyBonus + " EXP: " + achievement.expBonus);
-
-								var achievements = user.getAchievements();
-								achievements.push(achievement.id);
-								user.achievements = achievements;
-								user.currency += 10 + achievement.currencyBonus;
-
-								HandleActivity(client,server,{achievement: achievement.expBonus},user);
-
-								botChannel.send(user.username + " has unlocked the " + niceName + " achievement!");*/
-
 								AS.addAchievement(user, achievement, client, server);
 							});
 						});
@@ -109,7 +103,7 @@ function invoke({ message, params, serverData, client }) {
 		});
 	}
 	return new Promise(function(resolve, reject) {
-		if(name && cmd && value && name.length > 0) {
+		if(name && cmd && value && name.length > 0 && CoreUtil.isMemberAdmin(message, serverData)) {
 			Achievement.findByName(name).then(achievement => {
 				console.log(achievement);
 				switch(cmd) {
@@ -148,14 +142,14 @@ function invoke({ message, params, serverData, client }) {
 			const embed = new Discord.RichEmbed();
 			embed.setColor("RANDOM");
 			embed.setTitle(`__Achievements__`);
-			embed.setFooter("Under Construction!");
+			//embed.setFooter("Under Construction!");
 			var desc = "";
 
 			Achievement.findAll().then(achievements => {
 				achievements.forEach(achievement => {
 					if(achievement.active && !achievement.hidden) {
 						var achievementEmoji = achievement.emoji;
-						if(achievementEmoji.length > 5) {
+						if(achievementEmoji && achievementEmoji.length > 5) {
 							var emoji = client.emojis.get(achievementEmoji);
 						} else {
 							var emoji = achievementEmoji;
@@ -163,13 +157,13 @@ function invoke({ message, params, serverData, client }) {
 	
 						//console.log(achievementEmoji + " " + emoji);
 	
-						desc = desc + emoji + " " + achievement.name + " - " + achievement.description + "\n";
+						desc += AS.getAchievementNiceDescription(achievement, client);
 					}
 				});
 				embed.setDescription(desc);
 				//console.log("DESC: " + desc);
 
-				resolve ({embed});
+				resolve (DiscordUtil.processEmbed(embed, client));
 			});
 		}
 	});

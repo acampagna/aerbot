@@ -16,34 +16,120 @@ function calculateActionExp(action) {
 			return 50;
 			break;
 		case 'reaction':
-			return 2;
+			return 4;
 			break;
 		case 'event':
-			return 50;
+			return 100;
 			break;
 		case 'br_win':
-			return 50;
+			return 200;
 			break;
 		case 'message':
 			return 1;
 			break;
+		case 'trendy_message':
+			return 1;
+			break;
+		case 'gamesie_post':
+			return 10;
+			break;
 		case 'voice':
-			return 4;
+			return 5;
 			break;
 		case 'trivia_question':
-			return 10;
+			return 5;
 			break;
 		case 'trivia_game':
 			return 50;
 			break;
+		case 'qotd':
+			return 25;
+			break;
 		case 'pinned':
-			return 10;
+			return 50;
 			break;
 		case 'achievement':
+			return 100;
+			break;
+		case 'stream_engagement':
+			return 10;
+			break;
+		case 'stream_contribution':
+			return 25;
+			break;
+		case 'stream_mvp':
+			return 50;
+			break;
+		case 'recruit':
+			return 500;
+			break;
+		case 'greet':
+			return 25;
+			break;
+		case 'holiday_hunter':
 			return 50;
 			break;
 		default:
 			return 1;
+			break;
+	}
+}
+
+function calculateActionCurrency(action) {
+	switch(action) {
+		case 'lottery':
+			return 5;
+			break;
+		case 'reaction':
+			return 0;
+			break;
+		case 'event':
+			return 2;
+			break;
+		case 'br_win':
+			return 0;
+			break;
+		case 'message':
+			return 0;
+			break;
+		case 'voice':
+			return 0;
+			break;
+		case 'trivia_question':
+			return 0;
+			break;
+		case 'trivia_game':
+			return 5;
+			break;
+		case 'qotd':
+			return 1;
+			break;
+		case 'pinned':
+			return 1;
+			break;
+		case 'achievement':
+			return 10;
+			break;
+		case 'stream_engagement':
+			return 0;
+			break;
+		case 'stream_contribution':
+			return 2;
+			break;
+		case 'stream_mvp':
+			return 5;
+			break;
+		case 'recruit':
+			return 10;
+			break;
+		case 'greet':
+			return 0;
+			break;
+		case 'holiday_hunter':
+			return 5;
+			break;
+		default:
+			return 0;
 			break;
 	}
 }
@@ -117,6 +203,84 @@ function domainNameMatches(hostname, domainName) {
 	return (hostname.split(".").filter(h => h === domainName).length > 0)
 }
 
+function getAccountDisplayName(name) {
+	switch(name.toLowerCase()) {
+		case 'steam':
+			return "Steam";
+			break;
+		case 'epic':
+			return "Epic";
+			break;
+		case 'origin':
+			return "Origin";
+			break;
+		case 'bnet':
+		case 'battle.net':
+			return "Battle.net";
+			break;
+		case 'league':
+		case 'lol':
+			return "LoL";
+			break;
+		case 'activision':
+			return "Activision";
+			break;
+		case 'playstation':
+		case 'psn':
+			return "Playstation Network";
+			break;
+		case 'xbl':
+		case 'xbox':
+			return "Xbox Live";
+			break;
+		case 'switch':
+		case 'friendcode':
+			return "Switch Friend Code";
+			break;
+		default:
+			return name;
+	}
+}
+
+function getAccountNiceName(name) {
+	switch(name.toLowerCase()) {
+		case 'steam':
+			return "steam";
+			break;
+		case 'epic':
+			return "epic";
+			break;
+		case 'origin':
+			return "origin";
+			break;
+		case 'bnet':
+		case 'battle.net':
+			return "bnet";
+			break;
+		case 'league':
+		case 'lol':
+			return "lol";
+			break;
+		case 'activision':
+			return "activision";
+			break;
+		case 'playstation':
+		case 'psn':
+			return "psn";
+			break;
+		case 'xbl':
+		case 'xbox':
+			return "xbox";
+			break;
+		case 'switch':
+		case 'friendcode':
+			return "switch";
+			break;
+		default:
+			return name;
+	}
+}
+
 module.exports = {
 	calculateNewExp,
 	calculateActionExp,
@@ -124,5 +288,8 @@ module.exports = {
 	handleLevelRoles,
 	calculateNextLevelExp,
 	validURL,
-	domainNameMatches
+	domainNameMatches,
+	calculateActionCurrency,
+	getAccountDisplayName,
+	getAccountNiceName
 };

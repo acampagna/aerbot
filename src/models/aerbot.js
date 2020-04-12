@@ -27,10 +27,16 @@ module.exports = function() {
 	}
 
 	aerbotSchema.statics.set = function (key, value) {
+		console.log("SETTING " + key + " TO " + value);
 		return this.model('Aerbot').findOneAndUpdate(
 			{key: key},
 			{key: key, value: value},
 			{upsert: true, new: true}).exec();
+	}
+
+	aerbotSchema.methods.inc = function () {
+		if(!isNaN(value))
+			this.value++;
 	}
 
 	let AerbotModel = mongoose.model('Aerbot', aerbotSchema);

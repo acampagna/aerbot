@@ -61,6 +61,7 @@ async function invoke({ message, params, serverData, client }) {
 			}
 			break;
 		case 'end':
+		case 'stop':
 			if(currentTriviaId) {
 				TS.sendLeaderboard(client, serverData);
 				TS.resetTrivia();

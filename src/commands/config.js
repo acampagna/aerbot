@@ -94,9 +94,37 @@ function invoke({ message, params, serverData, client }) {
 				return Promise.resolve("You must @mention an existing channel");
 			}
 			break;
+		case 'set_event_coordinator_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updateEventCoordinatorRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
+		case 'set_ppc_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updatePPCRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
 		case 'set_mod_role':
 			if (message.mentions.roles.size > 0) {
 				serverData.updateOfficerRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
+		case 'set_pcc_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updatePCCRoleId(message.mentions.roles.first().id)
+			} else {
+				return Promise.resolve("You must @mention an existing role");
+			}
+			break;
+		case 'set_subscriber_role':
+			if (message.mentions.roles.size > 0) {
+				serverData.updateSubscriberRoleId(message.mentions.roles.first().id)
 			} else {
 				return Promise.resolve("You must @mention an existing role");
 			}

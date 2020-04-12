@@ -5,6 +5,12 @@ const Pinned = mongoose.model('Pinned');
 const Discord = require("discord.js");
 const HandleActivity = require("../HandleActivity");
 const UserModel = mongoose.model('User');
+const Twit = require('twit');
+const https = require('https');
+const fs = require('fs');
+const TwitterService = require("./TwitterService");
+var Jimp = require('jimp');
+
 
 /**
  * Service to manage Pinboard. 
@@ -22,22 +28,29 @@ const ignoredCategories = new Array(
     "634067492150444032", //INFORMATION
     "633329100664209441", //WELCOME
     "633932629066121237", //COUNCIL
-    "629778070982885377" //STAFF
+    "629778070982885377", //STAFF
+    "637734526780571666", //BDM
+    "658537544740241409" //CONTENT CREATORS
 );
 const ignoredCategoriesChannelWhitelist = new Array(
     "634091411993657357" //game-deals
 );
 const ignoredChannels = new Array(
     "643107684421468170", //pinboard
+    "645648131433955358", //minecraft-server
     "626677437287366666", //music-playlist
     "630032620331335690", //idle-miner
     "628947427466149888", //pokecord
-    "579759668218298398" //introductions
+    "579759668218298398", //introductions
+    "667697726766710794", //discord-dungeons
+    "659468834599600128" //streams-and-videos
 );
 const starboardEmojiId = "538050181573378048";
 const starboardChannelId = "643107684421468170";
 
 const pinReactionsRequired = 3;
+
+const TWITTER_SERVICE = new TwitterService();
 
 class PinnedService {
     constructor(){
@@ -113,6 +126,12 @@ class PinnedService {
                             .setImage(image)
     
                             await pinboardChannel.send(msgText, { embed });
+
+                            if(image && image !== '') {
+                                this.download(image, 'res/tmp/' + message.attachments.array()[0].filename, this.tweet(message.member.displayName + "'s picture was pinned: " + message.cleanContent, 'res/tmp/' + message.attachments.array()[0].filename));
+                            } else {
+                                //TWITTER_SERVICE.tweet(message.member.displayName + "'s message was pinned: " + message.cleanContent);
+                            }
                         }
                     }
                 }
@@ -131,6 +150,27 @@ class PinnedService {
         if (!image) return '';
         return attachment;
       }
+    
+    download(url, dest, cb) {
+        Jimp.read({
+            url: url
+        })
+        .then(image => {
+            if(image.bitmap.width > 1920 || image.bitmap.height > 1080) {
+                image.scaleToFit(1920,1080);
+            }
+            image.writeAsync(dest).then(() => cb);
+        })
+        .catch(err => {
+            // Handle an exception.
+        });
+    }
+
+    tweet(message, file) {
+        setTimeout(function(){  
+            TWITTER_SERVICE.tweet(message, file)
+        }, 5000)
+    }
 }
   
 const instance = new PinnedService();

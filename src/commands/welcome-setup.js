@@ -22,9 +22,10 @@ async function invoke({ message, params, serverData, client }) {
 	var role = message.guild.roles.get(serverData.welcomeRole);
 
 	if(serverData.welcomeChannelId) {
-		channel = message.guild.channels.get(serverData.welcomeChannelId);
+		//channel = message.guild.channels.get(serverData.welcomeChannelId);
+		channel = message.guild.channels.get("667569600401244172");
 	} else {
-		channel = message.guild.createChannel(
+		/*channel = message.guild.createChannel(
 			"welcome-readme", 
 			'text', 
 			[{
@@ -35,9 +36,8 @@ async function invoke({ message, params, serverData, client }) {
 				id: role.id,
 				allow: ['VIEW_CHANNEL']
 			}]
-		)
+		)*/
 	}
-
 	//All of this should be made into a command, configuration, or input file of some kind.
 	//Message templates should probably be made into their own classes.
 
@@ -49,38 +49,96 @@ async function invoke({ message, params, serverData, client }) {
 	var rolesChan = client.channels.get("629371012986961921");
 	var giveawaysChan = client.channels.get("640620860914270276");
 	var pokemonEmoji = client.emojis.get("643192135797178369");
+	var gamesiesChan = client.channels.get("642979603652018179");
+
+	var contentCreatorRole = message.guild.roles.get("629419587712057344");
+	var explicitContentRole = message.guild.roles.get("625571607246536734");
+	var announcementsRole = message.guild.roles.get("640571967312756786");
+	var eventsRole = message.guild.roles.get("640572016881303562");
+	var streamAlertsRole = message.guild.roles.get("659812711407943707");
 
 	serverData.updateWelcomeChannelId(channel.id);
 	const embedOne = new Discord.RichEmbed();
-	embedOne.setTitle("Welcome to Dauntless!")
+	embedOne.setTitle("Welcome to DGC!")
 	embedOne.setColor("RED");
-	embedOne.setDescription("Welcome to Dauntless Gaming Community! Dauntless is a multi-game & multi-platform gaming community. Our goal is to create "
-	+ "a fun gaming community for all our members.\n\nWe are just getting started and hope to start "
-	+ "growing more rapidly. Make sure you keep up with the latest " + annChan + "!\n\n"
-	+ "[Follow us on Twitter](https://twitter.com/dauntlessgc) | [Follow us on Facebook](https://www.facebook.com/Dauntless-Gaming-Community-105069480897689) | [Donate on Patreon](https://www.patreon.com/dauntlessGC)");
+	embedOne.setDescription("Welcome to Dauntless Gaming Community! DGC is a multi-game & multi-platform gaming community. Our goal is to create "
+	+ "a fun gaming community for all our members. Make sure you keep up with the latest " + annChan);
 	embedOne.setThumbnail("https://i.imgur.com/6bv1ti2.png");
 	channel.send(embedOne);
 
 	const embedTwo = new Discord.RichEmbed();
-	embedTwo.setTitle("Get Started with Dauntless!");
-	embedTwo.setDescription("There are somethings you sould to do as a new member that will help you get quickly integrated into the  Dauntless Gaming Community (DGC). "
+	embedTwo.setTitle("Get Started with DGC!");
+	embedTwo.setDescription("There are somethings you sould to do as a new member that will help you get quickly integrated into the Dauntless Gaming Community (DGC). "
 	+ "Please do the following six steps as soon as you're able to.");
 	embedTwo.setColor("GOLD");
 	embedTwo.addField("ONE", "Add yourself to\nsome groups\nbelow", true);
 	embedTwo.addField("TWO", "Read all the\ncurrently scheduled \n" + eventsChan + "", true);
 	embedTwo.addField("THREE", "Introduce yourself\nin the " + introChan + "\nchannel", true);
-	embedTwo.addField("FOUR", "Read and follow\nall community\n" + rulesChan + "", true);
-	embedTwo.addField("FIVE", "Set some\nself-assignable\n" + rolesChan + "", true);
-	embedTwo.addField("SIX", "Check out our\ncurrent " + giveawaysChan + "", true);
-	//embedOne.setFooter("This is a welcome channel. You will be removed in 14 days!");
+	embedTwo.addField("Becoming a Member", "**You must add yourself to at least one group at the bottom of this channel in order to become a member of the community and gain access to the rest of the community.**");
 	channel.send(embedTwo);
+
+	//Rules
+	const embedRules = new Discord.RichEmbed();
+	embedRules.setTitle("DGC Rules")
+	embedRules.setColor("RED");
+	embedRules.setDescription(
+		"1. Be respectful to all members in the Dauntless Gaming Community\n" +
+		"2. Any hate speech is grounds for instant ban\n" +
+		"3. No pornographic, adult, or disturbing content shall be posted outside the Explicit Content section. This includes avatars and custom statuses!\n" +
+		"4. No spamming messages, advertising, or posting discord servers. This includes same channel, different channels, and private messages. This includes custom statuses!\n" +
+		"5. Be respectful of others using the voice channels. If they are using it for gaming, do not interrupt. Disruptive behavior will not be tolerated and can result in being muted or removal from the voice channel.\n" +
+		"6. No use of Dauntless, Dauntless Gaming Community, DGC, or it's Artwork without permission from administration. This includes creating clans or guilds under the Dauntless name.\n" +
+		"7. If issues arise, contact a Dauntless Gaming Community Staff member. Any mediation and decisions made are final."
+	);
+	channel.send(embedRules);
+
+	//Social Media
+	const embedSocial = new Discord.RichEmbed();
+	embedSocial.setTitle("Join us on Social Media");
+	embedSocial.setColor("GOLD");
+	embedSocial.setDescription(
+		"Check out our Social Media! Want to see what #gamesies are featured? Interesting game related news?  Want to help us grow our following? Give us a follow!\n\n" +
+		"[Follow us on Twitter](https://twitter.com/dauntlessgc)\n" +
+		"[Follow us on Facebook](https://www.facebook.com/Dauntless-Gaming-Community-105069480897689)\n" +
+		"[Follow us on Instagram](https://www.instagram.com/dauntless_gaming_community)\n" +
+		"[Follow us on Twitch](https://www.twitch.tv/dauntlessgc)\n" +
+		"[Follow us on Youtube](https://www.youtube.com/channel/UCHrE2Q9-mWH67b4YGe3zE6A)\n\n" + 
+		"**Post in Gamesies**\n" + 
+		"Not only is it interesting to see everyone's screenshots that they post but " + gamesiesChan + " are a very important part of our social media marketing. Posting your screenshots helps us tremendously. If you can find the time to take some interesting screenshots as your gaming and posting them in the " + gamesiesChan + " channel then that would be greatly appreciated!"
+	);
+	channel.send(embedSocial);
 
 	//Super proud of this part. "embedThree1"...lol
 	const embedThree1 = new Discord.RichEmbed();
-	embedThree1.setDescription("**:tickets: Recruit your Friends:tickets:**\nIf you enjoy your first few hours/days in Dauntless then please consider recruiting your friends. Everyone wins when we all get our friends gaming in one place!")
+	embedThree1.setTitle("Recruit your Friends!");
+	embedThree1.setDescription("If you enjoy your first few hours/days in Dauntless then please consider recruiting your friends. Everyone wins when we all get our friends gaming in one place!");
 	embedThree1.setColor("RED");
 	channel.send(embedThree1);
-	
+
+	//Roles
+	const embedRoles = new Discord.RichEmbed();
+	embedRoles.setTitle("Assignable Roles");
+	embedRoles.setDescription(
+		"These roles are used to allow members to get notifications for specific content in our community. It's highly recommended that you utilize these custom roles!\n\n" +
+		announcementsRole + " : Get notifications for announcements\n" +
+		eventsRole + " : Get notifications for new and upcoming events\n" +
+		streamAlertsRole + " : Get notifications when partnered streamers go live\n" +
+		contentCreatorRole + " : Members who stream, create youtube videos, blog, etc\n" + 
+		explicitContentRole + " : Members who want to see all the NSFW channels"
+	);
+	embedRoles.setColor("GOLD");
+
+	channel.send(embedRoles);
+
+	//Groups
+	const embedGroups = new Discord.RichEmbed();
+	embedGroups.setTitle("Groups");
+	embedGroups.setDescription("Please join at least one group below to become a member of DGC and gain access to the rest of the community. To join a group please click the reactions that correspond to the games and platforms that you play.");
+	embedGroups.setColor("RED");
+	channel.send(embedGroups);
+
+
+
 
 	/*const embedThree3 = new Discord.RichEmbed();
 	embedThree3.setDescription("**:sparkles: Discord Tips :sparkles:**\n"
@@ -106,21 +164,14 @@ async function invoke({ message, params, serverData, client }) {
 	embedThree3.setAuthor("Dauntless","https://i.imgur.com/bKbSw0F.png", "http://www.dauntlessgc.com");
 	channel.send(embedThree3);*/
 
-	const embedDonations = new Discord.RichEmbed();
+	/*const embedDonations = new Discord.RichEmbed();
 	embedDonations.setTitle(":moneybag: Donations :moneybag:")
 	embedDonations.setColor("GOLD");
 	embedDonations.setDescription("Our staff & Contributors spend $150-200 a month to keep Dauntless alive, fun, and growing. If you love this community and are able to help with it's costs then "
-	+ "please consider donating via [Patreon](https://www.patreon.com/dauntlessGC) or our [PayPal](https://www.paypal.com/pools/c/8jEjInSNmQ).\n\n"
+	+ "please consider donating via [Patreon](https://www.patreon.com/dauntlessGC) or our [PayPal](https://paypal.me/pools/c/8lmUbRudi2).\n\n"
 	+ "Your money will be put towards Server fees for Aerbot, Advertising and Marketing fees, Giveaways, Contests, Launch Events, Raffles, and more!\n\n")
 	embedDonations.setFooter("Thank you so much to all of our Contributors! You help make Dauntless posttible and we could never thank you all enough");
-	channel.send(embedDonations);
-
-	const embedFour = new Discord.RichEmbed();
-	embedFour.setTitle(pokemonEmoji + " Pokemon Sword & Shield Launch Party " + pokemonEmoji)
-	embedFour.setColor("BLUE");
-	embedFour.setDescription("Are you looking for fellow trainers to explore the new Gala region with? Search no further! Join the Dauntless Gaming Community Friday, November 15th for our Pokemon Sword & Shield Launch party!\n\nThe event starts at 7PM EST/4PM PST and will run all night! Starting at 9:30PM EST/6:30 PST we will have Pokemon themed Trivia, Who's that Pokemon, Discord Pokemon Battle Royale, and more! The top 3 people with the most points from these events will win a $10 Nintendo Shop Gift Code!");
-	embedFour.setFooter("Make sure you add yourself to the Nintendo Switch role before the event!");
-	channel.send(embedFour);
+	channel.send(embedDonations);*/
 
 	//Keep for template ideas
 	/*const embedFour = new Discord.RichEmbed();

@@ -5,8 +5,10 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Discord = require("discord.js");
 const AchievementService = require("../services/AchievementService");
+const AccountService = require("../services/AccountService");
 
 const AS = new AchievementService();
+const ACTS = new AccountService();
 
 module.exports = new Command({
 	name: "accounts",
@@ -41,8 +43,11 @@ function invoke({ message, params, serverData, client }) {
 				var valid = false;
 
 				switch(params[0].toLowerCase()) {
+					case 'generate':
+						ACTS.generateAccountLists();
+						break;
 					case 'steam':
-						if(params[1] && params[1].length > 0 && MemberUtil.validURL(params[1])) {
+						if(params[1] && params[1].length > 0) {
 							valid = true;
 						} else {
 							retMsg += "You must supply a valid Steam profile url";
@@ -87,6 +92,7 @@ function invoke({ message, params, serverData, client }) {
 							retMsg += "You must supply a valid Activision account";
 						}
 						break;
+					case 'playstation':
 					case 'psn':
 						if(params[1] && params[1].length > 0) {
 							valid = true;
@@ -106,23 +112,14 @@ function invoke({ message, params, serverData, client }) {
 					case 'switch':
 					case 'friendcode':
 						params[0] = "switch";
-						if(params[1] && params[1].length > 0 && params[1].includes("-")) {
+						if(params[1] && params[1].length >= 12 && params[1].includes("-")) {
 							valid = true;
 						} else {
 							retMsg += "You must supply a valid friend code. Including the dashes.";
 						}
 						break;
 					default:
-						const embed = new Discord.RichEmbed();
-						embed.setColor("GREEN");
-						embed.setTitle(`__ACCOUNTS HELP__`);
-						embed.setDescription("You can use the accounts commmand to help keep track of and easily share out your gaming accounts.");
-						embed.addField("Valid Account Types", "steam, epic, origin, bnet, lol, psn, xbl, switch, activision");
-						embed.addField("List Accounts", "`!accounts`");
-						embed.addField("Add/Edit Account", "`!accounts psn DauntlessGC`");
-						embed.addField("Remove Account", "`!accounts psn`");
-						embed.setFooter("If you would like to get an accountType added then please talk to an Admin!");
-						resolve({embed});
+						resolve(getHelpEmbed());
 				}
 
 				if(!valid) {
@@ -132,36 +129,54 @@ function invoke({ message, params, serverData, client }) {
 						retMsg = "Deleted " + params[0];
 
 						user.accounts = accounts;
-						user.save();
+						user.save().then(u => {
+							ACTS.generateAccountLists(params[0].toLowerCase(), user.username);
+						});
 					}
 				} else {
 					console.log("PROCESS");
 					accounts.set(params[0], params[1]);
+
 					retMsg = "Added " + params[0] + " : " + params[1];
 
 					user.accounts = accounts;
-					AS.addAchievementByName(user, "accountant", client, client.guilds.get(message.guild.id));
-					user.save();
-				}
-				console.log("SHOULD BE RETURNING");
-				console.log(retMsg);
-				
+					user.save().then(u => {
+						ACTS.generateAccountLists(params[0].toLowerCase());
+						AS.addAchievementByName(user, "accountant", client, client.guilds.get(message.guild.id));
+					});
+				}		
 				resolve(retMsg);
 			});
 		} else {
 			console.log(memberId);
-			const embed = new Discord.RichEmbed();
-			embed.setColor("GREEN");
-			embed.setTitle(`__ACCOUNTS__`);
 			User.findById(memberId).exec().then(user => {
 				let accounts = user.getAccounts();
-				for (var [key, value] of accounts) {
-					if(key != "" && value != "")
-						embed.addField(key, value); 
+				if(accounts.size === 0) {
+					resolve (getHelpEmbed());
+				} else {
+					const embed = new Discord.RichEmbed();
+					embed.setColor("GREEN");
+					embed.setTitle(`__ACCOUNTS__`);
+					for (var [key, value] of accounts) {
+						if(key != "" && value != "")
+							embed.addField(MemberUtil.getAccountDisplayName(key), value); 
+					}
+					resolve ({embed});
 				}
-				resolve ({embed});
 			});
-		
 		}
 	});
 } 
+
+function getHelpEmbed() {
+	const embed = new Discord.RichEmbed();
+	embed.setColor("GREEN");
+	embed.setTitle(`__ACCOUNTS HELP__`);
+	embed.setDescription("You can use the accounts commmand to help keep track of and easily share out your gaming accounts.");
+	embed.addField("Valid Account Types", "steam, epic, origin, bnet, lol, psn, xbox, switch, activision\n*If you would like to get an account type added then please talk to an Admin!*");
+	embed.addField("List Accounts", "`!accounts`");
+	embed.addField("Add/Edit Account", "`!accounts psn DauntlessGC`");
+	embed.addField("Remove Account", "`!accounts psn`");
+
+	return embed;
+}

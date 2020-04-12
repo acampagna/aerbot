@@ -10,10 +10,11 @@ const SimpleFileWriter = require("simple-file-writer");
 
 const logWriter = new SimpleFileWriter("./console.log");
 const debugLogWriter = new SimpleFileWriter("./debug.log");
+const DiscordUtil = require("./DiscordUtil.js");
 
 function aerLog(client, message) {
 	client.channels.get("625025213171499011").send(message);
-	dateError(message);
+	dateLog(message);
 }
 
 function log(...args) {
@@ -50,6 +51,31 @@ function dateDebug(...args) {
 
 function isMemberAdmin(message, serverData) {
 	return message.member.permissions.has("ADMINISTRATOR") || message.member.roles.get(serverData.moderatorRoleId);
+	//return message.member.permissions.has("ADMINISTRATOR");
+}
+
+function isMemberEventCoordinator(message, serverData) {
+	return (typeof message.member.roles.get(serverData.eventCoordinatorRoleId) !== 'undefined');
+}
+
+function isMemberPCC(message, serverData) {
+	return (typeof message.member.roles.get(serverData.ppcRoleId) !== 'undefined');
+}
+
+function isMemberStaff(message, serverData) {
+	return (typeof message.member.roles.get("629375250131320846") !== 'undefined');
+}
+
+function isMemberNitroBooster(message, serverData) {
+	return (typeof message.member.roles.get("586736809166241803") !== 'undefined');
+}
+
+function isMemberDonor(message, serverData) {
+	return (typeof message.member.roles.get("629418096041394179") !== 'undefined');
+}
+
+function isMemberAerfalle(member) {
+	return member.id === "151473524974813184";
 	//return message.member.permissions.has("ADMINISTRATOR");
 }
 
@@ -110,12 +136,11 @@ function sendQotd(qotd, client, serverData) {
 	const embed = new Discord.RichEmbed();
 	embed.setTitle("Question of the Day - " + date.toLocaleDateString("en-US", options));
 	embed.setColor("GOLD");
-	embed.setDescription("**" + qotd + "**");
-	embed.setFooter("Please share your answer with us today! Note: Only 1 post in this channel per person per day so make it count. To make a new post you must delete the original");
+	embed.setDescription("**" + qotd + "**\n\n*Please share your answer with us today! Only 1 post in this channel per person per day, so make it count. To make a new post you must delete the original. Answering QOTDs is a great way to earn exp, Ð, and the Teacher's Pet achievement!*");
 	
 	var qotdChan = client.channels.get(serverData.qotdChannelId);
 	
-	qotdChan.send(embed).then(function (message) {
+	qotdChan.send(DiscordUtil.processEmbed(embed, client)).then(function (message) {
 		serverData.updateQotdMessageId(message.id);
 	}).catch(function() {
 		//Something
@@ -202,6 +227,14 @@ function slugify(string) {
 		.replace(/-+$/, '') // Trim - from end of text
 }
 
+function shuffleArray(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 module.exports = {
 	error,
 	dateError,
@@ -224,5 +257,11 @@ module.exports = {
 	arraySearch,
 	removeArrayItemByValue,
 	isObject,
-	slugify
+	slugify,
+	isMemberAerfalle,
+	isMemberEventCoordinator,
+	isMemberPCC,
+	isMemberStaff,
+	isMemberNitroBooster,
+	isMemberDonor
 };
