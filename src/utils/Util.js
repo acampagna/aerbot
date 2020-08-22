@@ -136,7 +136,7 @@ function sendQotd(qotd, client, serverData) {
 	const embed = new Discord.RichEmbed();
 	embed.setTitle("Question of the Day - " + date.toLocaleDateString("en-US", options));
 	embed.setColor("GOLD");
-	embed.setDescription("**" + qotd + "**\n\n*Please share your answer with us today! Only 1 post in this channel per person per day, so make it count. To make a new post you must delete the original. Answering QOTDs is a great way to earn exp, Ð, and the Teacher's Pet achievement!*");
+	embed.setDescription(qotd + "\n\n*Please share your answer with us today! Only 1 post in this channel per person per day, so make it count. Answering QOTDs is a great way to earn exp, Ð, and the Teacher's Pet achievement!*");
 	
 	var qotdChan = client.channels.get(serverData.qotdChannelId);
 	
@@ -263,5 +263,6 @@ module.exports = {
 	isMemberPCC,
 	isMemberStaff,
 	isMemberNitroBooster,
-	isMemberDonor
+	isMemberDonor,
+	shuffleArray
 };

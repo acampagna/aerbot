@@ -48,8 +48,9 @@ function invoke({ message, params, serverData, client }) {
 	}
 	
 	for (i = 0; i < numWinners; i++) { 
-		let winner = Math.floor(Math.random()*entries.length);
-		//let winner = 4;
+		let winner = 0;
+		winner = Math.floor(Math.random()*entries.length);
+
 		winners += entries[winner] + "\n";
 		
 		//entries.splice(winner, 1);

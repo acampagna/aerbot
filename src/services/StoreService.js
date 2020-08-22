@@ -8,6 +8,8 @@ const StoreItem = mongoose.model('StoreItem');
 const StorePurchase = mongoose.model('StorePurchase');
 const Validation = require("../utils/ValidationUtil.js");
 const Prize = mongoose.model('Prize');
+const AchievementService = require("../services/AchievementService");
+const Achievement = mongoose.model('Achievement');
 
 /**
  * Service to manage Pinboard. 
@@ -19,9 +21,11 @@ server = undefined;
 storeChannel = undefined;
 HandleActivity = undefined;
 pendingRequests = new Map();
-colorOptions = Array('AQUA','BLUE','NAVY','GREEN','PURPLE','ORANGE','RED','PINK','WHITE','LIGHT_GREY','GREY','DARK_GREY','BLACK','RANDOM')
+colorOptions = Array('AQUA','BLUE','NAVY','GREEN','PURPLE','ORANGE','RED','PINK','LIGHT_GREY','GREY','DARK_GREY','BLACK','RANDOM')
 
 const wait = require('util').promisify(setTimeout);
+
+const AS = new AchievementService();
 
 class StoreService {
 
@@ -124,6 +128,46 @@ class StoreService {
     }
   }
 
+  async buyCustomTitle(dMember, item, client) {
+    console.log(dMember.displayName + " " + item.id + " " + item.answers.get("title"));
+    if(item.answers.has("title")) {
+      User.findById(dMember.id).then(userData => {
+        var price = item.cost;
+        //var price = 0;
+        console.log(item);
+        console.log(userData);
+        StorePurchase.createStorePurchase(userData.id, item.id, price, 1);
+        item.purchases++;
+        item.save();
+
+        userData.title = item.answers.get("title");
+        userData.currency -= price;
+        userData.save().then(u => {
+          console.log("FINISHED SAVING USER");
+          Achievement.findByName("Entitled").then(achievement => {
+            console.log(achievement);
+
+            AS.addAchievement(u, achievement, client, server);
+          });
+
+          if(userData.title != item.answers.get("title")) {
+            console.log("TITLE WASN'T SET PROPERLY?! IT'S " + userData.title + ". TRYING AGAIN!");
+            userData.title = item.answers.get("title");
+            userData.save()
+          }
+        });
+        
+				const embed = new Discord.RichEmbed();
+				embed.setColor(userData.embedColor);
+				embed.setTitle(`__DAUNTLESS STORE - Purchase Success!__`);
+        embed.setDescription("You successfully purchased " + item.name + " for Ð" + price + ". Your title is now set to " + userData.title + ". *Note: Titles are only used in a few places right now but will be used in more and more places as time goes on.*");
+        storeChannel.send({embed});
+      });
+    } else {
+      storeChannel.send(dMember + ", there was an error in your purchase of " + item.name + ". You were not charged for this attempted purchase!");
+    }
+  }
+
   async buyExp(dMember, item) {
     console.log(dMember.displayName + " " + item.id) + ": " + item.name;
     User.findById(dMember.id).then(userData => {
@@ -188,8 +232,8 @@ class StoreService {
     storeChannel.send(dMember + ", please select a color for your purchase of " + item.name + "\nPossible Colors Include: " + this.getPossibleColors());
   }
 
-  requestNameMsg(dMember, item) {
-    storeChannel.send(dMember + ", please specify a name for your purchase of " + item.name + ". Anything inappropriate will be deleted. You will lose your purchase and more...");
+  requestStringMsg(dMember, item, requirement) {
+    storeChannel.send(dMember + ", please specify a **" + requirement + "** for your purchase of " + item.name + ". *Anything inappropriate will be deleted and you'll lose your purchase and more...*");
   }
 
   sendRequestExpiredMsg(userId, item) {
@@ -213,7 +257,7 @@ class StoreService {
     return color.toUpperCase();
   }
 
-  handleRequestResponse(dMessage) {
+  handleRequestResponse(dMessage, client) {
     console.log("handleRequestResponse " + dMessage.content);
 
     if(dMessage.channel.id === storeChannel.id) {
@@ -230,7 +274,7 @@ class StoreService {
           storeChannel.send(dMessage.content + " is an invalid " + userRequest.requirement);
         }
   
-        this.handleBuyCommand(dMessage, userRequest.item);
+        this.handleBuyCommand(dMessage, userRequest.item, client);
         
       } else {
         console.log("MEMBER DOES NOT HAVE A PENDING REQUEST!");
@@ -246,8 +290,9 @@ class StoreService {
       case "color":
         this.requestColorMsg(dMember, item);
         break;
+      case "title":
       case "name":
-        this.requestNameMsg(dMember, item);
+        this.requestStringMsg(dMember, item, requirement);
         break;
     }
   }
@@ -285,7 +330,10 @@ class StoreService {
       //Moneybags Achievement
       case "5e47d4a4c107db7ce82ae8f8":
         this.buyMoneybags(dMessage.member, item, client);
-        console.log("ITM NOT FOUND!");
+        break;
+      //Custom Title
+      case "5e9b484cbe2a48540c72b638":
+        this.buyCustomTitle(dMessage.member, item, client);
         break;
       default:
         console.log("ITM NOT FOUND!");
@@ -331,7 +379,9 @@ class StoreService {
         return (Validation.isHexColor(str) || colorOptions.includes(str.toUpperCase()));
         break;
       case "string":
-        return (str.length > 0 && str.length < 20);
+      case "name":
+      case "title":
+        return (str.length > 0 && str.length < 25);
         break;
       default:
         console.log("HIT DEFAULT CASE");

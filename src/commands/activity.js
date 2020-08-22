@@ -3,6 +3,7 @@ const Command = require("../Command.js");
 const mongoose = require('mongoose');
 const Activity = mongoose.model('Activity');
 const Discord = require("discord.js");
+const MemberFetchingService = require("../services/MemberFetchingService");
 
 module.exports = new Command({
 	name: "activity",
@@ -11,6 +12,8 @@ module.exports = new Command({
 	admin: true,
 	invoke
 });
+
+const MFS = new MemberFetchingService();
 
 /**
  * Lists all groups. Adds/Removes a group for a user if they specify a group by adding the group's role to them.
@@ -82,6 +85,8 @@ function invoke({ message, params, serverData, client }) {
 							embed.addField("QOTD Exp", response.typeActivity.get("qotd"));
 						if(response.typeActivity.get("stream") > 0)
 							embed.addField("Stream Exp", response.typeActivity.get("stream"));
+						if(response.typeActivity.get("greet") > 0)
+							embed.addField("Welcome Exp", response.typeActivity.get("greet"));
 						if(response.typeActivity.get("achievement") > 0)
 							embed.addField("Achievement Exp", response.typeActivity.get("achievement"));
 
@@ -114,6 +119,8 @@ function invoke({ message, params, serverData, client }) {
 						embed.addField("QOTD Exp", response.typeActivity.get("qotd"));
 					if(response.typeActivity.get("stream") > 0)
 						embed.addField("Stream Exp", response.typeActivity.get("stream"));
+					if(response.typeActivity.get("greet") > 0)
+						embed.addField("Welcome Exp", response.typeActivity.get("greet"));
 					embed.addField("Achievement Exp", response.typeActivity.get("achievement"));
 					embed.addField("Total Exp (minus achievements)", response.typeActivity.get("total"));
 					embed.addField("Active Users", response.activeUsers);
@@ -138,6 +145,8 @@ function invoke({ message, params, serverData, client }) {
 					case 'stream_engagement':
 					case 'stream_contribution':
 					case 'stream_mvp':
+					case 'holiday_hunter':
+					case 'greet':
 						Activity.countDocuments({type: newParams[2], date : {"$gte": date}}, function (err, count) {
 							resolve("Total " + newParams[2] + " activity in past " + activityDuration + " days: " + count);
 						});
@@ -173,7 +182,10 @@ function invoke({ message, params, serverData, client }) {
 
 				Activity.findActivitySince(activityDuration).then(activities => {
 					activities.forEach(activity =>{
-						if(activity.type != "achievement") {
+						if(activity.type != "achievement" && activity.type != "holiday_hunter") {
+							if(activity.userId == "337760608617496588") {
+								console.log(activity.type + ": " + activity.exp);
+							}
 							if(userActivity.has(activity.userId)) {
 								userActivity.set(activity.userId, userActivity.get(activity.userId)+activity.exp);
 							} else {
@@ -217,18 +229,73 @@ function invoke({ message, params, serverData, client }) {
 					resolve({embed});
 				});
 				break;
-				case 'stats2': 
-					/*Activity.getStatistics(activityDuration, newParams[2]).then(response => {
-						const embed = new Discord.RichEmbed();
-						embed.setTitle("**Stats 2**");
-						embed.setColor("RANDOM");
+			case 'leaderboard_new':
+				//newParams2 = limit
+				//newParams3 = offset
+				var limit = 10;
+				if(!isNaN(newParams[2])){
+					limit = newParams[2];
+				}
 
-						embed.addField("Total Exp", response.typeActivity.get("total"));
-						embed.addField("Active Users", response.activeUsers);
-						embed.addField("Mean Exp", response.avgExp);
+				var skip = 0;
+				if(!isNaN(newParams[3])) {
+					skip = newParams[3];
+				}
+				
+				var role = message.guild.roles.get("525992621999521802");
+				var newMembers = MFS.getMembersInRole(role);
+				var ids = newMembers.map(m => m.id);
 
-						resolve({embed});
-					});*/
+				var userActivity = new Map();
+
+				Activity.findAllRecentActivityIn(7, ids).then(activities => {
+					activities.forEach(activity =>{
+						if(activity.type != "achievement" && activity.type != "holiday_hunter") {
+							if(activity.userId == "337760608617496588") {
+								console.log(activity.type + ": " + activity.exp);
+							}
+							if(userActivity.has(activity.userId)) {
+								userActivity.set(activity.userId, userActivity.get(activity.userId)+activity.exp);
+							} else {
+								userActivity.set(activity.userId, activity.exp);
+							}
+						}
+					});
+
+					const sortedUserActivity = new Map([...userActivity.entries()].sort((a, b) => b[1] - a[1]));
+
+					const embed = new Discord.RichEmbed();
+					embed.setTitle("**New Member Leaderboard** - Past " + activityDuration + " days");
+					embed.setColor("RANDOM");
+
+					//DiscordUtil.constructTableFromMap(serviceAccounts);
+					var total = -skip;
+					console.log(skip);
+					console.log(total);
+
+					var retStr = "";
+					sortedUserActivity.forEach(function(value, key) {
+						total++;
+						console.log("T: " + total + " L: " + limit + " S: " + skip);
+						if(total <= limit && total > 0) {
+							let member = client.guilds.get(serverData._id).members.get(key);
+
+							if(total === 1) {
+								let avatar = member.user.avatarURL;
+								embed.setThumbnail(avatar);
+							}
+
+							if(member){
+								retStr += (parseInt(total) + parseInt(skip)) + ". " +  member + " : " + value + " exp\n";
+							} else {
+								total--;
+							}
+						}
+					});
+
+					embed.setDescription(retStr);
+					resolve({embed});
+				});
 				break;
 			default:
 				resolve(params[0] + " is an invalid configuration");

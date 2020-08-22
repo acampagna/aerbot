@@ -111,18 +111,21 @@ async function createEmbed(user, client, serverData, admin) {
 	}
 	
 
-	const embed = new Discord.RichEmbed().setTitle(`__${user.username} Stats__`);
+	const embed = new Discord.RichEmbed()
+	if(user.title && user.title != "Noobling") {
+		embed.setTitle(`__${user.username} the ${user.title}\'s Stats__`);
+	} else {
+		embed.setTitle(`__${user.username}\'s Stats__`);
+	}
+	
 	embed.setDescription(desc);
 	if(admin) {
 		embed.addField("ID", user.id);
 	}
+	embed.addField("Title", `${user.title}`);
 	embed.addField("Level", `${user.level}`);
 	embed.addField("Exp", `${user.exp}`);
 	embed.addField("Exp to Level " + (user.level+1), MemberUtil.calculateNextLevelExp(user.level, user.exp));
-
-	if(admin)
-		embed.addField("Exp Adjustments", `${user.expAdjustment}`);
-	
 	embed.addField("Ð (Currency)", `${user.currency}`);
 
 	if(admin) {
@@ -132,8 +135,11 @@ async function createEmbed(user, client, serverData, admin) {
 		embed.addField("Reactions", `${user.reactions}`, true);
 		embed.addField("Events", `${user.events}`, true);
 		embed.addField("Voice Activity", `${user.voiceActivity}`, true);
-		embed.addField("Trivia Answers", `${user.triviaCorrect}`, true);
-		embed.addField("Trivia Wins", `${user.triviaWon}`, true);
+		embed.addField("Members Welcomed", user.getCount("greet"), true);
+		embed.addField("Pinned Messages", user.getCount("pinned"), true);
+		embed.addField("QOTD's Answered", user.getCount("qotd"), true);
+		//embed.addField("Trivia Answers", `${user.triviaCorrect}`, true);
+		//embed.addField("Trivia Wins", `${user.triviaWon}`, true);
 		embed.addField("Battle Royale Wins", `${user.brWins}`, true);
 		embed.addField("Last Online", `${user.lastOnline}\n*${new DateDiff(now, user.lastOnline).days()} days ago*`);
 		embed.addField("Last Active", `${user.lastActive}\n*${new DateDiff(now, user.lastActive).days()} days ago*`);

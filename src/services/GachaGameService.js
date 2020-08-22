@@ -51,7 +51,7 @@ class GachaGameService {
         console.log(mode);
 
         var totalExp = 0;
-        var activities = await Activity.findActivitySince(7);
+        var activities = await Activity.findActivitySince(6);
 
         activities.forEach(activity =>{
             if(activity.type != "achievement") {
@@ -80,7 +80,7 @@ class GachaGameService {
     }
 
     userEntry(message, params) {
-        console.log(this.isUserPremium(message));
+        //console.log(this.isUserPremium(message));
 
         let entry = game.generateEntry(message, params);
         entries.set(message.member.displayName, {member: message.member, entry: entry});

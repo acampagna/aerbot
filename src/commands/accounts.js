@@ -175,7 +175,7 @@ function getHelpEmbed() {
 	embed.setDescription("You can use the accounts commmand to help keep track of and easily share out your gaming accounts.");
 	embed.addField("Valid Account Types", "steam, epic, origin, bnet, lol, psn, xbox, switch, activision\n*If you would like to get an account type added then please talk to an Admin!*");
 	embed.addField("List Accounts", "`!accounts`");
-	embed.addField("Add/Edit Account", "`!accounts psn DauntlessGC`");
+	embed.addField("Add/Edit Account", "`!accounts psn Your_PSN_ID`");
 	embed.addField("Remove Account", "`!accounts psn`");
 
 	return embed;

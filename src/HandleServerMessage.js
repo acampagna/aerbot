@@ -73,7 +73,7 @@ function handleServerCommand(client, message, commands, serverData) {
 				}
 			}
 		})
-		.catch(err => err && message.reply(err));
+		//.catch(err => err && message.reply(err));
 	}
 }
 

@@ -20,8 +20,14 @@ module.exports = new Command({
  * @copyright Dauntless Gaming Community 2019
  */
 function invoke({ message, params, serverData, client }) {
-	if (message.mentions.users.first() && !isNaN(params[0])) {
-		User.byId(message.mentions.users.first().id).then(user => {
+	if(message.mentions.users.first()) {
+		var memberId = message.mentions.users.first().id;
+	} else if(params[0]){
+		var memberId = params[1];
+	}
+
+	if (!isNaN(params[0])) {
+		User.byId(memberId).then(user => {
 			user.currency += parseInt(params[0]);
 			user.save();
 			//console.log(user);

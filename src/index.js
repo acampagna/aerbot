@@ -8,6 +8,8 @@
 const Client = require("./Client.js");
 const Config = require("./config.json");
 const CoreUtil = require("./utils/Util.js");
+const DiscordUtil = require("./utils/DiscordUtil.js");
+const MemberUtil = require("./utils/MemberUtil.js");
 const mongoose = require('mongoose');
 const DateDiff = require("date-diff");
 require('./models/server.js')();
@@ -25,6 +27,7 @@ require('./models/pinned.js')();
 require('./models/storeItem.js')();
 require('./models/storePurchase.js')();
 require('./models/messageQueueItem.js')();
+const Discord = require("discord.js");
 const AccountService = require("./services/AccountService");
 const StoreService = require("./services/StoreService");
 const PinnedService = require("./services/PinnedService");
@@ -34,6 +37,7 @@ const MessageQueueService = require("./services/MessageQueueService");
 const MemberFetchingService = require("./services/MemberFetchingService");
 const NewMemberService = require("./services/NewMemberService");
 const HolidayHunterService = require("./services/HolidayHunterService");
+const BattleService = require("./services/BattleService");
 const HandleActivity = require("./HandleActivity");
 const ServerModel = mongoose.model('Server');
 const UserModel = mongoose.model('User');
@@ -65,7 +69,8 @@ const ACTS = new AccountService();
 const MQS = new MessageQueueService();
 const MFS = new MemberFetchingService();
 const NMS = new NewMemberService();
-const HHS = new HolidayHunterService();
+const BATTLE_SERVICE = new BattleService();
+//const HHS = new HolidayHunterService();
 //var msgRateLimiter = new Map();
 var reactionRateLimiter = new Map();
 var pendingRequests = new Map();
@@ -77,18 +82,19 @@ client.on("beforeLogin", () => {
 	setInterval(doServerIteration, Config.onlineIterationInterval);
 	setInterval(doVoiceChannelScan, Config.voiceIterationInterval);
 	//setInterval(doSendMessages, Config.sendMessageInterval);
+	setInterval(doNitroCheck, Config.nitroIterationInterval);
 
 	//doActivityConversion();
 });
 client.on("message", message => {
-	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && message.content.length > 1 &&
+	if (message.guild && message.member && !message.member.user.bot && message.content.substring(0, 1) !== cmdPrefix && message.content.length > 2 &&
 	message.channel.id != "630032620331335690" && message.channel.id != "628947427466149888" && message.channel.id != "667697726766710794") {
 		//Holiday Hunter
-		HHS.messageSent(client);
+		//HHS.messageSent(client);
 		
 		if(SS.userHasPendingRequest(message.member.id)) {
 			console.log("INDEX USER HAS PENDING REQUEST!");
-			SS.handleRequestResponse(message);
+			SS.handleRequestResponse(message, client);
 		}
 
 		UserModel.findById(message.member.id).exec()
@@ -157,7 +163,7 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 	}*/
 	
 	if (messageReaction && user && !user.bot && messageReaction.message.channel.type != "dm") {
-		console.log("Reaction Added!");
+		//console.log("Reaction Added!");
 		//console.log(messageReaction);
 		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
 			//var msgReactions = messageReaction.message.reactions;
@@ -174,18 +180,20 @@ client.on("messageReactionAdd", (messageReaction, user) => {
 					TS.removeUserFromAnsweredCorrectly(user.id);
 				}
 			}
+		} else if(BATTLE_SERVICE.getState() === 2 && BATTLE_SERVICE.isMessageBetMessage(messageReaction.message.id)) {
+			BATTLE_SERVICE.addBet(messageReaction, user);
 		} else {
 			if(new DateDiff(new Date(), messageReaction.message.createdAt).days() < 1 || messageReaction._emoji.id === "538050181573378048") {
 				UserModel.findById(user.id).exec()
 				.then(userData => {
 					if(userData.reactions < userData.messages) {
-						CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
+						/*CoreUtil.dateLog(`Reaction Added: ${messageReaction} - ${user.id}`);
 						HandleActivity(
 							client,
 							messageReaction.message.guild,
 							{reaction: messageReaction},
 							userData || newUser(user.id, user.username)
-						);
+						);*/
 					}
 				});
 			}
@@ -197,6 +205,8 @@ client.on("messageReactionRemove", (messageReaction, user) => {
 	if (messageReaction && user && !user.bot && messageReaction.message.channel.type != "dm") {
 		if(TS.getCurrentTriviaMessageId() && messageReaction.message.id === TS.getCurrentTriviaMessageId()) {
 			// Nothing right now
+		} else if(BATTLE_SERVICE.getState() === 2 && BATTLE_SERVICE.isMessageBetMessage(messageReaction.message.id)) {
+			BATTLE_SERVICE.removeBet(messageReaction, user);
 		} else {
 			UserModel.findById(user.id).exec()
 			.then(userData => {
@@ -250,7 +260,7 @@ client.on('raw', async event => {
 		}
 	}
 
-	if(!channel) {
+	if(!channel || !user) {
 		return;
 	}
 
@@ -270,9 +280,9 @@ client.on('raw', async event => {
 
 	if (event.t === "MESSAGE_REACTION_ADD") {
 		//console.log(message.reactions);
-		if(data.emoji.id === HHS.getPrizeEmojiId()) {
+		/*if(data.emoji.id === HHS.getPrizeEmojiId()) {
 			HHS.prizeFound(message, user.id, client);
-		}
+		}*/
 	}
 
 	const member = tmpMember;
@@ -394,13 +404,16 @@ client.on("ready", () => {
 				ACTS.setConsoleCodeChannel(client.channels.get("648636215368613908"));
 				ACTS.setPCCodeChannel(client.channels.get("649351980338249739"));
 				ACTS.setBotsChannel(client.channels.get("601981031511359518"));
-				HHS.initialize();
-				HHS.setBotsChannel(client.channels.get("601981031511359518"));
+				//HHS.initialize();
+				//HHS.setBotsChannel(client.channels.get("601981031511359518"));
+				//HHS.setPublicChannel(client.channels.get("579383236334059521"));
 				MQS.setServer(server);
 				MFS.setServer(server);
 				NMS.setNonMemberChannel("633329366662643732");
 				NMS.setPublicChannel("579383236334059521");
 				NMS.setWelcomeReadmeChannel(doc.welcomeChannelId);
+				BATTLE_SERVICE.setClient(client);
+				BATTLE_SERVICE.setServer(server);
 			}
 		});
 
@@ -415,7 +428,7 @@ client.on("ready", () => {
 	mainGuild.fetchInvites().then(guildInvites => {invites = guildInvites;});
 
 	//doServerIteration();
-
+	doNitroCheck();
 	//doVoiceChannelScan();
 });
 
@@ -473,7 +486,7 @@ client.on("guildMemberAdd", (member) => {
 				
 				if(inviter && (invite.channel.parentID === "628668360887894057" || invite.channel.parentID === "630030213924782080")) {
 					//console.log("------[INVITER]-------");
-					//onsole.log(inviter);
+					//console.log(inviter);
 					CoreUtil.aerLog(client,`${member} joined! Invited by **${inviter.member ? inviter.member.displayName : inviter.tag}** from ${invite.channel} (Total: ${invite.uses}).`);
 				} else if(inviter){
 					CoreUtil.aerLog(client,`${member} joined! Invited by **${inviter.member ? inviter.member.displayName : inviter.tag}.**`);
@@ -489,6 +502,10 @@ client.on("guildMemberAdd", (member) => {
 						console.log(userData);
 						userData.save();
 					});
+					//Tanny
+					if(inviter.id === "570442148072390656") {
+						member.addRole("708749097657565215");
+					}
 				}
 			} else {
 				CoreUtil.aerLog(client,`${member} joined!`);
@@ -502,8 +519,10 @@ client.on("guildMemberRemove", (member) => {
 		CoreUtil.aerLog(client,member + " left the server. :(");
 		NMS.userLeavesServer(member, client);
 		UserModel.findById(member.user.id).exec().then(userData => {
-			userData.left = new Date();
-			userData.save();
+			if(userData) {
+				userData.left = new Date();
+				userData.save();
+			}
 		});
 	}
 });
@@ -595,22 +614,73 @@ async function doServerIteration() {
 	})
 }
 
+//message.guild
+
+async function doNitroCheck() {
+	CoreUtil.dateLog(`[Nitro Interval]`);
+
+	var now = new Date();
+	console.log(now.getHours());
+	if(now.getHours() === 20){
+        Aerbot.get("last_nitro_bonus_date").then(async meta => {
+			
+			if(meta) {
+				//console.log(meta);
+				var lastNitroBonusDate = new Date(meta.value);
+
+				var memberStr = "";
+
+				console.log(lastNitroBonusDate.getDate() + " vs " + now.getDate());
+				if(lastNitroBonusDate.getDate() != now.getDate()) {
+					CoreUtil.dateLog(`[DOING Nitro Interval]`);
+
+					var nitroBoosters = await mainGuild.roles.get('586736809166241803').members;
+					Aerbot.set("last_nitro_bonus_date", now);
+					nitroBoosters.forEach(member => {
+						console.log(member.displayName);
+						UserModel.findById(member.id).exec().then(userData => { 
+							if(userData) {
+								HandleActivity(client,mainGuild,{booster: true},userData);
+							}
+						});
+					});
+
+					var newExp = MemberUtil.calculateActionExp("booster");
+    				var newCurrency = MemberUtil.calculateActionCurrency("booster");
+
+					const embed = new Discord.RichEmbed();
+					embed.setColor("#F47FFF");
+					embed.setTitle(`Daily Nitro Booster Appreciation Bonus`);
+					embed.setDescription("Every Nitro Booster has been awarded a daily bonus of **" + newCurrency + " Currency** and **" + newExp + " EXP**! Thank you so much to all of our Nitro Boosters:\n\n" + nitroBoosters.array().join(", "));
+
+					client.channels.get("579383236334059521").send(DiscordUtil.processEmbed(embed, client));
+				}
+			}
+		});
+    }
+}
+
 async function doVoiceChannelScan() {
 	CoreUtil.dateLog(`[Voice Interval]`);
 	const channels = client.guilds.get("524900292836458497").channels.filter(c => c.type === 'voice' && c.name.toLowerCase() != "afk");
 
 	for (const [channelID, channel] of channels) {
-		//console.log("Channel " + channelID + " " + channel.name);
+		console.log("[" + channel.members.size + "] Channel " + channelID + " : " + channel.name);
 		for (const [memberID, member] of channel.members) {
-			//console.log("Member " + memberID + " " + member.user.username);
-			UserModel.findById(memberID).exec().then(userData => {
-				if(userData) {
-					HandleActivity(client,client.guilds.get("524900292836458497"),{voice: true},userData || newUser(user.id, user.username));
-				}
-			});
+			console.log("Member " + memberID + " : " + member.user.username);
+			if(channel.members.size > 1) {
+				console.log("Giving voice credit to " + member.user.username);
+				UserModel.findById(memberID).exec().then(userData => {
+					if(userData) {
+						HandleActivity(client,client.guilds.get("524900292836458497"),{voice: true},userData);
+					}
+				});
+			}
 		}
 	}
 }
+
+
 
 async function doSendMessages() {
 	CoreUtil.dateLog(`[Send Message Interval]`);

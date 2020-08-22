@@ -8,6 +8,7 @@ const Group = mongoose.model('Group');
 const Activity = mongoose.model('Activity');
 const MessageQueueService = require("../services/MessageQueueService");
 const MemberFetchingService = require("../services/MemberFetchingService");
+const Fighter = require("../services/gacha/battle/Fighter");
 const Twit = require('twit');
 var Jimp = require('jimp');
 
@@ -118,6 +119,47 @@ async function invoke({ message, params, serverData, client }) {
 	.catch(err => {
 		// Handle an exception.
 	});*/
+		
+	//console.log(`0.95 2.6: ${Math.max(1,Math.floor(0.95 * Math.pow(exp, 1/2.6)))}`);
+
+	var i = 0;
+	var lastLevel = 0;
+	while(i < 200000) {
+		i++;
+		//var level = Math.max(1,Math.floor(0.3 * Math.sqrt(i)));
+		var level = Math.max(1,Math.floor(0.95 * Math.pow(i, 1/2.6)));
+		if(level > lastLevel) {
+			lastLevel = level;
+			if(level == 5 || level == 10) {
+				console.log(level + ": " + i);
+			} else if(level % 20 === 0) {
+				console.log(level + ": " + i);
+			}
+		}
+	}
+
+	var role = message.guild.roles.get("525992621999521802");
+	var newMembers = MFS.getMembersInRole(role);
+	var ids = newMembers.map(m => m.id);
+	var activity = await Activity.findAllRecentActivityIn(7, ids);
+
+	console.log(activity);
+
+	//console.log(ids);
+
+	/*var f1 = new Fighter();
+	var f2 = new Fighter();
+
+	console.log(f1.toString());
+	console.log(f2.toString());
+
+	f1.takeDamage(15);
+	f2.takeDamage(93);
+
+	console.log(f1.toString());
+	console.log(f2.toString());*/
+
+
 
 	const embed = new Discord.RichEmbed();
 	embed.setColor("RANDOM");

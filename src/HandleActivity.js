@@ -387,6 +387,18 @@ async function handleActivityNew(client, server, activity, userData) {
 			Activity.add(userData.id, "voice", newExp);
 		}
 
+		//Handle Booster
+		if(activity.booster) {
+			var newExp = MemberUtil.calculateActionExp("booster");
+			exp += newExp; 
+
+			var newCurrency = MemberUtil.calculateActionCurrency("booster");
+			currency += newCurrency;
+
+			//DailyActivity.add(userData.id, "voice", newExp);
+			//Activity.add(userData.id, "voice", newExp);
+		}
+
 		//Handle Shop Purchase
 		/*if(activity.qotd) {
 			userData.incCount("purchase");
@@ -429,6 +441,8 @@ async function handleActivityNew(client, server, activity, userData) {
 		//Handle holiday_hunter
 		if(activity.holiday_hunter) {
 			userData.incCount("holiday_hunter");
+			userData.setCount("egg_hunter", userData.getCount("holiday_hunter"));
+			
 
 			var achievement = await Achievement.findByName("egg hunter");
 
@@ -444,12 +458,72 @@ async function handleActivityNew(client, server, activity, userData) {
 			console.log(activity);
 
 			var newExp = MemberUtil.calculateActionExp("holiday_hunter");
-			exp += newExp; 
+			exp += newExp;
 
 			var newCurrency = MemberUtil.calculateActionCurrency("holiday_hunter");
 			currency += newCurrency;
 
 			Activity.add(userData.id, "holiday_hunter", newExp);
+		}
+
+		// battle_win
+		if(activity.battle_win >= 0) {
+			userData.incCount("battle_win");
+
+			/*var achievement = await Achievement.findByName("chatterbox");
+			if(voiceHours >= 4) {
+				var msgRet = await AS.processRankedAchievementActivity(userData, achievement, client, server, voiceHours);
+				if(msgRet.exp && !isNaN(msgRet.exp) && msgRet.exp > 0) {
+					console.log("[[Set activity.achievement to msgRet]]");
+					console.log(msgRet);
+					activity.achievement = msgRet;
+				}
+			}*/
+
+			var newExp = MemberUtil.calculateActionExp("battle_win");
+			exp += newExp; 
+
+			var newCurrency = MemberUtil.calculateActionCurrency("battle_win");
+
+			if(activity.battle_win > 0) {
+				newCurrency += activity.battle_win;
+			}
+
+			currency += newCurrency;
+
+			Activity.add(userData.id, "battle_win", newExp);
+		}
+
+		// battle_lose
+		if(activity.battle_lose >= 0) {
+			userData.incCount("battle_lose");
+
+			/*var achievement = await Achievement.findByName("chatterbox");
+			if(voiceHours >= 4) {
+				var msgRet = await AS.processRankedAchievementActivity(userData, achievement, client, server, voiceHours);
+				if(msgRet.exp && !isNaN(msgRet.exp) && msgRet.exp > 0) {
+					console.log("[[Set activity.achievement to msgRet]]");
+					console.log(msgRet);
+					activity.achievement = msgRet;
+				}
+			}*/
+
+			var newExp = MemberUtil.calculateActionExp("battle_lose");
+			exp += newExp; 
+
+			var newCurrency = MemberUtil.calculateActionCurrency("battle_lose");
+
+			if(activity.battle_lose > 0) {
+				newCurrency -= activity.battle_lose;
+			}
+
+			currency += newCurrency;
+
+			console.log(activity.battle_lose);
+			console.log(newCurrency);
+			console.log(currency);
+
+			Activity.add(userData.id, "battle_lose", newExp);
 		}
 
 		//Handle Achievement
@@ -489,8 +563,12 @@ async function handleActivityNew(client, server, activity, userData) {
 		if(userData.level != startLvl) {
 			await client.serverModel.findById(server.id).exec().then(serverData => {
 				if(serverData.botChannelId) {
-					client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + userData.level + "!");
-					MemberUtil.handleLevelRoles(userData, member, server, serverData);
+					if(userData.level < startLvl) {
+						client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled down to level " + userData.level + "!");
+					} else {
+						client.channels.get(serverData.botChannelId).send(member.displayName + " has leveled up to level " + userData.level + "!");
+						MemberUtil.handleLevelRoles(userData, member, server, serverData);
+					}
 				}
 			});
 		}

@@ -2,5 +2,6 @@
 	"onlineIterationInterval": "3600000",
 	"voiceIterationInterval": "600000",
 	"activityIterationInterval": "300000",
-	"sendMessageInterval": "60000"
+	"sendMessageInterval": "60000",
+	"nitroIterationInterval": "300000"
 }

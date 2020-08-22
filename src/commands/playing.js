@@ -49,7 +49,7 @@ function invoke({ message, params, serverData, client }) {
 					if(member.presence.game && member.presence.game.name && member.presence.game.applicationID) {
 						var game = member.presence.game.name;
 						if(CoreUtil.isMemberAerfalle(message.member)) {
-							//game = game + " (" + member.presence.game.applicationID + ")";
+							game = game + " (" + member.presence.game.applicationID + ")";
 						}
 						
 						//console.log(member.presence.game);

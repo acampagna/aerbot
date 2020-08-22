@@ -88,7 +88,7 @@ async function invoke({ message, params, serverData, client }) {
 				var desc = "";
 				var inList = Array();
 
-				Prize.findAllMaxValue(name ? name : 999).then(items => {
+				Prize.findAllBetweenValue((name && !isNaN(name)) ? (name-0.01) : 0, (p1 && !isNaN(p1)) ? p1 : 999).then(items => {
 					items.forEach(item => {
 						if(!inList.includes(item.slug)) {
 							inList.push(item.slug);
@@ -116,12 +116,40 @@ async function invoke({ message, params, serverData, client }) {
 					console.log("getting random prize");
 					Prize.giveRandomPrize((name && !isNaN(name)) ? (name-0.01) : 0, (p1 && !isNaN(p1)) ? p1 : 999).then(item => {
 						console.log(item);
-						message.mentions.users.first().send("Congratz on winning a random steam game!\n> Game Name: " + item.name + "\n> Game Value: " + item.value + "\n> Steam Key: " + item.key + "\nhttps://support.steampowered.com/kb_article.php?ref=5414-tfbn-1352");
+						message.mentions.users.first().send("Congratz on winning a random steam game!\n> Game Name: " + item.name + "\n> Game Value: " + item.value + "\n> Steam Key: " + item.key + "\n<https://support.steampowered.com/kb_article.php?ref=5414-tfbn-1352>");
 						resolve ("Congratz " + message.mentions.users.first() + " on winning " + item.name + " ($" + item.value + ")! *Check your private messages from Aerbot for your steam key!*");
 					});
 				} else {
 					resolve("You must @mention a user to give a prize to");
 				}
+			});
+			break;
+		case 'give-many':
+			return new Promise(function(resolve, reject) {
+				if(name === "help") {
+					const embed = new Discord.RichEmbed();
+					embed.setColor("RED");
+					embed.setTitle(`__Give Random Prize Help__`);
+					embed.setDescription("!prize give <min value> <max value> @ref");
+					resolve (DiscordUtil.processEmbed(embed, client));
+				}
+				var numGames = newParams[1];
+				var minPrice = newParams[2];
+				var maxPrice = newParams[3];
+
+				if (message.mentions.users.first() && numGames && numGames <= 10) {
+					console.log("getting random prizes");
+					for(var i=0; i < numGames; i++){
+						Prize.giveRandomPrize((minPrice && !isNaN(minPrice)) ? (minPrice-0.01) : 0, (maxPrice && !isNaN(maxPrice)) ? maxPrice : 999).then(item => {
+							console.log(item);
+							message.mentions.users.first().send("Congratz on winning a random steam game!\n> Game Name: " + item.name + "\n> Game Value: " + item.value + "\n> Steam Key: " + item.key + "\n<https://support.steampowered.com/kb_article.php?ref=5414-tfbn-1352>");
+						});
+					}
+					resolve ("Congratz " + message.mentions.users.first() + " on winning " + numGames + " games! *Check your private messages from Aerbot for your game keys!*");
+				} else {
+					resolve("You must @mention a user to give a prize to");
+				}
+
 			});
 			break;
 		case 'sgive':

@@ -76,7 +76,7 @@ async function invoke({ message, params, serverData, client }) {
 				}
 			} */
 
-			var role = message.guild.roles.get("536619177994092549");
+			var role = message.guild.roles.get("536619083920179212");
 			var listSwitchMembers = MFS.getMembersInRole(role);
 			//id
 			var listInactive = await MFS.getInactiveMembers();
@@ -97,6 +97,7 @@ async function invoke({ message, params, serverData, client }) {
 			});
 
 			console.log(results.length);
+			console.log(results.slice(0,100).length);
 
 			/*await MSQ.addMessage("151473524974813184", params.join(" "));
 			await MSQ.addMessage("388822941728636938", params.join(" "));
@@ -107,7 +108,7 @@ async function invoke({ message, params, serverData, client }) {
 			await MSQ.addMessage("298472961373896714", params.join(" "));
 			await MSQ.addMessage("155778364014067712", params.join(" "));*/
 			
-			CoreUtil.asyncForEach(results, async (r) => {
+			CoreUtil.asyncForEach(results.slice(0,200), async (r) => {
 				await MSQ.addMessage(r, params.join(" "));
 			});
 

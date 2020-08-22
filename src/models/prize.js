@@ -16,7 +16,8 @@ module.exports = function() {
 		key: String,
 		category: String,
 		active: {type: Boolean, default: true },
-		value: { type: Number, default: 0, min: 0 }
+		value: { type: Number, default: 0, min: 0 },
+		tags: { type: Array, of: String }
 	});
 
 	prizeSchema.statics.findAll = function() {
@@ -26,7 +27,12 @@ module.exports = function() {
 
 	prizeSchema.statics.findAllMaxValue = function(maxValue) {
 		console.log("Finding All Prize Less than $" + maxValue);
-		return this.find({value : {"$lte": maxValue}, "$or": [{active: true}, {active : { $exists: false }}]}).sort({name: 'asc'}).exec();
+		return this.find({value : {"$lte": maxValue}, value: {"$gte": 4.99}, "$or": [{active: true}, {active : { $exists: false }}]}).sort({price: 'asc'}).exec();
+	};
+
+	prizeSchema.statics.findAllBetweenValue = function(minValue, maxValue) {
+		console.log("Finding All Prizes More than $" + minValue + " and Less than $" + maxValue);
+		return this.find({"$and": [{value : {"$gte": minValue}}, {value : {"$lte": maxValue}}, {"$or": [{active: true}, {active : { $exists: false }}]}]}).sort({price: 'asc'}).exec();
 	};
 
 	prizeSchema.statics.addPrize = function(name, key, value, category) {
@@ -44,20 +50,22 @@ module.exports = function() {
 		return this.findOne({slug: CoreUtil.slugify(n)}).exec();
 	};
 
-	prizeSchema.statics.giveRandomPrize = async function(minValue, maxValue) {
+	prizeSchema.statics.giveRandomPrize = async function(minValue, maxValue, debug) {
 		const count = await this.countDocuments({"$and": [{value : {"$gte": minValue}}, {value : {"$lte": maxValue}}, {"$or": [{active: true}, {active : { $exists: false }}]}]});
 		console.log("Count: " + count);
 		const rand = Math.floor(Math.random() * count);
 		console.log("min: " + minValue + " max: " + maxValue + " rand: " + rand);
 		const randomDoc = await this.findOne({"$and": [{value : {"$gte": minValue}}, {value : {"$lte": maxValue}}, {"$or": [{active: true}, {active : { $exists: false }}]}]}).skip(rand);
 
-		if(randomDoc) {
+		if(randomDoc && !debug) {
 			console.log("Made " + randomDoc.key + " inactive!");
 			randomDoc.active = false;
 			randomDoc.save();
-
-			return randomDoc;
+		} else {
+			console.log("DEBUG MODE!");
 		}
+
+		return randomDoc;
 	};
 
 	prizeSchema.statics.givePrizeByName = async function(n) {

@@ -76,7 +76,7 @@ var annihilations = [
     "{$n} fighters attended the Red Wedding",
     "Social isolation has taken the lives of {$n} brave souls!",
     "Aerbot sneaks into {$n} combatant's houses, steals their toilet paper, and leaves them to die in their own filth",
-    "While Aerfalle was rigging the competition against deaths, he accidentally killed($n) competitors",
+    "While Aerfalle was rigging the competition against deaths, he accidentally killed{$n} competitors",
     "Aerbot caught {$n} people trying to hack the competiton and gave them a taste of the ban hammer!",
     "Aerbot caught {$n} people trying to sneak out during quarantine"
 ];
@@ -96,7 +96,7 @@ var oneOnOneKills = [
     "{$1} uncloaks and throws their {$w} at {$2}'s {$b}",
     "{$1} drowns {$2} in a pool of {$w}",
     "{$2} fell into a pit filled with {$1}’s {$w}",
-    "{$1} failed to maintain social distancing as {$2}'s {$w} plunges through their {$b}",
+    "{$2} failed to maintain social distancing as {$1}'s {$w} plunges through their {$b}",
     "{$1} attacks {$2} with {$w}. It was super effective!",
     "{$1} cancels {$2}’s Netflix subscription",
     "{$1}’s {$w}'s pure awesomeness is exposed killing {$2}.",
@@ -284,24 +284,47 @@ class GachaBattleRoyale {
             }
         }
 
-        var topExp = false;
+        var isTopExp = false;
+        var isBotExp = false;
+        var isAvgExp = false;
         var recentExp = 0;
         var isStaff = false;
+        var isActive = false;
 
         if(message && message.member) {
-            if(topUserActivity.includes(message.member.id)) {
-                topExp = true;
-            }
-            
             if(userActivity.has(message.member.id)) {
                 recentExp = userActivity.get(message.member.id);
             }
 
+            if(topUserActivity.includes(message.member.id)) {
+                isTopExp = true;
+            }
+
+            if(recentExp <= (avgExp/10)) {
+                isBotExp = true;
+            }
+
+            if(recentExp >= (avgExp/2)) {
+                isAvgExp = true;
+            }
+            
             if(message.member.roles.get("629375250131320846")) {
                 isStaff = true;
             }
 
-            console.log(message.member.displayName + " | Top 10?: " + topExp + " | Recent Exp: " + recentExp + " | " + "Is Staff?: " + isStaff);
+            if(message.member.displayName === "Aerfalle") {
+                recentExp = Math.floor(Math.random() * 1000) + 1;
+                isTopExp = Math.random() >= 0.5;
+                isBotExp = Math.random() >= 0.5;
+                isStaff = Math.random() >= 0.5;
+                if(recentExp >= avgExp) {
+                    isAvgExp = true;
+                }
+            }
+
+            isActive = (isAvgExp || isTopExp);
+
+            console.log(message.member.displayName + " | Recent Exp: " + recentExp + " | Active?: " + isActive + " | Top Exp?: " + isTopExp + " | Bot Exp?: " + isBotExp + " | " + "Is Staff?: " + isStaff);
         }
         
         return {
@@ -320,14 +343,13 @@ class GachaBattleRoyale {
             strength: 20,
             favor: 0,
             weapon: weapon,
-            isTopExp: topExp,
+            isTopExp: isTopExp,
+            isBotExp: isBotExp,
+            isAvgExp: isAvgExp,
+            isActive: isActive,
             recentExp: recentExp,
             isStaff: isStaff
         };
-    }
-
-    rollDice() {
-        return Math.floor(Math.random() * 100) + 1;
     }
 
     randomPhrase(phraseType) {
@@ -385,6 +407,10 @@ class GachaBattleRoyale {
     }
 
     randomDeadPlayer(entries) {
+        /*if(numDead === 0) {
+            return;
+        }
+
         var found = false;
         while(!found) {
             var entry = this.randomEntry(entries);
@@ -392,6 +418,52 @@ class GachaBattleRoyale {
                 found = true;
                 return entry;
             }
+        }*/
+
+        return this.goodDeadPlayer(entries);
+    }
+
+    getDeadPool(entries) {
+        var dead = new Array();
+        entries.forEach(function(value, key) {
+            if(value.entry.dead) {
+                dead.push(value);
+            }
+        });
+
+        return dead;
+    }
+
+    // Gets a dead player above avg exp if possible. If not, gets the highest exp dead person
+    goodDeadPlayer(entries) {
+        var dead = CoreUtil.shuffleArray(this.getDeadPool(entries));
+
+        if(dead.length === 0)
+            return;
+
+        var activeDead = null;
+        var bestDead = null;
+        var bestDeadExp = 0;
+        
+        dead.forEach(d => {
+            if(d.entry.isActive) {
+                activeDead = d;
+            } else {
+                if(d.entry.recentExp > bestDeadExp) {
+                    bestDead = d;
+                    bestDeadExp = d.entry.recentExp;
+                }
+            }
+        });
+
+        if(activeDead) {
+            console.log("AVG DEAD");
+            console.log(activeDead.entry);
+            return activeDead;
+        } else {
+            console.log("BEST DEAD");
+            console.log(bestDead.entry);
+            return bestDead;
         }
     }
 
@@ -410,6 +482,17 @@ class GachaBattleRoyale {
         });
 
         return alive;
+    }
+
+    numDead(entries) {
+        var dead = 0;
+        entries.forEach(function(value, key) {
+            if(value.entry.dead) {
+                dead++;
+            }
+        });
+
+        return dead;
     }
 
     numTargets(entries) {
@@ -486,7 +569,7 @@ class GachaBattleRoyale {
         message = msg;
 
         var totalExp = 0;
-        var activities = await Activity.findActivitySince(7);
+        var activities = await Activity.findActivitySince(6);
 
         activities.forEach(activity =>{
             if(activity.type != "achievement") {
@@ -508,16 +591,10 @@ class GachaBattleRoyale {
             var total = 0;
             sortedUserActivity.forEach(function(value, key) {
                 total++;
-                if(total <= 20) {
+                if(total <= 30) {
                     let member = message.guild.members.get(key);
                     if(member){
-                        if(member.roles.get("629375250131320846")) {
-                            console.log("Ignoring Staff!");
-                            total--;
-                            //topUserActivity.push(key);
-                        } else {
-                            topUserActivity.push(key);
-                        }
+                        topUserActivity.push(key);
                     } else {
                         total--;
                     }
@@ -556,6 +633,14 @@ class GachaBattleRoyale {
         entries.forEach(function(value, key) {
             console.log(key);
         });
+
+        day++;
+        this.sendNewDayMessage(entries);
+
+        this.doDayOne(entries);
+        if(this.numAlive(entries) == 1) {
+            this.processMessages(entries);
+        }
     
         while(this.numAlive(entries) > 2) {
             day++;
@@ -602,9 +687,7 @@ class GachaBattleRoyale {
         console.log("---[DAY 1]---");
         this.doNormalDay();
 
-        //this.doSupplyDrop();
-
-        if(this.numAlive(entries) > 15) {
+        if(this.numAlive(entries) > 10) {
             this.doAnnihilation(entries);
         } else {
             this.doThreeWayKill(entries);
@@ -612,7 +695,7 @@ class GachaBattleRoyale {
 
         this.doPlayerKill(entries);
 
-        this.doResurrect(this.randomDeadPlayer(entries));
+        this.doResurrect(this.goodDeadPlayer(entries));
 
         this.resolveDailyEvent(entries);
     }
@@ -627,16 +710,20 @@ class GachaBattleRoyale {
 
         console.log("Alive " + alive + " | Targets " + this.numTargets(entries) + " | Actions " + actions);
 
-        if(day === 1 && this.numAlive(entries) > 15) {
-            this.doAnnihilation(entries);
-        }
-
-        if(day === 3 && this.numTargets(entries) > 1) {
+        if(day === 3 && this.numTargets(entries) > 2) {
             this.doBlackShell(entries);
         }
 
-        if(day >= 5) {
-            if(alive > 2)
+        if(day === 5 && this.numTargets(entries) > 2) {
+            this.doBlackShell(entries);
+        }
+
+        if(day === 8 && this.numTargets(entries) > 2) {
+            this.doBlackShell(entries);
+        }
+
+        if(day >= 6) {
+            if(alive > 3)
                 this.doPlayerKill(entries);
             this.doResurrect(this.randomDeadPlayer(entries));
         }
@@ -708,7 +795,9 @@ class GachaBattleRoyale {
         var action = Math.floor(Math.random() * 5) + 1;
         console.log("Event pick: " + action);
         var deadTarget = this.randomDeadPlayer(entries);
-        console.log("Dead Target: " + deadTarget.member.displayName);
+        if(deadTarget) {
+            console.log("Dead Target: " + deadTarget.member.displayName);
+        }
 
         switch (action) {
             case 1:
@@ -720,16 +809,16 @@ class GachaBattleRoyale {
                 }
                 break;
             case 3:
-                if(this.numTargets(entries) > 1) {
+                if(this.numTargets(entries) > 2) {
                     this.doBlueShell(entries);
-                } else {
+                } else if (deadTarget){
                     this.doResurrect(deadTarget);
                 }
                 break;
             case 4:
-                if(this.numTargets(entries) > 1) {
+                if(this.numTargets(entries) > 2) {
                     this.doBlackShell(entries);
-                } else {
+                } else if (deadTarget){
                     this.doResurrect(deadTarget);
                 }
                 break;
@@ -746,14 +835,10 @@ class GachaBattleRoyale {
     }
 
     doDailyEvent(entries) {
-        var action = Math.floor(Math.random() * 7) + 1;
-
-        if(day === 2) {
-            action = 7;
-        }
+        var action = Math.floor(Math.random() * 8) + 1;
 
         if(action === 6 && this.numAlive < 5) {
-            action = 3;
+            action = 7;
         }
 
         todaysEvent = action;
@@ -783,7 +868,8 @@ class GachaBattleRoyale {
                 this.doSupplyDrop();
                 break;
             case 8:
-                this.doBloodlust();
+                //this.doBloodlust(entries);
+                this.doSupplyDrop();
                 break;
             default: 
                 this.doMassProtection(entries);
@@ -816,7 +902,7 @@ class GachaBattleRoyale {
                 //this.resolveSupplyDrop(entries);
                 break;
             case 8:
-                this.resolveBloodlust();
+                //this.resolveBloodlust();
                 break;
             default: 
                 this.resolveMassProtection(entries);
@@ -826,7 +912,7 @@ class GachaBattleRoyale {
         todaysEventName = "";
     }
 
-    doBloodlust() {
+    doBloodlust(entries) {
         todaysEventName = "Bloodlust";
 
         var numAffected = 0;
@@ -913,7 +999,19 @@ class GachaBattleRoyale {
         var retStr = "";
 
         entries.forEach(function(value, key) {
-            var affected = Math.random() >= 0.85;
+            var protValue = 0.85;
+
+            if(value.entry.isActive) {
+                console.log("PROTECTION ACTIVE. LOWER SAVE VALUE!");
+                protValue = 0.8;
+            }
+
+            if(value.entry.isBotExp) {
+                console.log("PROTECTION BOT EXP. HIGHER SAVE VALUE!");
+                protValue = 0.9;
+            }
+
+            var affected = Math.random() >= protValue;
             if(affected && !value.entry.dead) {
                 value.entry.dailyImmune = true;
                 retStr += ", " + key;
@@ -1061,7 +1159,7 @@ class GachaBattleRoyale {
 
         var embed = new Discord.RichEmbed();
         embed.setTitle("__Event - Black Shell__");
-        embed.setDescription("A flying black shell comes zipping across the battlefield killing **" + target.member.displayName + "**, a member who interacted with the community the least this week and is just here for the giveaway.");
+        embed.setDescription("A flying black shell comes zipping across the battlefield killing **" + target.member.displayName + "**, the living combatant who interacted with the community the least this week.");
         embed.setColor(msgColors.event);
         messages.push({ embed: embed });
 
@@ -1099,40 +1197,40 @@ class GachaBattleRoyale {
             case 2:
                 itemName = "Potion of Vitality";
                 statBoosted = "hitpoints";
-                statBoost = statBoost * 5;
+                statBoost = statBoost * 4;
                 target.entry.hp += statBoost;
                 break;
             case 3:
             case 4:
                 itemName = "Potion of Might";
                 statBoosted = "strength";
-                statBoost = statBoost * 2;
+                statBoost = statBoost;
                 target.entry.strength += statBoost;
                 break;
             case 5:
                 itemName = "Elixir of Vitality";
                 statBoosted = "hitpoints";
-                statBoost = statBoost * 7;
+                statBoost = statBoost * 6;
                 target.entry.hp += statBoost;
                 break;
             case 6:
                 itemName = "Elixir of Might";
                 statBoosted = "strength";
-                statBoost = statBoost * 3;
+                statBoost = statBoost * 2;
                 target.entry.strength += statBoost;
                 break;
             case 7:
                 itemType = 5;
                 itemName = "Talisman of the Gods";
                 statBoost = statBoost * 4;
-                target.entry.strength += (Math.ceil(statBoost/2));
+                target.entry.strength += (Math.ceil(statBoost/3));
                 target.entry.hp += statBoost;
                 break;
             case 8:
                 itemType = 4;
                 itemName = "Fairy in a Bottle";
                 itemEffect = "instant resurrection after their next death! (Does not work during showdown)";
-                target.immune = true;
+                target.entry.immune = true;
                 break;
             case 9:
                 itemType = 2;
@@ -1232,92 +1330,75 @@ class GachaBattleRoyale {
             }
         });
 
-        console.log(player1.entry);
-        console.log(player2.entry);
-
-        var embed = new Discord.RichEmbed();
-        embed.setTitle("__Battle Royale **Day " + day + "** - The Showdown__");
-        embed.setDescription("Welcome to the Showdown! Our final 2 combatants will fight to the death **" + this.randomPhrase(showdownArenas) + "**");
-        //embed.addField(player1.member.displayName + " Health", player1.entry.hp, true);
-        //embed.addField(player2.member.displayName + " Health", player2.entry.hp, true);
-        embed.addField(player1.member.displayName + " Stats", "HP: " + player1.entry.hp + " Strength: " + player1.entry.strength);
-        embed.addField(player2.member.displayName + " Stats", "HP: " + player2.entry.hp + " Strength: " + player2.entry.strength);
-        embed.setFooter(playersAlive);
-        embed.setColor(msgColors.showdownDay);
-        messages.push({ embed: embed });
-
-        //var player1Buff = Math.floor(Math.min((player1.entry.recentExp/100),50))
-
-        /*if(player1.entry.recentExp !== player2.entry.recentExp && (!player1.entry.isStaff || !player2.entry.isStaff)) {
-            console.log(player1.member.displayName + " Health", player1.entry.hp + " | " + player2.member.displayName + " Health", player2.entry.hp);
-            var buffStr = "";
-            if(player1.entry.recentExp > player2.entry.recentExp) {
-                var hpBoost = Math.floor(player1.entry.hp * 0.20);
-                player1.entry.hp += hpBoost;
-                buffStr += "**" + player1.member.displayName + "** (" + player1.entry.recentExp + " exp) has gained more exp than **" + player2.member.displayName + "** (" + player2.entry.recentExp + 
-                " exp) this week. **" + player1.member.displayName + "** gains **" + hpBoost + "** Health before the Showdown!"
-            } else {
-                var hpBoost = Math.floor(player2.entry.hp * 0.20);
-                player2.entry.hp += hpBoost;
-                buffStr += "**" + player2.member.displayName + "** (" + player2.entry.recentExp + " exp) has gained more exp than **" + player1.member.displayName + "** (" + player1.entry.recentExp + 
-                " exp) this week. **" + player2.member.displayName + "** gains **" + hpBoost + "** Health before the Showdown!"
-            }
-
-            var embedTwo = new Discord.RichEmbed();
-            embedTwo.setTitle("[NEW] - DGC Activity Buff!");
-            embedTwo.setDescription(buffStr);
-            embedTwo.addField(player1.member.displayName + " Health", player1.entry.hp, true);
-            embedTwo.addField(player2.member.displayName + " Health", player2.entry.hp, true);
-            embedTwo.setFooter("Exp can be gained by text chatting, voice chatting, participating in events, earning achievements, and more!");
-            embedTwo.setColor("GOLD");
-            messages.push({ embed: embedTwo });
-        }*/
-
-        while(player1.entry.hp > 0 && player2.entry.hp > 0) {
-            console.log(player1.member.displayName + " Health", player1.entry.hp + " | " + player2.member.displayName + " Health", player2.entry.hp);
-            var p1Attacks = Math.random() >= 0.5;
-
-            var killer;
-            var target;
-            if(p1Attacks) {
-                killer = player1;
-                target = player2;
-            } else {
-                killer = player2;
-                target = player1;
-            }
-
-            var attackValue = Math.floor(Math.random() * killer.entry.strength) + killer.entry.strength;
-
-            this.damagePlayer(target, attackValue);
-
-            const embed = new Discord.RichEmbed();
-
-            embed.setDescription(
-                this.formatMessage(
-                    this.randomPhrase(showdownHits), 
-                    {
-                        player1: killer.member.displayName,
-                        player2: target.member.displayName,
-                        weapon: killer.entry.weapon,
-                        bodyPart: this.randomPhrase(bodyParts),
-                        animal: this.randomPhrase(animals),
-                        damage: attackValue
-                    }
-                ) + " for **" + attackValue + "** damage!"
-            );
-
-            embed.addField(player1.member.displayName + " Health", player1.entry.hp, true);
-            embed.addField(player2.member.displayName + " Health", player2.entry.hp, true);
-            embed.setColor(msgColors.showdownAction);
+        if(player1 && player2) {
+            console.log(player1.entry);
+            console.log(player2.entry);
     
+            var embed = new Discord.RichEmbed();
+            embed.setTitle("__Battle Royale **Day " + day + "** - The Showdown__");
+            embed.setDescription("Welcome to the Showdown! Our final 2 combatants will fight to the death **" + this.randomPhrase(showdownArenas) + "**");
+            //embed.addField(player1.member.displayName + " Health", player1.entry.hp, true);
+            //embed.addField(player2.member.displayName + " Health", player2.entry.hp, true);
+            embed.addField(player1.member.displayName + " Stats", "HP: " + player1.entry.hp + " Strength: " + player1.entry.strength);
+            embed.addField(player2.member.displayName + " Stats", "HP: " + player2.entry.hp + " Strength: " + player2.entry.strength);
+            embed.setFooter(playersAlive);
+            embed.setColor(msgColors.showdownDay);
             messages.push({ embed: embed });
-        }
-
-        if(player1.entry.hp > player2.entry.hp) {
-            this.killPlayer(player2, player1);
+    
+            //var player1Buff = Math.floor(Math.min((player1.entry.recentExp/100),50))
+    
+            while(player1.entry.hp > 0 && player2.entry.hp > 0) {
+                console.log(player1.member.displayName + " Health", player1.entry.hp + " | " + player2.member.displayName + " Health", player2.entry.hp);
+                var p1Attacks = Math.random() >= 0.5;
+    
+                var killer;
+                var target;
+                if(p1Attacks) {
+                    killer = player1;
+                    target = player2;
+                } else {
+                    killer = player2;
+                    target = player1;
+                }
+    
+                var attackValue = Math.floor(Math.random() * killer.entry.strength) + killer.entry.strength;
+    
+                this.damagePlayer(target, attackValue);
+    
+                const embed = new Discord.RichEmbed();
+    
+                embed.setDescription(
+                    this.formatMessage(
+                        this.randomPhrase(showdownHits), 
+                        {
+                            player1: killer.member.displayName,
+                            player2: target.member.displayName,
+                            weapon: killer.entry.weapon,
+                            bodyPart: this.randomPhrase(bodyParts),
+                            animal: this.randomPhrase(animals),
+                            damage: attackValue
+                        }
+                    ) + " for **" + attackValue + "** damage!"
+                );
+    
+                embed.addField(player1.member.displayName + " Health", player1.entry.hp, true);
+                embed.addField(player2.member.displayName + " Health", player2.entry.hp, true);
+                embed.setColor(msgColors.showdownAction);
+        
+                messages.push({ embed: embed });
+            }
+    
+            if(player1.entry.hp > player2.entry.hp) {
+                this.killPlayer(player2, player1);
+            } else {
+                this.killPlayer(player1, player2);
+            }
         } else {
-            this.killPlayer(player1, player2);
+            const embed = new Discord.RichEmbed();
+            embed.setTitle("__Battle Royale **Day " + day + "** - The Showdown???__");
+            embed.setDescription("Only **" + player1.member.displayName + "** remains in the arena! Something went wrong and Aerfalle needs to figure out why but " + player1.member.displayName + " is the last player standing and they are the winner!");
+            embed.setColor("RED");
+            messages.push({ embed: embed });
         }
     }
 
@@ -1380,7 +1461,19 @@ class GachaBattleRoyale {
         var alive = this.numAlive(entries);
         
         entries.forEach(function(value, key) {
-            var dies = Math.random() >= 0.79;
+            var killValue = 0.8;
+
+            if(value.entry.isActive) {
+                console.log("ANNIHILATION ACTIVE. LOWER KILL VALUE!");
+                killValue = 0.85;
+            }
+
+            if(value.entry.isBotExp) {
+                console.log("ANNIHILATION BOT EXP. HIGHER KILL VALUE!");
+                killValue = 0.75;
+            }
+
+            var dies = Math.random() >= killValue;
             if(dies && _this.isValidTarget(value) && alive > 2 && !_this.isPlayerImmune(value)) {
                 _this.killPlayer(value, god);
                 annihilatedStr += ", " + key;
@@ -1408,6 +1501,7 @@ class GachaBattleRoyale {
         if(this.numTargets(entries) > 1) {
             var target = this.randomAlivePlayer(entries);
             var killer = this.randomAlivePlayer(entries, target);
+
             this.killPlayer(target, killer);
     
             const embed = new Discord.RichEmbed();
@@ -1551,6 +1645,11 @@ class GachaBattleRoyale {
                     }
                 }
             }
+
+            if(killer.member && target.member) {
+                console.log(killer.member.displayName + " kills " + target.member.displayName);
+            }
+            
             target.entry.dead = true;
         }
     }

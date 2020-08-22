@@ -1,5 +1,5 @@
 /**
- * Combat Generator for Battle Royale.
+ * Combat Message Generator for Battle Royale.
  * @author acampagna
  * @copyright Dauntless Gaming Community 2019
  **/

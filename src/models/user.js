@@ -19,6 +19,7 @@ module.exports = function() {
 		currency: { type: Number, default: 0, min: 0},
 		rank: { type: String, default: "Padawan" },
 		class: { type: String, default: "Padawan" },
+		title: { type: String, default: "Noobling" },
 		messages: { type: Number, default: 0, min: 0 },
 		events: { type: Number, default: 0, min: 0 },
 		voiceActivity: { type: Number, default: 0, min: 0 },

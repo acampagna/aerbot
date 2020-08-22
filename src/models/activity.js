@@ -36,10 +36,10 @@ module.exports = function() {
 		return this.find().exec();
 	};
 
-	activitySchema.statics.findAllRecentActivityIn = function(ids) {
+	activitySchema.statics.findAllRecentActivityIn = function(days, ids) {
 		console.log("Finding ALL Activity IN");
 		var date = new Date();
-		date.setDate( date.getDate() - 3);
+		date.setDate( date.getDate() - days);
 	
 		return this.find({"$and": [{userId: {$in:ids}},  {date: {"$gte": date}}]}).exec();
 	};
@@ -180,7 +180,7 @@ module.exports = function() {
 
 		console.log(date);
 		
-		console.log("Getting Statistics " + "{\"date\" : {\"$gte\": " + date + ", \"$lte\": " + today + "}}");
+		console.log("Getting Statistics " + "{\"date\" : {\"$gte\": " + date + "}}");
 
 		var query = {
 			date: {"$gte": date, "$lte": today}
@@ -273,8 +273,16 @@ module.exports = function() {
 					typeActivity.set("achievement", 0);
 				}
 
+				if(isNaN(typeActivity.get("holiday_hunter"))) {
+					typeActivity.set("holiday_hunter", 0);
+				}
+
+				if(isNaN(typeActivity.get("greet"))) {
+					typeActivity.set("greet", 0);
+				}
+
 				typeActivity.set("total", typeActivity.get("message") + typeActivity.get("voice") +  typeActivity.get("reaction") + 
-					typeActivity.get("pinned") + typeActivity.get("event") + typeActivity.get("trivia") + typeActivity.get("qotd") + typeActivity.get("stream")
+					typeActivity.get("pinned") + typeActivity.get("event") + typeActivity.get("trivia") + typeActivity.get("qotd") + typeActivity.get("stream") + typeActivity.get("greet")
 				);
 
 				var avgExp = typeActivity.get("total") / activeUsers;

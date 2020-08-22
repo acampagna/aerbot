@@ -11,141 +11,176 @@ function calculateNewExp(action, currentExp) {
 }
 
 function calculateActionExp(action) {
+	var exp = 1;
 	switch(action) {
 		case 'lottery':
-			return 50;
+			exp = 50;
 			break;
 		case 'reaction':
-			return 4;
+			exp = 4;
 			break;
 		case 'event':
-			return 100;
+			exp = 100;
 			break;
 		case 'br_win':
-			return 200;
+			exp = 100;
 			break;
 		case 'message':
-			return 1;
+			exp = 1;
 			break;
 		case 'trendy_message':
-			return 1;
+			exp = 1;
 			break;
 		case 'gamesie_post':
-			return 10;
+			exp = 10;
 			break;
 		case 'voice':
-			return 5;
+			exp = 4;
 			break;
 		case 'trivia_question':
-			return 5;
+			exp = 5;
 			break;
 		case 'trivia_game':
-			return 50;
+			exp = 50;
 			break;
 		case 'qotd':
-			return 25;
+			exp = 25;
 			break;
 		case 'pinned':
-			return 50;
+			exp = 50;
 			break;
 		case 'achievement':
-			return 100;
+			exp = 100;
 			break;
 		case 'stream_engagement':
-			return 10;
+			exp = 10;
 			break;
 		case 'stream_contribution':
-			return 25;
+			exp = 25;
 			break;
 		case 'stream_mvp':
-			return 50;
+			exp = 50;
 			break;
 		case 'recruit':
-			return 500;
+			exp = 500;
 			break;
 		case 'greet':
-			return 25;
+			exp = 20;
 			break;
 		case 'holiday_hunter':
-			return 50;
+			exp = 10;
 			break;
-		default:
-			return 1;
+		case 'booster':
+			exp = 25;
+			break;
+		case 'battle_win':
+			exp = 2;
+			break;
+		case 'battle_lose':
+			exp = 1;
 			break;
 	}
+
+	return exp;
 }
 
 function calculateActionCurrency(action) {
+	var currency = 0;
 	switch(action) {
 		case 'lottery':
-			return 5;
+			currency = 5;
 			break;
 		case 'reaction':
-			return 0;
+			currency = 0;
 			break;
 		case 'event':
-			return 2;
+			currency = 5;
 			break;
 		case 'br_win':
-			return 0;
+			currency = 1;
 			break;
 		case 'message':
-			return 0;
+			currency = 0;
 			break;
 		case 'voice':
-			return 0;
+			currency = 0;
 			break;
 		case 'trivia_question':
-			return 0;
+			currency = 0;
 			break;
 		case 'trivia_game':
-			return 5;
+			currency = 5;
 			break;
 		case 'qotd':
-			return 1;
+			currency = 2;
 			break;
 		case 'pinned':
-			return 1;
+			currency = 2;
 			break;
 		case 'achievement':
-			return 10;
+			currency = 10;
 			break;
 		case 'stream_engagement':
-			return 0;
+			currency = 0;
 			break;
 		case 'stream_contribution':
-			return 2;
+			currency = 2;
 			break;
 		case 'stream_mvp':
-			return 5;
+			currency = 5;
 			break;
 		case 'recruit':
-			return 10;
+			currency = 10;
 			break;
 		case 'greet':
-			return 0;
+			currency = 0;
 			break;
 		case 'holiday_hunter':
-			return 5;
+			currency = 1;
 			break;
-		default:
-			return 0;
+		case 'booster':
+			currency = 5;
+			break;
+		case 'battle_win':
+			currency = 0;
+			break;
+		case 'battle_lose':
+			currency = 0;
 			break;
 	}
+
+	return currency;
 }
 
 function calculateLevel(exp) {
-	/*CoreUtil.dateLog(`0.1 New Level: ${Math.round(0.1 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`0.2 New Level: ${Math.round(0.2 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`0.25 (current) New Level: ${Math.round(0.25 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`0.3 New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
-	CoreUtil.dateLog(`0.5 New Level: ${Math.round(0.5 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);*/
+	if(exp > 10) {
+		var lvl = Math.max(1,Math.floor(0.95 * Math.pow(exp, 1/2.6)));
+		console.log("---[" + Math.round(0.3 * Math.sqrt(exp)) + "]--");
+		//console.log(`0.3 (current) New Level: ${Math.round(0.3 * Math.sqrt(exp))} | Exp: ${exp} | Sqrt(exp): ${Math.sqrt(exp)}`);
+		//console.log(`0.32: ${Math.round(0.32 * Math.sqrt(exp))}`);
+		//console.log(`0.8 2.4: ${Math.max(1,Math.floor(0.8 * Math.pow(exp, 1/2.4)))}`);
+		//console.log(`0.7 2.4: ${Math.max(1,Math.floor(0.7 * Math.pow(exp, 1/2.4)))}`);
+		//console.log(`0.75 2.4: ${Math.max(1,Math.floor(0.75 * Math.pow(exp, 1/2.4)))}`);
+		//console.log(`0.8 2.45: ${Math.max(1,Math.floor(0.8 * Math.pow(exp, 1/2.45)))}`);
+		//console.log(`0.85 2.5: ${Math.max(1,Math.floor(0.85 * Math.pow(exp, 1/2.5)))}`);
+		//console.log(`0.85 2.55: ${Math.max(1,Math.floor(0.85 * Math.pow(exp, 1/2.55)))}`);
+		//console.log(`0.875 2.525: ${Math.max(1,Math.floor(0.875 * Math.pow(exp, 1/2.525)))}`);
+		//console.log(`0.85 2.65: ${Math.max(1,Math.floor(0.85 * Math.pow(exp, 1/2.65)))}`);
+		//console.log(`0.9 2.5: ${Math.max(1,Math.floor(0.9 * Math.pow(exp, 1/2.5)))}`);
+		//console.log(`0.9 2.525: ${Math.max(1,Math.floor(0.9 * Math.pow(exp, 1/2.525)))}`);
+		//console.log(`0.9 2.55: ${Math.max(1,Math.floor(0.9 * Math.pow(exp, 1/2.55)))}`);
+		console.log(`0.925 2.55: ${Math.max(1,Math.floor(0.925 * Math.pow(exp, 1/2.55)))} | EXP to lvl: ${(Math.ceil(Math.pow((lvl+1) / 0.925, 2.55)) - exp)}`);
+		//console.log(`0.95 2.55: ${Math.max(1,Math.floor(0.95 * Math.pow(exp, 1/2.55)))}`);
+		//console.log(`0.95 2.575: ${Math.max(1,Math.floor(0.95 * Math.pow(exp, 1/2.575)))}`);
+		//console.log(`[0.95 2.6]: ${Math.max(1,Math.floor(0.95 * Math.pow(exp, 1/2.6)))} | EXP to lvl: ${(Math.ceil(Math.pow((lvl+1) / 0.95, 2.6)) - exp)}`);
+	}
+	
+	//return Math.max(1,Math.floor(0.95 * Math.pow(exp, 1/2.6)));
 	return Math.max(1,Math.floor(0.3 * Math.sqrt(exp)));
 }
 
 function calculateNextLevelExp(lvl, exp) {
-	//CoreUtil.dateLog(`EXP to next level: ${((Math.ceil(Math.pow((lvl+1) / 0.3, 2))) - exp)} | Lvl: ${(lvl+1)} | Pow(${((lvl+1) / 0.3)}): ${Math.pow(((lvl+1) / 0.3), 2)}`);
-
+	//return (Math.ceil(Math.pow((lvl+1) / 0.95, 2.6)) - exp);
 	return ((Math.ceil(Math.pow((lvl+1) / 0.3, 2))) - exp);
 }
 

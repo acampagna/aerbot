@@ -23,7 +23,7 @@ function invoke({ message, params, serverData, client }) {
 		serverData.updateQotd(question);
 		serverData.updateQotdMessageId("");
 		serverData.resetMsgsSinceNewQotd();
-		client.channels.get(serverData.qotdChannelId).send("**Previous Question of the Day has ended!**");
+		client.channels.get(serverData.qotdChannelId).send("```Previous Question of the Day has ended!```");
 
 		CoreUtil.sendQotd(question, client, serverData);
 
